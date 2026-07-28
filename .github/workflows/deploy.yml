@@ -1,13 +1,22 @@
 name: ideafeed deploy (GitHub Pages)
 
-# Manual on purpose: publishing to Pages replaces whatever else this repository
-# currently serves there, so it only ever runs when you click the button.
+# Publishes the app to GitHub Pages.
 #
-# To use it: Settings → Pages → Source: "GitHub Actions", then run this workflow.
+# Runs on every push that touches the app or the feed, which is what keeps the
+# live site current: the scan job commits a refreshed feed.json every two hours,
+# and that commit lands here and redeploys.
+#
+# The build step enables Pages itself (`enablement: true`) using the workflow
+# token, so there is no Settings page to visit first.
 # If you'd rather host on Netlify, ignore this file — see web/netlify.toml.
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'web/**'
+      - '.github/workflows/deploy.yml'
 
 permissions:
   contents: read
@@ -38,7 +47,11 @@ jobs:
         working-directory: web
         run: npm run build
 
+      # enablement: true turns Pages on and sets its source to Actions if it
+      # isn't already configured, so a fresh repository needs no manual setup.
       - uses: actions/configure-pages@v5
+        with:
+          enablement: true
 
       - uses: actions/upload-pages-artifact@v3
         with:
