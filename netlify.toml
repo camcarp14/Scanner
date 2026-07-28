@@ -1,0 +1,37 @@
+# Netlify config for the ideafeed web app.
+#
+# This lives at the repository root on purpose. Netlify reads the root
+# netlify.toml before it knows anything else about the project, so declaring
+# `base` here is what points it at web/ — without it, Netlify publishes the
+# repository as-is and you get the unbuilt Vite entry (a page whose only script
+# tag is /src/main.tsx) instead of the app.
+#
+# Setting this in the file rather than in the UI also means the build config is
+# versioned with the code, so it survives a re-import of the site.
+
+[build]
+  base = "web"
+  command = "npm run build"
+  # Relative to `base`, so this is web/dist.
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# The scan job rewrites feed.json every couple of hours, so it must not sit in
+# the CDN cache. Everything else is content-hashed and can be cached hard.
+[[headers]]
+  for = "/feed.json"
+  [headers.values]
+    Cache-Control = "no-cache, must-revalidate"
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# Single page app: anything that isn't a real file falls through to index.html.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

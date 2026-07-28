@@ -154,12 +154,15 @@ component changes.
 
 ## Deploying
 
-**Netlify**: import the repo, set the base directory to `web`.
-`web/netlify.toml` handles build, caching and SPA routing.
+**Netlify**: import the repo and accept the defaults. The root `netlify.toml`
+declares `base = "web"` along with the build command, caching and SPA routing,
+so there is nothing to fill in by hand. Leave the UI's build fields empty — if
+the base directory isn't set anywhere, Netlify publishes the repository as-is
+and you get the unbuilt Vite entry rather than the app.
 
-**GitHub Pages**: Settings → Pages → Source "GitHub Actions", then run the
-*ideafeed deploy* workflow. It's manual on purpose — publishing to Pages replaces
-whatever else the repository serves there.
+**GitHub Pages**: Settings → Pages → Source "GitHub Actions". Creating the Pages
+site needs repo-admin, so no workflow can do it for you; once it exists, every
+push that touches `web/` redeploys.
 
 Either way the scan workflow keeps committing `feed.json`, and each commit
 triggers a rebuild, so the live site stays current on its own.
