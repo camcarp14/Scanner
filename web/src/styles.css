@@ -236,7 +236,27 @@ kbd {
 
 .app {
   min-height: 100%;
-  padding-bottom: 90px;
+  padding-bottom: calc(90px + env(safe-area-inset-bottom));
+}
+
+/*
+  Installed to the home screen, the status bar is translucent and the page
+  begins underneath it. The sticky header absorbs that inset itself so its
+  blurred background runs to the top of the display instead of leaving a strip,
+  and the horizontal insets keep content clear of a landscape notch.
+*/
+@media (display-mode: standalone) {
+  .topbar {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .topbar-inner,
+  .controls,
+  .lanes,
+  .main {
+    padding-left: max(20px, env(safe-area-inset-left));
+    padding-right: max(20px, env(safe-area-inset-right));
+  }
 }
 
 .topbar {
@@ -274,22 +294,22 @@ kbd {
 }
 
 .brand-mark {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: var(--accent);
-  box-shadow: 0 0 0 4px var(--accent-soft);
+  width: 22px;
+  height: 22px;
   flex: none;
-  animation: pulse 3.4s var(--ease-out) infinite;
+  color: var(--accent);
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--accent) 34%, transparent));
 }
 
-@keyframes pulse {
-  0%,
-  100% {
-    box-shadow: 0 0 0 4px var(--accent-soft);
-  }
-  50% {
-    box-shadow: 0 0 0 8px transparent;
+/* The one piece of ambient motion in the app: the sweep is literally scanning. */
+.brand-sweep {
+  transform-origin: 256px 256px;
+  animation: sweep 9s linear infinite;
+}
+
+@keyframes sweep {
+  to {
+    transform: rotate(360deg);
   }
 }
 
@@ -1299,8 +1319,43 @@ kbd {
   }
 
   .btn,
+  .seg button,
+  .chip {
+    min-height: 44px; /* Apple's minimum comfortable target */
+  }
+
+  /*
+    Four tabs plus the sort control are wider than a phone, and as flex
+    children they were widening the whole row — which scrolled the page
+    sideways rather than the tabs. The tab strip now scrolls inside itself and
+    the sort stays put.
+  */
+  .controls {
+    gap: 8px;
+  }
+
+  .seg {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .seg::-webkit-scrollbar {
+    display: none;
+  }
+
   .seg button {
-    min-height: 40px;
+    flex: none;
+  }
+
+  .spacer {
+    display: none;
+  }
+
+  .sort {
+    flex: none;
   }
 
   .keyhints {
@@ -1328,7 +1383,7 @@ kbd {
   .cmdk,
   .cmdk-wrap,
   .bar-fill,
-  .brand-mark {
+  .brand-sweep {
     animation: none !important;
   }
 

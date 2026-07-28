@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { CandidateItem } from '../types';
-import { Expand, Num } from './primitives';
+import { Expand } from './primitives';
 import { ageLabel, compact, languageColor, relative, velocityLabel } from '../lib/format';
 
 const BREAKDOWN_LABELS: Record<string, string> = {
@@ -77,7 +77,7 @@ export function Card({
           </span>
         )}
         <span className="meta-item mono" title={`${item.stars.toLocaleString()} stars`}>
-          ★ <Num v={item.stars} f={compact} />
+          ★ {compact(item.stars)}
         </span>
         {item.stars_gained > 0 && (
           <span className="meta-item gain" title="Stars gained since this first appeared here">

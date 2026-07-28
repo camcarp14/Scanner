@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="ideafeed">
+  <!--
+    The app's brand mark is a mint dot inside a pulsing ring — a signal being
+    picked up. This is that mark held still: a solid centre, one closed ring,
+    and an outer sweep broken at the top-right so the shape reads as a scan in
+    progress rather than a wifi glyph. The asymmetry is what keeps it from
+    looking like every other concentric-circle icon, and it still resolves at
+    16px because the centre dot carries the silhouette on its own.
+  -->
+  <defs>
+    <linearGradient id="ground" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#151a24"/>
+      <stop offset="1" stop-color="#0a0c11"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.42" r="0.55">
+      <stop offset="0" stop-color="#5ad1a5" stop-opacity="0.20"/>
+      <stop offset="1" stop-color="#5ad1a5" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="mark" x1="0.2" y1="0" x2="0.8" y2="1">
+      <stop offset="0" stop-color="#8fe9c6"/>
+      <stop offset="1" stop-color="#3fbc8e"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="512" height="512" rx="114" fill="url(#ground)"/>
+  <rect width="512" height="512" rx="114" fill="url(#glow)"/>
+
+  <g transform="translate(256 256)">
+    <!-- outer sweep: 270deg, opening toward the top-right -->
+    <path d="M 0 -150 A 150 150 0 1 0 106 106"
+          fill="none" stroke="url(#mark)" stroke-opacity="0.34"
+          stroke-width="20" stroke-linecap="round"/>
+    <!-- inner ring, closed -->
+    <circle r="86" fill="none" stroke="url(#mark)" stroke-opacity="0.62" stroke-width="22"/>
+    <!-- the signal -->
+    <circle r="34" fill="url(#mark)"/>
+  </g>
+</svg>

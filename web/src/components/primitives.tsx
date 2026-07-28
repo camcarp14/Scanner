@@ -14,8 +14,12 @@ import {
 /* ---------------- numbers count to their value ---------------- */
 
 export function useTween(target: number | null, dur = 650): number | null {
-  const [value, setValue] = useState(target ?? 0);
-  const fromRef = useRef(target ?? 0);
+  // Both seed at 0 rather than at the target, so the first render animates up
+  // to the value instead of snapping to it. Seeding with the target made the
+  // very first effect a no-op (from === target), which meant nothing ever
+  // counted on mount — only on a later change.
+  const [value, setValue] = useState(0);
+  const fromRef = useRef(0);
 
   useEffect(() => {
     if (target == null) return;

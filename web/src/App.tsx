@@ -3,7 +3,14 @@ import type { Feed, FeedItem, SortKey, View } from './types';
 import { isCandidate, isSkill } from './types';
 import { Card } from './components/Card';
 import { SkillCard } from './components/SkillCard';
-import { CommandK, SkFeed, ToastProvider, useToast, type Command } from './components/primitives';
+import {
+  CommandK,
+  Num,
+  SkFeed,
+  ToastProvider,
+  useToast,
+  type Command,
+} from './components/primitives';
 import { downloadJson, readTheme, store, writeTheme, type StoreState, type Theme } from './lib/store';
 import { relative } from './lib/format';
 
@@ -362,17 +369,23 @@ function App() {
 
   cardRefs.current = [];
 
-  const subtitle = feed
-    ? `${feed.stats.skills} skills · ${feed.stats.published} published · ` +
-      `${feed.stats.candidates} candidates · ${relative(feed.generated_at)}`
-    : 'Mining GitHub for reusable agent skills';
+  // The counts tween up rather than appearing, so the header reads as an
+  // instrument settling on a value instead of text swapping in.
+  const subtitle = feed ? (
+    <>
+      <Num v={feed.stats.skills} /> skills · <Num v={feed.stats.published} /> published ·{' '}
+      <Num v={feed.stats.candidates} /> candidates · {relative(feed.generated_at)}
+    </>
+  ) : (
+    'Mining GitHub for reusable agent skills'
+  );
 
   return (
     <div className="app">
       <header className="topbar">
         <div className="topbar-inner">
           <div className="brand">
-            <span className="brand-mark" aria-hidden="true" />
+            <BrandMark />
             <div>
               <h1>ideafeed</h1>
               <p className="sub">{subtitle}</p>
@@ -579,6 +592,31 @@ function App() {
 
       <CommandK commands={commands} open={paletteOpen} onOpenChange={setPaletteOpen} />
     </div>
+  );
+}
+
+/**
+ * The same mark as the app icon — solid centre, closed ring, and a sweep broken
+ * at the top-right. The sweep turns once every nine seconds, which is the only
+ * ambient motion in the app: it says the thing is scanning, which it is.
+ */
+function BrandMark() {
+  return (
+    <svg className="brand-mark" viewBox="0 0 512 512" aria-hidden="true">
+      <g transform="translate(256 256)">
+        <path
+          className="brand-sweep"
+          d="M 0 -150 A 150 150 0 1 0 106 106"
+          fill="none"
+          stroke="currentColor"
+          strokeOpacity="0.4"
+          strokeWidth="30"
+          strokeLinecap="round"
+        />
+        <circle r="86" fill="none" stroke="currentColor" strokeOpacity="0.7" strokeWidth="32" />
+        <circle r="38" fill="currentColor" />
+      </g>
+    </svg>
   );
 }
 
