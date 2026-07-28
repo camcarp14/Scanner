@@ -47,11 +47,21 @@ jobs:
         working-directory: web
         run: npm run build
 
-      # enablement: true turns Pages on and sets its source to Actions if it
-      # isn't already configured, so a fresh repository needs no manual setup.
+      # configure-pages fails with "Resource not accessible by integration" when
+      # Pages has never been turned on, which is not a useful thing to read at
+      # 3am. Creating a Pages site needs repo-admin and the workflow token only
+      # ever has `pages: write`, so no workflow can enable it for you — say so.
+      - name: Check Pages is enabled
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if ! gh api "repos/${GITHUB_REPOSITORY}/pages" >/dev/null 2>&1; then
+            echo "::error title=GitHub Pages is not enabled::Go to Settings -> Pages and set Source to 'GitHub Actions', then re-run. A workflow cannot do this for you: creating a Pages site requires repo-admin, and the Actions token is capped at pages:write (deploy-only)."
+            exit 1
+          fi
+          echo "Pages is enabled; deploying."
+
       - uses: actions/configure-pages@v5
-        with:
-          enablement: true
 
       - uses: actions/upload-pages-artifact@v3
         with:
