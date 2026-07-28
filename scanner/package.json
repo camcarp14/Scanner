@@ -1,0 +1,20 @@
+{
+  "name": "ideafeed-scanner",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Scans GitHub for novel projects and writes the feed the web app reads.",
+  "scripts": {
+    "scan": "node scan.mjs",
+    "scan:dry": "node scan.mjs --dry",
+    "scan:nollm": "node scan.mjs --no-llm",
+    "scan:mock": "node scan.mjs --mock-llm",
+    "test": "node --test 'test/*.test.mjs'"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.115.0"
+  }
+}

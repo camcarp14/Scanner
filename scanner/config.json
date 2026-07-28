@@ -1,0 +1,301 @@
+{
+  "$comment": "The whole pipeline is tunable from this file. Stages run in order: scout -> filter -> read -> extract -> score -> generate -> review -> publish.",
+
+  "output": "../web/public/feed.json",
+  "skillsDir": "../skills",
+  "skillsRepoPath": "skills",
+
+  "limits": {
+    "perQuery": 50,
+    "maxItemsInFeed": 500,
+    "maxCandidatesPerRun": 40,
+    "maxSkillsPerRun": 8,
+    "extractBatchSize": 5,
+    "reviewBatchSize": 4,
+    "docBytes": 9000,
+    "maxDocFiles": 4,
+    "keepUnseenDays": 45
+  },
+
+  "scout": {
+    "trending": {
+      "enabled": true,
+      "since": ["daily", "weekly"],
+      "languages": ["", "python", "typescript", "rust"]
+    },
+    "lanes": [
+      {
+        "id": "brand-new",
+        "label": "Brand new",
+        "blurb": "Created in the last 21 days and already picking up real traction.",
+        "query": "created:>{{days:21}} stars:>20",
+        "sort": "stars"
+      },
+      {
+        "id": "under-radar",
+        "label": "Under the radar",
+        "blurb": "Young, small, and moving fast — before anyone has heard of it.",
+        "query": "created:>{{days:45}} stars:8..250 pushed:>{{days:7}}",
+        "sort": "updated"
+      },
+      {
+        "id": "ai-agents",
+        "label": "Agents & LLM tooling",
+        "blurb": "Agent frameworks, inference tricks, eval harnesses, context plumbing.",
+        "query": "created:>{{days:120}} stars:>40 topic:llm",
+        "sort": "stars"
+      },
+      {
+        "id": "ai-agents-2",
+        "label": "Agents & LLM tooling",
+        "blurb": "Agent frameworks, inference tricks, eval harnesses, context plumbing.",
+        "query": "created:>{{days:120}} stars:>30 topic:ai-agents",
+        "sort": "stars"
+      },
+      {
+        "id": "agent-skills",
+        "label": "Agent skills & prompts",
+        "blurb": "Repos that already package workflows for agents to use.",
+        "query": "created:>{{days:180}} stars:>15 topic:claude",
+        "sort": "stars"
+      },
+      {
+        "id": "devtools",
+        "label": "Devtools",
+        "blurb": "Things that change how software gets built.",
+        "query": "created:>{{days:120}} stars:>60 topic:developer-tools",
+        "sort": "stars"
+      },
+      {
+        "id": "rag",
+        "label": "Retrieval & data",
+        "blurb": "RAG, embeddings, extraction, evaluation and the plumbing around them.",
+        "query": "created:>{{days:150}} stars:>30 topic:rag",
+        "sort": "stars"
+      },
+      {
+        "id": "mcp",
+        "label": "MCP & tool use",
+        "blurb": "Model Context Protocol servers, tool runtimes, sandboxes.",
+        "query": "created:>{{days:180}} stars:>20 topic:mcp",
+        "sort": "stars"
+      }
+    ]
+  },
+
+  "filter": {
+    "$comment": "Stage 2 — keep AI projects. A repo needs one strong signal, or two weak ones.",
+    "requireScore": 2,
+    "strongTopics": [
+      "llm",
+      "large-language-models",
+      "ai-agents",
+      "agent",
+      "agents",
+      "generative-ai",
+      "rag",
+      "mcp",
+      "model-context-protocol",
+      "claude",
+      "anthropic",
+      "openai",
+      "prompt-engineering",
+      "machine-learning",
+      "deep-learning",
+      "transformers",
+      "inference",
+      "embeddings",
+      "vector-database",
+      "fine-tuning",
+      "computer-vision",
+      "nlp"
+    ],
+    "strongKeywords": [
+      "llm",
+      "language model",
+      "ai agent",
+      "agentic",
+      "claude",
+      "gpt-",
+      "openai",
+      "anthropic",
+      "prompt",
+      "rag",
+      "retrieval-augmented",
+      "embedding",
+      "vector search",
+      "fine-tune",
+      "inference engine",
+      "model context protocol",
+      "mcp server",
+      "diffusion",
+      "transformer",
+      "neural network"
+    ],
+    "weakKeywords": [
+      " ai ",
+      "ai-",
+      "artificial intelligence",
+      "machine learning",
+      "ml ",
+      "chatbot",
+      "copilot",
+      "assistant",
+      "autonomous",
+      "reasoning",
+      "multimodal",
+      "token",
+      "context window",
+      "eval",
+      "benchmark"
+    ]
+  },
+
+  "reader": {
+    "$comment": "Stage 3 — read documentation first. Files are tried in order; the first maxDocFiles that exist are read.",
+    "preferredFiles": [
+      "SKILL.md",
+      "AGENTS.md",
+      "CLAUDE.md",
+      "docs/README.md",
+      "docs/index.md",
+      "docs/getting-started.md",
+      "docs/guide.md",
+      "docs/usage.md",
+      "USAGE.md",
+      "GUIDE.md",
+      "COOKBOOK.md",
+      "RECIPES.md",
+      "examples/README.md"
+    ],
+    "docDirectories": ["docs", "doc", "guides", "examples", "cookbook", ".claude"]
+  },
+
+  "skillScoring": {
+    "$comment": "Stage 5 — score with rules, before any model reviews it. Weights sum to 100.",
+    "weights": {
+      "specificity": 26,
+      "actionability": 24,
+      "grounding": 24,
+      "reusability": 16,
+      "sourceQuality": 10
+    },
+    "minSteps": 3,
+    "genericPhrases": [
+      "best practices",
+      "getting started",
+      "introduction to",
+      "overview of",
+      "learn how to",
+      "in this guide",
+      "follow these steps to install",
+      "read the documentation"
+    ],
+    "publishThreshold": 62
+  },
+
+  "scoring": {
+    "$comment": "Repo-level scoring, used to rank candidates before extraction.",
+    "weights": {
+      "momentum": 34,
+      "freshness": 22,
+      "novelty": 24,
+      "substance": 10,
+      "obscurity": 10
+    },
+    "penalizeKeywords": [
+      "awesome",
+      "awesome-list",
+      "curated list",
+      "list of",
+      "boilerplate",
+      "starter kit",
+      "starter-template",
+      "template repo",
+      "scaffold",
+      "roadmap",
+      "cheatsheet",
+      "cheat sheet",
+      "interview questions",
+      "leetcode",
+      "coding challenge",
+      "tutorial",
+      "course",
+      "learn ",
+      "learning path",
+      "study notes",
+      "my portfolio",
+      "portfolio website",
+      "resume template",
+      "100 days",
+      "clone of",
+      "netflix clone",
+      "todo app",
+      "crud app",
+      "free api",
+      "collection of resources",
+      "ebooks",
+      "books"
+    ],
+    "rewardKeywords": [
+      "from scratch",
+      "no dependencies",
+      "zero-dependency",
+      "single file",
+      "wire protocol",
+      "compiler",
+      "interpreter",
+      "kernel",
+      "scheduler",
+      "allocator",
+      "deterministic",
+      "incremental",
+      "differentiable",
+      "formally verified",
+      "proof",
+      "jit",
+      "sandbox",
+      "sync engine",
+      "crdt",
+      "raft",
+      "wasm",
+      "gpu",
+      "simd",
+      "reverse engineer",
+      "emulator",
+      "decompiler",
+      "protocol",
+      "runtime",
+      "novel",
+      "we found",
+      "turns out"
+    ],
+    "unusualLanguages": [
+      "Zig",
+      "Nim",
+      "OCaml",
+      "Haskell",
+      "Elixir",
+      "Erlang",
+      "Racket",
+      "Clojure",
+      "Odin",
+      "Crystal",
+      "Julia",
+      "Roc",
+      "Gleam",
+      "Rust",
+      "Assembly",
+      "Verilog",
+      "V"
+    ],
+    "obscurityIdealStars": 400,
+    "hardExcludeIfStarsAbove": 90000
+  },
+
+  "enrichment": {
+    "enabled": true,
+    "model": "claude-opus-5",
+    "effort": "low"
+  }
+}
