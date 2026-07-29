@@ -61,15 +61,31 @@ export const store: IdeaStore = localStore;
 
 export type Theme = 'dark' | 'light';
 
+// Both guarded: touching localStorage throws outright when storage is blocked
+// (Safari with cookies disabled, an embedded third-party frame), and setItem
+// throws on quota. Unguarded, either one takes down the whole app from inside
+// an effect — a white screen, not a lost preference.
+
 export function readTheme(): Theme {
-  const saved = localStorage.getItem('ideafeed.theme');
+  let saved: string | null = null;
+  try {
+    saved = localStorage.getItem('ideafeed.theme');
+  } catch {
+    saved = null;
+  }
   if (saved === 'dark' || saved === 'light') return saved;
   return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
 }
 
 export function writeTheme(theme: Theme) {
-  localStorage.setItem('ideafeed.theme', theme);
+  // The attribute is what actually themes the page, so it goes first and
+  // applies even when the preference can't be persisted.
   document.documentElement.setAttribute('data-theme', theme);
+  try {
+    localStorage.setItem('ideafeed.theme', theme);
+  } catch {
+    // Preference won't survive a reload; the current session is unaffected.
+  }
 }
 
 /* ---------- export, for getting saved items back out ---------- */
@@ -80,6 +96,14 @@ export function downloadJson(filename: string, data: unknown) {
   const a = document.createElement('a');
   a.href = url;
   a.download = filename;
+  // Firefox ignores a click on an anchor that isn't in the document, and
+  // revoking the URL in the same tick can cancel a download that hasn't
+  // started yet — so: attach, click, then revoke on the next turn.
+  a.style.display = 'none';
+  document.body.appendChild(a);
   a.click();
-  URL.revokeObjectURL(url);
+  setTimeout(() => {
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }, 0);
 }

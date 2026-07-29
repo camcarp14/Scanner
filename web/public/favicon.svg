@@ -9,16 +9,16 @@
   -->
   <defs>
     <linearGradient id="ground" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#151a24"/>
-      <stop offset="1" stop-color="#0a0c11"/>
+      <stop offset="0" stop-color="#171b21"/>
+      <stop offset="1" stop-color="#0b0d11"/>
     </linearGradient>
     <radialGradient id="glow" cx="0.5" cy="0.42" r="0.55">
-      <stop offset="0" stop-color="#5ad1a5" stop-opacity="0.20"/>
-      <stop offset="1" stop-color="#5ad1a5" stop-opacity="0"/>
+      <stop offset="0" stop-color="#3fbf95" stop-opacity="0.20"/>
+      <stop offset="1" stop-color="#3fbf95" stop-opacity="0"/>
     </radialGradient>
     <linearGradient id="mark" x1="0.2" y1="0" x2="0.8" y2="1">
-      <stop offset="0" stop-color="#8fe9c6"/>
-      <stop offset="1" stop-color="#3fbc8e"/>
+      <stop offset="0" stop-color="#7bdcb6"/>
+      <stop offset="1" stop-color="#2ea27b"/>
     </linearGradient>
   </defs>
 

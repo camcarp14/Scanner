@@ -11,44 +11,48 @@
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-spring: cubic-bezier(0.34, 1.4, 0.44, 1);
 
-  --bg: #0a0c11;
-  --bg-soft: #0e1118;
-  --panel: #12151e;
-  --panel-2: #171b26;
-  --line: rgba(255, 255, 255, 0.075);
-  --line-strong: rgba(255, 255, 255, 0.16);
-  --text: #e8eaf1;
-  --text-dim: #b9bfcf;
-  --muted: #7b8497;
-  --accent: #5ad1a5;
-  --accent-soft: rgba(90, 209, 165, 0.14);
-  --accent-2: #7aa2f7;
-  --danger: #ff7a7a;
-  --warn: #e8b352;
-  --shadow: 0 18px 48px rgba(0, 0, 0, 0.42);
+  --bg: #0b0d11;
+  --bg-soft: #0f1216;
+  --panel: #13161b;
+  --panel-2: #181c22;
+  --line: rgba(255, 255, 255, 0.08);
+  --line-strong: rgba(255, 255, 255, 0.17);
+  --text: #e6e9ee;
+  --text-dim: #b4bbc6;
+  --muted: #767f8c;
+  --accent: #3fbf95;
+  --accent-soft: rgba(63, 191, 149, 0.13);
+  --accent-2: #6f9bf0;
+  --danger: #e8686d;
+  --warn: #d8a13f;
+  --shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
 
-  --radius: 14px;
+  /* Squared-off geometry: the rounder these get, the more consumer it reads. */
+  --radius: 8px;
+  --radius-sm: 5px;
+  --radius-xs: 3px;
   --maxw: 780px;
 
   color-scheme: dark;
 }
 
 :root[data-theme='light'] {
-  --bg: #f6f5f1;
-  --bg-soft: #efeee9;
+  /* Cool paper, not cream — warm off-white is what made this read casual. */
+  --bg: #eef1f4;
+  --bg-soft: #e7ebef;
   --panel: #ffffff;
-  --panel-2: #faf9f6;
-  --line: rgba(15, 20, 30, 0.09);
-  --line-strong: rgba(15, 20, 30, 0.2);
-  --text: #14171e;
-  --text-dim: #3d4453;
-  --muted: #6d7482;
-  --accent: #0f9d70;
-  --accent-soft: rgba(15, 157, 112, 0.12);
-  --accent-2: #3b6fd4;
-  --danger: #c94040;
-  --warn: #b7791f;
-  --shadow: 0 14px 40px rgba(20, 25, 40, 0.1);
+  --panel-2: #f5f7f9;
+  --line: rgba(16, 24, 40, 0.11);
+  --line-strong: rgba(16, 24, 40, 0.24);
+  --text: #0d1420;
+  --text-dim: #333d4b;
+  --muted: #5f6a79;
+  --accent: #0a6b52;
+  --accent-soft: rgba(10, 107, 82, 0.09);
+  --accent-2: #23509b;
+  --danger: #a8322f;
+  --warn: #8a5a12;
+  --shadow: 0 12px 32px rgba(13, 20, 32, 0.09);
 
   color-scheme: light;
 }
@@ -149,7 +153,7 @@ code {
   border: 1px solid var(--line);
   background: var(--panel-2);
   color: var(--text-dim);
-  border-radius: 9px;
+  border-radius: var(--radius-sm);
   padding: 6px 11px;
   font: inherit;
   font-size: 13px;
@@ -293,12 +297,20 @@ kbd {
   min-width: 0;
 }
 
+/*
+  A flex item won't shrink below its content unless min-width is cleared.
+  Without this the status line pushes the masthead wider than the viewport and
+  gets sliced mid-word instead of ellipsing.
+*/
+.brand > div {
+  min-width: 0;
+}
+
 .brand-mark {
   width: 22px;
   height: 22px;
   flex: none;
   color: var(--accent);
-  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--accent) 34%, transparent));
 }
 
 /* The one piece of ambient motion in the app: the sweep is literally scanning. */
@@ -314,14 +326,19 @@ kbd {
 }
 
 .brand h1 {
-  font-size: 17px;
-  letter-spacing: -0.02em;
-  font-weight: 620;
+  font-size: 14px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-weight: 600;
 }
 
 .sub {
-  margin: 1px 0 0;
-  font-size: 12.5px;
+  margin: 2px 0 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.045em;
+  font-variant-numeric: tabular-nums;
   color: var(--muted);
   white-space: nowrap;
   overflow: hidden;
@@ -493,9 +510,12 @@ kbd {
   background: transparent;
   color: var(--muted);
   font: inherit;
-  font-size: 12.5px;
-  padding: 4px 11px;
-  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  padding: 5px 10px;
+  border-radius: var(--radius-xs);
   cursor: pointer;
   transition:
     color var(--dur-1) ease,
@@ -604,11 +624,12 @@ kbd {
 }
 
 .pill {
-  font-size: 10.5px;
+  font-size: 10px;
+  font-weight: 550;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
-  padding: 2px 7px;
-  border-radius: 99px;
+  letter-spacing: 0.08em;
+  padding: 2px 6px;
+  border-radius: var(--radius-xs);
   border: 1px solid var(--line);
   color: var(--muted);
 }
@@ -697,12 +718,13 @@ kbd {
 }
 
 .tag {
-  font-size: 11.5px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 11px;
   color: var(--muted);
   background: var(--panel-2);
   border: 1px solid var(--line);
-  border-radius: 6px;
-  padding: 1px 7px;
+  border-radius: var(--radius-xs);
+  padding: 1px 6px;
 }
 
 .actions {
