@@ -49,7 +49,17 @@ const NO_LLM = args.has('--no-llm');
 const MOCK_LLM = args.has('--mock-llm');
 
 const DAY = 86_400_000;
-const MAX_BODY_CHARS = 6000;
+// The feed embeds each skill's body so the app can render it without a second
+// request. That copy is clamped; the SKILL.md written to disk never is —
+// publishing a file that stops mid-sentence would be worse than a big feed.
+const FEED_BODY_CHARS = 6000;
+
+function clampBody(body) {
+  if (body.length <= FEED_BODY_CHARS) return body;
+  const cut = body.slice(0, FEED_BODY_CHARS);
+  const boundary = cut.lastIndexOf('\n');
+  return `${boundary > 2000 ? cut.slice(0, boundary) : cut}\n\n_[truncated — see the published SKILL.md]_`;
+}
 
 // IDEAFEED_CONFIG points at an alternate config file — handy for trying a
 // different set of lanes without touching the one the cron job uses.
@@ -390,7 +400,7 @@ async function main() {
         const skillDraft = {
           name: generated.name,
           description: generated.description,
-          body: String(generated.body || '').slice(0, MAX_BODY_CHARS),
+          body: String(generated.body || ''),
           when_to_use: workflow.when_to_use,
           steps: workflow.steps || [],
           prerequisites: workflow.prerequisites || [],
@@ -485,7 +495,7 @@ async function main() {
 
   if (newSkills.length) {
     console.log(
-      `\n[8] publish — ${published.length} written to ${config.skillsRepoPath}` +
+      `\n[8] publish — ${published.length} ${DRY_RUN ? 'would be written to' : 'written to'} ${config.skillsRepoPath}` +
         `${published.length ? `: ${published.join(', ')}` : ''}`,
     );
   }
@@ -505,7 +515,7 @@ async function main() {
   for (const skill of newSkills) {
     // docs_excerpt is prompt context, not feed content — don't ship it.
     const { docs_excerpt, ...rest } = skill;
-    merged.set(skill.id, rest);
+    merged.set(skill.id, { ...rest, body: clampBody(rest.body) });
   }
 
   const cutoff = Date.now() - config.limits.keepUnseenDays * DAY;
