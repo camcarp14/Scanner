@@ -87,6 +87,42 @@ function record(response) {
   usage.set(model, entry);
 }
 
+/* ------------------------- choosing what to write up ------------------------- */
+
+/**
+ * Order extracted workflows so the ones worth paying to write come first.
+ *
+ * Round-robin across repos rather than straight down a list sorted by repo
+ * score. A single repo often yields two workflows, and the sorted order put
+ * both of them at the top — so a two-skill run spent its entire generate and
+ * review budget on one project. Taking each repo's best workflow before
+ * anyone's second one covers twice as many projects for exactly the same
+ * money, and it matters more the tighter maxSkillsPerRun is.
+ *
+ * @returns {{queue: Array<{entry: any, workflow: any}>, repos: number}}
+ */
+export function orderWorkflows(readable, extracted) {
+  const byRepo = [];
+  for (const entry of readable) {
+    const result = extracted.get(String(entry.repo.id));
+    if (!result?.is_ai_project) continue;
+    const workflows = (result.workflows || []).map((workflow) => ({ entry, workflow }));
+    if (workflows.length) byRepo.push(workflows);
+  }
+
+  byRepo.sort((a, b) => (b[0].entry.preScore ?? 0) - (a[0].entry.preScore ?? 0));
+
+  const deepest = byRepo.reduce((max, w) => Math.max(max, w.length), 0);
+  const queue = [];
+  for (let rank = 0; rank < deepest; rank++) {
+    for (const workflows of byRepo) {
+      if (workflows[rank]) queue.push(workflows[rank]);
+    }
+  }
+
+  return { queue, repos: byRepo.length };
+}
+
 /* --------------------------------- schemas --------------------------------- */
 
 const EXTRACT_SCHEMA = {

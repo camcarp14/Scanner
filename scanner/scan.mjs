@@ -42,6 +42,7 @@ import {
   mock,
   getUsage,
   resetUsage,
+  orderWorkflows,
 } from './lib/pipeline.mjs';
 import { writeSkill } from './lib/skillfile.mjs';
 import { supabaseConfigured, syncRun } from './lib/supabase.mjs';
@@ -368,20 +369,13 @@ async function main() {
               config.limits.extractBatchSize,
             );
 
-      // Flatten to individual workflows, best repos first, then cap.
-      const workflowQueue = [];
-      for (const entry of readable) {
-        const result = extracted.get(String(entry.repo.id));
-        if (!result?.is_ai_project) continue;
-        for (const workflow of result.workflows || []) {
-          workflowQueue.push({ entry, workflow });
-        }
-      }
-      workflowQueue.sort((a, b) => b.entry.preScore - a.entry.preScore);
+      const { queue: workflowQueue, repos } = orderWorkflows(readable, extracted);
       const selected = workflowQueue.slice(0, config.limits.maxSkillsPerRun);
 
+      const distinctRepos = new Set(selected.map((s) => String(s.entry.repo.id))).size;
       console.log(
-        `  ${workflowQueue.length} workflows extracted · generating ${selected.length}` +
+        `  ${workflowQueue.length} workflows extracted from ${repos} repos · ` +
+          `generating ${selected.length} across ${distinctRepos} repo${distinctRepos === 1 ? '' : 's'}` +
           `${workflowQueue.length > selected.length ? ` (capped by maxSkillsPerRun; ${workflowQueue.length - selected.length} dropped)` : ''}`,
       );
 

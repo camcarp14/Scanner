@@ -14,7 +14,7 @@ import { rankDocPaths } from '../lib/docs.mjs';
 import { scoreSkill, distinctiveTerms } from '../lib/skillscore.mjs';
 import { renderSkillMd, slugify } from '../lib/skillfile.mjs';
 import { readmeSummary, buildHook } from '../lib/summarize.mjs';
-import { rateFor } from '../lib/pipeline.mjs';
+import { rateFor, orderWorkflows } from '../lib/pipeline.mjs';
 
 /* --------------------------------- trending --------------------------------- */
 
@@ -325,4 +325,46 @@ test('rateFor matches a model ID the API returned with a release date on it', ()
 test('rateFor still returns nothing for a model that is genuinely unpriced', () => {
   assert.equal(rateFor(PRICING, 'claude-sonnet-5'), undefined);
   assert.equal(rateFor(undefined, 'claude-opus-5'), undefined);
+});
+
+/* ---------------------------- workflow selection ---------------------------- */
+
+const repoEntry = (id, preScore) => ({ repo: { id }, preScore });
+
+test('orderWorkflows spreads a tight budget across repos instead of draining one', () => {
+  // The live run generated 4 skills from exactly 2 repos, because sorting by
+  // repo score put both of a repo's workflows above everyone else's first one.
+  // At maxSkillsPerRun 2 that would have covered a single project per day.
+  const readable = [repoEntry('a', 90), repoEntry('b', 80), repoEntry('c', 70)];
+  const extracted = new Map([
+    ['a', { is_ai_project: true, workflows: ['a1', 'a2'] }],
+    ['b', { is_ai_project: true, workflows: ['b1'] }],
+    ['c', { is_ai_project: true, workflows: ['c1', 'c2'] }],
+  ]);
+
+  const { queue, repos } = orderWorkflows(readable, extracted);
+  assert.equal(repos, 3);
+  assert.deepEqual(
+    queue.map((q) => q.workflow),
+    ['a1', 'b1', 'c1', 'a2', 'c2'],
+  );
+  // The two the budget actually pays for come from two different projects.
+  assert.deepEqual(queue.slice(0, 2).map((q) => q.entry.repo.id), ['a', 'b']);
+});
+
+test('orderWorkflows drops repos the extractor rejected or found nothing in', () => {
+  const readable = [repoEntry('a', 90), repoEntry('b', 80), repoEntry('c', 70)];
+  const extracted = new Map([
+    ['a', { is_ai_project: false, workflows: ['a1'] }],
+    ['b', { is_ai_project: true, workflows: [] }],
+    ['c', { is_ai_project: true, workflows: ['c1'] }],
+  ]);
+
+  const { queue, repos } = orderWorkflows(readable, extracted);
+  assert.equal(repos, 1);
+  assert.deepEqual(queue.map((q) => q.workflow), ['c1']);
+});
+
+test('orderWorkflows handles an empty extraction without throwing', () => {
+  assert.deepEqual(orderWorkflows([], new Map()), { queue: [], repos: 0 });
 });

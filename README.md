@@ -207,17 +207,42 @@ runs on the cheapest model. Generation is a writing task. Review is the gate
 that has to catch a fluent lie, and it's the cheapest stage by volume, so it
 keeps the best model.
 
-The three levers, largest first:
+### Scouting is free
 
-| Lever | Where |
-| --- | --- |
-| Cadence | the cron in `.github/workflows/scan.yml` — linear, and by far the biggest |
-| Stage models | `enrichment.stages` |
-| Volume caps | `limits.maxSkillsPerRun`, `maxCandidatesPerRun`, `docBytes`, `maxDocFiles` |
+Worth being precise about, because it's the natural place to start cutting and
+it saves nothing. That run swept 426 repos across 8 search lanes and 8 trending
+pages, and none of it cost a cent — the GitHub API is free, and Actions minutes
+are free on a public repo. Widening or narrowing the lanes changes how many
+ideas you see, not what you pay.
+
+Two things drive the bill:
+
+| Driver | Rate | Notes |
+| --- | --- | --- |
+| New repos with docs | ~$0.005 each (extract) | Self-limiting. 302 repos passed the filter, but 289 were already in the feed, so only 13 were read |
+| `maxSkillsPerRun` | ~$0.04 each (generate + review) | A cap you set. At 4 it was 72% of the run |
+
+So `maxSkillsPerRun` is the lever. It's set to **2**, which is as much about
+output as cost: the runs at 4 and 8 approved zero skills each, and paying to
+write up four candidates the reviewer then rejects is the expensive way to get
+nothing. The levers in order:
+
+| Lever | Where | Effect |
+| --- | --- | --- |
+| Cadence | the cron in `.github/workflows/scan.yml` | Linear, and by far the biggest |
+| `maxSkillsPerRun` | `limits` | ~$0.04 per skill, both stages |
+| Stage models | `enrichment.stages` | See above |
+| `docBytes` / `maxDocFiles` | `limits` | Small, and it cuts into grounding — the reader is what the score checks claims against, so starving it makes the reviewer reject more |
+| `perQuery`, `maxCandidatesPerRun`, lanes | `limits`, `scout` | **No effect on cost** |
 
 Don't cut the review model to save money — it's the smallest line item and the
 only thing standing between a hallucinated `SKILL.md` and your skills
 directory.
+
+One consequence of a tight `maxSkillsPerRun`: which workflows get written up
+starts to matter. A single repo often yields two, so `orderWorkflows` takes
+every repo's best one before anyone's second — otherwise a two-skill run spends
+its whole budget on one project.
 
 ---
 

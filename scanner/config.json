@@ -5,11 +5,13 @@
   "skillsDir": "../skills",
   "skillsRepoPath": "skills",
 
+  "$limits_comment": "Scouting is free — the GitHub API costs nothing and the caps on it (perQuery, maxCandidatesPerRun) do not touch the bill. Cost is (new repos with docs) x extract, plus maxSkillsPerRun x (generate + review). maxSkillsPerRun is therefore the only cap here worth tuning for money: at 4 it was 72% of the run.",
+
   "limits": {
     "perQuery": 50,
     "maxItemsInFeed": 500,
     "maxCandidatesPerRun": 25,
-    "maxSkillsPerRun": 4,
+    "maxSkillsPerRun": 2,
     "extractBatchSize": 6,
     "reviewBatchSize": 4,
     "docBytes": 6000,
