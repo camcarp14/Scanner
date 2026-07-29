@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "generated_at": "2026-07-29T05:59:38.299Z",
+  "generated_at": "2026-07-29T06:14:24.547Z",
   "mode": "live",
   "lanes": [
     {
@@ -45,19 +45,19 @@
     }
   ],
   "stats": {
-    "total": 416,
-    "skills": 12,
+    "total": 426,
+    "skills": 14,
     "published": 0,
-    "candidates": 404,
+    "candidates": 412,
     "scanned": 426,
     "kept_by_filter": 302,
-    "docs_read": 13,
-    "new_skills_this_run": 4,
+    "docs_read": 8,
+    "new_skills_this_run": 2,
     "published_this_run": 0,
-    "api_calls": 8,
-    "input_tokens": 59243,
-    "output_tokens": 8872,
-    "cost_usd": 0.1562
+    "api_calls": 5,
+    "input_tokens": 41849,
+    "output_tokens": 7683,
+    "cost_usd": 0.1663
   },
   "items": [
     {
@@ -256,6 +256,96 @@
     },
     {
       "type": "skill",
+      "id": "skill:1290391863:0",
+      "name": "gridbash-parallel-agents",
+      "description": "Use when you need to coordinate multiple AI coding agents (Codex, Claude, Gemini, etc.) working on the same project simultaneously while keeping their filesystem changes isolated.",
+      "body": "## Setup\n1. Install GridBash: requires Node.js 18+ (npm installs the native binary for your platform), or download a native binary directly (Windows x64, glibc Linux x64/arm64, macOS 13+).\n2. Ensure the target repo has at least one commit and no tracked modifications — required for `--worktrees` to work.\n3. Configure authentication profiles for each agent (Codex, Claude, Gemini, Aider, OpenCode, Goose, Amp, Cursor, Copilot, or custom commands) before launching.\n\n## Launching\n- Run `gridbash` alone for an interactive setup: choose agent, auth profile, project, layout, and worktree policy.\n- Or launch directly: `gridbash 2x3 --profile codex --worktrees` — creates a 2x3 grid, each pane in its own isolated repo-local git worktree.\n- Other useful launch forms:\n  - `gridbash --count 12 --layout auto --profile claude` — auto-arrange 12 panes.\n  - `gridbash --list-profiles` — show detected profiles and resolved commands.\n\n## Coordinating panes\n- Input routing is precise: type into the focused pane, a selected set (right-click to add/remove panes from selection), or the whole grid.\n- Alt+k opens command search; use it to run commands like `gridbash agent prompt --others \"Report status\"` to broadcast a prompt to every other pane.\n- `gridbash agent panes` lists sibling panes from inside a pane; `gridbash ctl list --json` and `gridbash ctl panes --session ID` discover running grids and pane identities from outside.\n\n## Monitoring\n- Alt+p opens focused-pane activity inspection.\n- Alt+Shift+C saves bounded recent output from target panes; Alt+Shift+L toggles continuous target-pane logging.\n- Alt+b searches/selects/copies focused-pane scrollback.\n- Ctrl+Alt+p inspects and stops localhost ports launched by agents.\n\n## Session persistence\n- Alt+w closes the current grid (with confirmation).\n- Enable \"Keep terminals running\" in Settings (Alt+o) so panes survive after GridBash UI closes.\n- Reconnect with `gridbash resume --latest` (latest session) or `gridbash resume` (pick a saved session) — live terminals continue running underneath.\n- Codex panes are tracked by conversation ID: if a live terminal can't survive a restart/shutdown, resume relaunches with `codex resume` instead of an empty terminal (this also covers Codex started manually in a Git Bash pane).\n\n## Gotchas\n- GridBash shortcuts are modeless — normal terminal keystrokes still reach agents/shells, so shortcuts use Alt combinations to avoid collisions.\n- `--worktrees` fails without a git repo with at least one commit and zero tracked modifications; check `git status` first.\n- Up to 100 real PTY-backed panes are supported across tabbed grids.",
+      "when_to_use": "When you need to coordinate multiple AI coding agents (Codex, Claude, Gemini, etc.) on the same project simultaneously while keeping their work isolated.",
+      "steps": [
+        "Install GridBash with Node.js 18+ or download a native binary for your platform",
+        "Create a managed agent workspace with `gridbash` to interactively configure agents, layout, and authentication",
+        "Launch agents with `gridbash 2x3 --profile codex --worktrees` to create a grid of panes, each in its own git worktree",
+        "Type commands into the focused pane, selected set, or entire grid using precise input routing",
+        "Use Alt+k to search and run GridBash commands like `gridbash agent prompt --others \"Report status\"` to coordinate panes",
+        "Monitor activity with Alt+p to inspect focused-pane output or use Alt+Shift+C to save bounded recent output",
+        "Save the session with Alt+w; reconnect later with `gridbash resume --latest` to continue with live terminals still running"
+      ],
+      "prerequisites": [
+        "Node.js 18+ or a native binary release for your OS",
+        "A git repository with at least one commit and no tracked modifications (for --worktrees)",
+        "Authentication profiles configured for your chosen agents (Codex, Claude, Gemini, etc.)"
+      ],
+      "tools": [
+        "gridbash CLI",
+        "git with worktree support",
+        "PTY (pseudo-terminal) support for your OS",
+        "Native binaries for Windows x64, Linux x64/arm64, or macOS 13+"
+      ],
+      "workflow": {
+        "title": "Run multiple coding agents in parallel with isolated git worktrees",
+        "when_to_use": "When you need to coordinate multiple AI coding agents (Codex, Claude, Gemini, etc.) on the same project simultaneously while keeping their work isolated.",
+        "steps": [
+          "Install GridBash with Node.js 18+ or download a native binary for your platform",
+          "Create a managed agent workspace with `gridbash` to interactively configure agents, layout, and authentication",
+          "Launch agents with `gridbash 2x3 --profile codex --worktrees` to create a grid of panes, each in its own git worktree",
+          "Type commands into the focused pane, selected set, or entire grid using precise input routing",
+          "Use Alt+k to search and run GridBash commands like `gridbash agent prompt --others \"Report status\"` to coordinate panes",
+          "Monitor activity with Alt+p to inspect focused-pane output or use Alt+Shift+C to save bounded recent output",
+          "Save the session with Alt+w; reconnect later with `gridbash resume --latest` to continue with live terminals still running"
+        ],
+        "prerequisites": [
+          "Node.js 18+ or a native binary release for your OS",
+          "A git repository with at least one commit and no tracked modifications (for --worktrees)",
+          "Authentication profiles configured for your chosen agents (Codex, Claude, Gemini, etc.)"
+        ],
+        "tools": [
+          "gridbash CLI",
+          "git with worktree support",
+          "PTY (pseudo-terminal) support for your OS",
+          "Native binaries for Windows x64, Linux x64/arm64, or macOS 13+"
+        ],
+        "evidence": "GridBash is a local workspace for running and coordinating CLI coding agents in parallel. Launch, authenticate, isolate, monitor, and steer Codex, Claude, and other agents side by side, each in a real PTY pane. Give every pane an isolated repo-local git worktree. gridbash 2x3 --profile codex --worktrees Isolate every pane in a git worktree"
+      },
+      "source": {
+        "full_name": "jasonsuhari/gridbash",
+        "owner": "jasonsuhari",
+        "url": "https://github.com/jasonsuhari/gridbash",
+        "language": "Rust",
+        "stars": 139,
+        "doc_files": [
+          "README.md",
+          "docs/AUTOMATED_REVIEW.md",
+          "docs/COMMUNITY_SETUP.md",
+          "docs/DAEMON_ARCHITECTURE.md"
+        ],
+        "repo_id": "1290391863"
+      },
+      "skill_score": 93,
+      "skill_breakdown": {
+        "specificity": 100,
+        "actionability": 83,
+        "grounding": 96,
+        "reusability": 100,
+        "sourceQuality": 80
+      },
+      "mock": false,
+      "review": {
+        "verdict": "hold",
+        "grounded": false,
+        "quality": 72,
+        "reasons": [
+          "Largely a reorganized restatement of the README's command and shortcut tables rather than a workflow with judgment",
+          "The Codex conversation-ID tracking / 'resume relaunches with codex resume' behavior does not appear in the supplied documentation",
+          "Setup step about configuring auth profiles 'before launching' is an inference; README only mentions Alt+Shift+A profile management"
+        ]
+      },
+      "published": false,
+      "slug": null,
+      "first_seen": "2026-07-29T06:14:24.547Z",
+      "last_seen": "2026-07-29T06:14:24.547Z"
+    },
+    {
+      "type": "skill",
       "id": "skill:1306065843:2",
       "name": "router-openai-gateway-app-setup",
       "description": "Use when connecting Cursor, opencode, or another app that only accepts an OpenAI-compatible base URL to codex-router's local gateway.",
@@ -423,6 +513,100 @@
       "slug": null,
       "first_seen": "2026-07-29T05:11:36.667Z",
       "last_seen": "2026-07-29T05:11:36.667Z"
+    },
+    {
+      "type": "skill",
+      "id": "skill:1281030225:1",
+      "name": "evaluate-vla-robot-benchmark",
+      "description": "Use when you have a vision-language-action (VLA) model or LLM policy and want to benchmark it against a real or simulated robotic task with auditable logs, scoring, and live visualization.",
+      "body": "## Setup\n1. Create a virtual environment (Python 3.10–3.13).\n2. Install with the visualization extra: `pip install inspect-robots[rerun]` (core is numpy-only; use plain `pip install inspect-robots` if you don't need the live viewer).\n3. Install the embodiment adapter plugin for your rig (e.g. `inspect-robots-yam`) or a simulator plugin — real arms/humanoids and simulators both need a compatible embodiment plugin per its own README.\n4. Run `inspect-robots setup` — this wizard picks defaults, detects cameras, and writes `~/.config/inspect-robots/config.ini`. To hand-edit instead, see the CLI guide.\n\nActivate the venv directly and call `inspect-robots` — don't use `uv run inspect-robots` inside a uv project, it re-syncs to the lockfile and silently uninstalls anything just `uv pip install`ed.\n\n## Start the policy\n- Out-of-process VLA policies (e.g. MolmoAct2, GR00T) require a running policy server first; nothing moves until it's listening, and it does not auto-start or survive reboots.\n- In-process policies (e.g. `agent` for LLM-driven policies, `capx` for code-as-policy, or mock/scripted policies) need no server.\n- LLM-driven policies (`inspect-robots-agent` plugin) need a `.env` with the provider API key in the working directory; the CLI loads it automatically.\n\n## Run the eval\n`inspect-robots eval benchmark.py --policy vla-name --embodiment robot-type`\n\nUseful flags: `--no-rerun`, `--no-store-frames`, `--max-steps 300`. `--store-frames` also captures camera frames the policy saw, viewable later in the HTML report.\n\nEvery run opens a live Rerun viewer streaming cameras, proprioception, and actions straight from the eval pipeline as the policy drives the robot — watch it to catch problems live.\n\n## Review results\n- Transcript view: `inspect-robots inspect LOG.json --transcript`\n- HTML report: `inspect-robots view LOG.json`\n- Logs are immutable `EvalLog` files containing grader scores, full LLM transcript, and full run config — treat them as the audit trail.\n\n## Iterate on failures\n1. `inspect-robots summarize LOG.json --output learnings.md` to distill a failed run into notes.\n2. Pass it into the next run: `inspect-robots eval benchmark.py --policy vla-name --embodiment robot-type --learnings learnings.md`.\n3. The policy reads the file once and records its resolved path and content hash in the eval configuration for auditability.\n\n## Notes\n- A Task (dataset of Scenes + scorers) is defined independently of policy and embodiment; `eval()` checks a (policy, embodiment) pair is compatible before running.\n- Specific benchmarks, simulators, and VLA weights ship as separate plugin packages registered via entry points (`inspectrobots.embodiments`, `inspectrobots.policies`) — install the plugin matching your rig/policy before running.\n- For GPU-served policies (e.g. GR00T), the serving shim hard-fails at startup if checkpoint action/state keys, units, or dimensions don't match the embodiment's contract — this is a safety gate, not a bug; don't bypass it.",
+      "when_to_use": "When you have a vision-language-action (VLA) model or LLM policy and want to benchmark it against a robotic task with auditable logs, scoring, and real-time visualization.",
+      "steps": [
+        "Create a virtual environment and install inspect-robots with the rerun extra: `pip install inspect-robots[rerun]`",
+        "Run `inspect-robots setup` to configure your robot rig and write `config.ini` with cameras and defaults",
+        "Start your policy server if using an out-of-process policy like MolmoAct2 (in-process policies like agent need no server)",
+        "Run `inspect-robots eval benchmark.py --policy vla-name --embodiment robot-type` to execute the task",
+        "Watch the live Rerun viewer showing cameras, proprioception, and actions as the policy drives the robot",
+        "Review the recorded agent conversation with `inspect-robots inspect LOG.json --transcript` or open the HTML report with `inspect-robots view LOG.json`",
+        "Summarize the failed log into a learnings file with `inspect-robots summarize LOG.json --output learnings.md` and pass it to the next policy run with `--learnings learnings.md`"
+      ],
+      "prerequisites": [
+        "Python 3.10–3.13 in a virtual environment",
+        "A compatible robot rig (real arm/humanoid or simulator with an adapter) set up per your embodiment plugin README",
+        "A policy server running if using VLA policies like MolmoAct2, or the policy available as an in-process plugin",
+        "Rerun viewer installed for live visualization (optional but recommended)"
+      ],
+      "tools": [
+        "inspect-robots CLI",
+        "inspect-robots-yam or other embodiment adapter plugin",
+        "VLA or LLM policy server (MolmoAct2, agent, capx, etc.)",
+        "Rerun SDK for visualization",
+        "pytest for running tests locally"
+      ],
+      "workflow": {
+        "title": "Evaluate a VLA policy on a robot arm or simulator",
+        "when_to_use": "When you have a vision-language-action (VLA) model or LLM policy and want to benchmark it against a robotic task with auditable logs, scoring, and real-time visualization.",
+        "steps": [
+          "Create a virtual environment and install inspect-robots with the rerun extra: `pip install inspect-robots[rerun]`",
+          "Run `inspect-robots setup` to configure your robot rig and write `config.ini` with cameras and defaults",
+          "Start your policy server if using an out-of-process policy like MolmoAct2 (in-process policies like agent need no server)",
+          "Run `inspect-robots eval benchmark.py --policy vla-name --embodiment robot-type` to execute the task",
+          "Watch the live Rerun viewer showing cameras, proprioception, and actions as the policy drives the robot",
+          "Review the recorded agent conversation with `inspect-robots inspect LOG.json --transcript` or open the HTML report with `inspect-robots view LOG.json`",
+          "Summarize the failed log into a learnings file with `inspect-robots summarize LOG.json --output learnings.md` and pass it to the next policy run with `--learnings learnings.md`"
+        ],
+        "prerequisites": [
+          "Python 3.10–3.13 in a virtual environment",
+          "A compatible robot rig (real arm/humanoid or simulator with an adapter) set up per your embodiment plugin README",
+          "A policy server running if using VLA policies like MolmoAct2, or the policy available as an in-process plugin",
+          "Rerun viewer installed for live visualization (optional but recommended)"
+        ],
+        "tools": [
+          "inspect-robots CLI",
+          "inspect-robots-yam or other embodiment adapter plugin",
+          "VLA or LLM policy server (MolmoAct2, agent, capx, etc.)",
+          "Rerun SDK for visualization",
+          "pytest for running tests locally"
+        ],
+        "evidence": "Define a robotics benchmark once, then run any policy (LLM agent, VLA) against any compatible embodiment (a real arm or humanoid, or a simulator) with auditable logs (grader scores, LLM transcript, full config) and first-class Rerun visualization. Every run opens a live Rerun viewer streaming the cameras, proprioception, and actions straight from the eval pipeline, so you watch exactly what the policy sees while the robot moves."
+      },
+      "source": {
+        "full_name": "robocurve/inspect-robots",
+        "owner": "robocurve",
+        "url": "https://github.com/robocurve/inspect-robots",
+        "language": "Python",
+        "stars": 92,
+        "doc_files": [
+          "README.md",
+          "CLAUDE.md",
+          "docs/cookbooks/gr00t-on-yam.md",
+          "docs/guide/adapters.md"
+        ],
+        "repo_id": "1281030225"
+      },
+      "skill_score": 89,
+      "skill_breakdown": {
+        "specificity": 100,
+        "actionability": 87,
+        "grounding": 76,
+        "reusability": 100,
+        "sourceQuality": 80
+      },
+      "mock": false,
+      "review": {
+        "verdict": "hold",
+        "grounded": false,
+        "quality": 70,
+        "reasons": [
+          "Several specifics are absent from the source: Python 3.10–3.13 support, entry-point names (inspectrobots.embodiments/policies), and the GR00T serving shim hard-failing on key/unit/dimension mismatch",
+          "Workflow steps otherwise track the quickstart closely, so the added claims need a human to verify against the plugin docs",
+          "Sim-vs-real embodiment plugin guidance is generalized beyond what the README states"
+        ]
+      },
+      "published": false,
+      "slug": null,
+      "first_seen": "2026-07-29T06:14:24.547Z",
+      "last_seen": "2026-07-29T06:14:24.547Z"
     },
     {
       "type": "skill",
@@ -1121,7 +1305,7 @@
       "created_at": "2026-07-25T16:58:43Z",
       "pushed_at": "2026-07-27T21:51:42Z",
       "age_days": 4,
-      "star_velocity": 232.62,
+      "star_velocity": 231.95,
       "score": 88.5,
       "breakdown": {
         "momentum": 100,
@@ -1143,7 +1327,7 @@
       ],
       "skills_extracted": 1,
       "first_seen": "2026-07-29T05:11:36.667Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 822,
       "stars_gained": 2
     },
@@ -1163,7 +1347,7 @@
         "android"
       ],
       "language": "TypeScript",
-      "stars": 1031,
+      "stars": 1033,
       "topics": [
         "agent",
         "ai-agent",
@@ -1180,9 +1364,9 @@
         "windows"
       ],
       "created_at": "2026-07-22T17:49:34Z",
-      "pushed_at": "2026-07-29T05:58:58Z",
+      "pushed_at": "2026-07-29T06:09:17Z",
       "age_days": 7,
-      "star_velocity": 158.44,
+      "star_velocity": 158.5,
       "score": 84.6,
       "breakdown": {
         "momentum": 100,
@@ -1203,9 +1387,9 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 908,
-      "stars_gained": 123
+      "stars_gained": 125
     },
     {
       "type": "candidate",
@@ -1218,12 +1402,12 @@
       "hook": "An AI copywriter that uses real copywriting skills + real marketing knowledge with human tone.",
       "tags": [],
       "language": "Python",
-      "stars": 997,
+      "stars": 998,
       "topics": [],
       "created_at": "2026-07-24T19:52:13Z",
       "pushed_at": "2026-07-25T11:08:41Z",
       "age_days": 4,
-      "star_velocity": 225.47,
+      "star_velocity": 225.18,
       "score": 81.5,
       "breakdown": {
         "momentum": 100,
@@ -1242,9 +1426,9 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 953,
-      "stars_gained": 44
+      "stars_gained": 45
     },
     {
       "type": "candidate",
@@ -1257,13 +1441,13 @@
       "hook": "A Call of Duty-quality FPS in Three.js, built from a single prompt.",
       "tags": [],
       "language": "JavaScript",
-      "stars": 1882,
+      "stars": 1894,
       "topics": [],
       "created_at": "2026-07-25T19:32:36Z",
       "pushed_at": "2026-07-25T19:38:53Z",
       "age_days": 3,
-      "star_velocity": 547.82,
-      "score": 80,
+      "star_velocity": 549.67,
+      "score": 79.9,
       "breakdown": {
         "momentum": 100,
         "freshness": 100,
@@ -1280,9 +1464,9 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 1075,
-      "stars_gained": 807
+      "stars_gained": 819
     },
     {
       "type": "candidate",
@@ -1300,7 +1484,7 @@
         "claude-code"
       ],
       "language": "TypeScript",
-      "stars": 2559,
+      "stars": 2561,
       "topics": [
         "agent-skills",
         "ai-agents",
@@ -1320,7 +1504,7 @@
       "created_at": "2026-07-19T11:44:41Z",
       "pushed_at": "2026-07-28T07:18:42Z",
       "age_days": 10,
-      "star_velocity": 262.18,
+      "star_velocity": 262.11,
       "score": 79.1,
       "breakdown": {
         "momentum": 100,
@@ -1342,9 +1526,9 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 2341,
-      "stars_gained": 218
+      "stars_gained": 220
     },
     {
       "type": "candidate",
@@ -1375,9 +1559,9 @@
         "mevbots"
       ],
       "created_at": "2026-07-17T09:45:22Z",
-      "pushed_at": "2026-07-29T05:55:53Z",
+      "pushed_at": "2026-07-29T06:13:18Z",
       "age_days": 12,
-      "star_velocity": 135.94,
+      "star_velocity": 135.82,
       "score": 77.1,
       "breakdown": {
         "momentum": 100,
@@ -1397,7 +1581,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 1521,
       "stars_gained": 89
     },
@@ -1482,7 +1666,7 @@
         "steganography"
       ],
       "language": "Go",
-      "stars": 1150,
+      "stars": 1151,
       "topics": [
         "llm-tools",
         "steganography"
@@ -1490,7 +1674,7 @@
       "created_at": "2026-07-17T04:58:22Z",
       "pushed_at": "2026-07-18T13:20:49Z",
       "age_days": 12,
-      "star_velocity": 95.49,
+      "star_velocity": 95.5,
       "score": 76.4,
       "breakdown": {
         "momentum": 99,
@@ -1508,9 +1692,9 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 1147,
-      "stars_gained": 3
+      "stars_gained": 4
     },
     {
       "type": "candidate",
@@ -1542,7 +1726,7 @@
       "created_at": "2026-07-14T14:45:23Z",
       "pushed_at": "2026-07-27T09:59:51Z",
       "age_days": 15,
-      "star_velocity": 120.94,
+      "star_velocity": 120.86,
       "score": 76.1,
       "breakdown": {
         "momentum": 100,
@@ -1563,7 +1747,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 1747,
       "stars_gained": 23
     },
@@ -1583,7 +1767,7 @@
         "workbuddy"
       ],
       "language": "Python",
-      "stars": 1472,
+      "stars": 1474,
       "topics": [
         "codex",
         "guide",
@@ -1593,7 +1777,7 @@
       "created_at": "2026-07-10T04:13:51Z",
       "pushed_at": "2026-07-26T11:17:14Z",
       "age_days": 19,
-      "star_velocity": 77.18,
+      "star_velocity": 77.24,
       "score": 74.7,
       "breakdown": {
         "momentum": 95,
@@ -1613,9 +1797,9 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 1352,
-      "stars_gained": 120
+      "stars_gained": 122
     },
     {
       "type": "candidate",
@@ -1633,7 +1817,7 @@
       "created_at": "2026-07-16T06:17:00Z",
       "pushed_at": "2026-07-16T06:35:44Z",
       "age_days": 13,
-      "star_velocity": 122.65,
+      "star_velocity": 122.56,
       "score": 74.6,
       "breakdown": {
         "momentum": 100,
@@ -1651,7 +1835,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 1497,
       "stars_gained": 96
     },
@@ -1741,7 +1925,7 @@
       "created_at": "2026-06-28T03:39:34Z",
       "pushed_at": "2026-07-28T14:58:13Z",
       "age_days": 31,
-      "star_velocity": 44.57,
+      "star_velocity": 44.56,
       "score": 74.3,
       "breakdown": {
         "momentum": 83,
@@ -1766,7 +1950,7 @@
       ],
       "skills_extracted": 0,
       "first_seen": "2026-07-29T03:41:49.825Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 1381,
       "stars_gained": 5
     },
@@ -1786,7 +1970,7 @@
       "created_at": "2026-07-15T22:17:25Z",
       "pushed_at": "2026-07-28T21:00:55Z",
       "age_days": 13,
-      "star_velocity": 65.76,
+      "star_velocity": 65.71,
       "score": 74,
       "breakdown": {
         "momentum": 91,
@@ -1807,7 +1991,7 @@
       ],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T16:49:48.226Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 865,
       "stars_gained": 11
     },
@@ -1851,7 +2035,7 @@
       "created_at": "2026-06-29T10:49:36Z",
       "pushed_at": "2026-07-29T05:33:38Z",
       "age_days": 30,
-      "star_velocity": 115.41,
+      "star_velocity": 115.37,
       "score": 73.9,
       "breakdown": {
         "momentum": 100,
@@ -1873,7 +2057,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 3408,
       "stars_gained": 31
     },
@@ -1944,7 +2128,7 @@
         "mcp"
       ],
       "language": "JavaScript",
-      "stars": 1133,
+      "stars": 1136,
       "topics": [
         "codex",
         "diagrams",
@@ -1956,7 +2140,7 @@
       "created_at": "2026-07-12T12:02:27Z",
       "pushed_at": "2026-07-21T15:19:13Z",
       "age_days": 17,
-      "star_velocity": 67.65,
+      "star_velocity": 67.79,
       "score": 73.9,
       "breakdown": {
         "momentum": 92,
@@ -1974,9 +2158,9 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 966,
-      "stars_gained": 167
+      "stars_gained": 170
     },
     {
       "type": "candidate",
@@ -2010,7 +2194,7 @@
       "created_at": "2026-07-07T17:05:54Z",
       "pushed_at": "2026-07-27T09:31:33Z",
       "age_days": 22,
-      "star_velocity": 26.84,
+      "star_velocity": 26.82,
       "score": 73.7,
       "breakdown": {
         "momentum": 72,
@@ -2037,7 +2221,7 @@
       ],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T19:54:13.585Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 568,
       "stars_gained": 10
     },
@@ -2072,7 +2256,7 @@
       "created_at": "2026-07-12T10:35:44Z",
       "pushed_at": "2026-07-28T12:17:58Z",
       "age_days": 17,
-      "star_velocity": 51.17,
+      "star_velocity": 51.13,
       "score": 73.4,
       "breakdown": {
         "momentum": 86,
@@ -2094,7 +2278,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 859,
       "stars_gained": 1
     },
@@ -2135,7 +2319,7 @@
       "created_at": "2026-07-03T15:06:45Z",
       "pushed_at": "2026-07-29T00:24:56Z",
       "age_days": 26,
-      "star_velocity": 113.97,
+      "star_velocity": 113.93,
       "score": 73.4,
       "breakdown": {
         "momentum": 100,
@@ -2156,7 +2340,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 2897,
       "stars_gained": 23
     },
@@ -2191,7 +2375,7 @@
       "created_at": "2026-07-06T22:35:18Z",
       "pushed_at": "2026-07-15T15:11:12Z",
       "age_days": 22,
-      "star_velocity": 87.95,
+      "star_velocity": 87.91,
       "score": 73.2,
       "breakdown": {
         "momentum": 97,
@@ -2212,7 +2396,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 1950,
       "stars_gained": 12
     },
@@ -2232,7 +2416,7 @@
         "computer-graphics"
       ],
       "language": "Python",
-      "stars": 7757,
+      "stars": 7769,
       "topics": [
         "3d",
         "ai-agents",
@@ -2248,8 +2432,8 @@
       "created_at": "2026-07-15T02:58:39Z",
       "pushed_at": "2026-07-29T05:35:47Z",
       "age_days": 14,
-      "star_velocity": 549.14,
-      "score": 73.1,
+      "star_velocity": 549.59,
+      "score": 73,
       "breakdown": {
         "momentum": 100,
         "freshness": 72,
@@ -2270,9 +2454,9 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 7148,
-      "stars_gained": 609
+      "stars_gained": 621
     },
     {
       "type": "candidate",
@@ -2304,7 +2488,7 @@
       "created_at": "2026-07-10T16:10:25Z",
       "pushed_at": "2026-07-28T13:46:42Z",
       "age_days": 19,
-      "star_velocity": 67.02,
+      "star_velocity": 66.99,
       "score": 72.3,
       "breakdown": {
         "momentum": 92,
@@ -2322,7 +2506,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 1237,
       "stars_gained": 8
     },
@@ -2337,12 +2521,12 @@
       "hook": "A Codex CLI jailbreak prompt and test pack for gpt-5.6-sol. 针对 gpt-5.6 系列的 Codex CLI 破甲提示词与测试包。",
       "tags": [],
       "language": "Python",
-      "stars": 3568,
+      "stars": 3570,
       "topics": [],
       "created_at": "2026-07-11T09:44:24Z",
       "pushed_at": "2026-07-27T01:03:12Z",
       "age_days": 18,
-      "star_velocity": 199.96,
+      "star_velocity": 199.95,
       "score": 72.1,
       "breakdown": {
         "momentum": 100,
@@ -2360,9 +2544,9 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 3329,
-      "stars_gained": 239
+      "stars_gained": 241
     },
     {
       "type": "candidate",
@@ -2375,12 +2559,12 @@
       "hook": "Codex skill for generating quiet minimal zine-style editorial poster prompts and images.",
       "tags": [],
       "language": null,
-      "stars": 1201,
+      "stars": 1205,
       "topics": [],
       "created_at": "2026-07-12T09:54:51Z",
       "pushed_at": "2026-07-25T07:47:00Z",
       "age_days": 17,
-      "star_velocity": 71.33,
+      "star_velocity": 71.53,
       "score": 71.9,
       "breakdown": {
         "momentum": 93,
@@ -2398,9 +2582,9 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 1070,
-      "stars_gained": 131
+      "stars_gained": 135
     },
     {
       "type": "candidate",
@@ -2479,7 +2663,7 @@
         "hud"
       ],
       "language": "Rust",
-      "stars": 1872,
+      "stars": 1893,
       "topics": [
         "claude-code",
         "cli",
@@ -2496,14 +2680,14 @@
       "created_at": "2026-06-26T05:08:01Z",
       "pushed_at": "2026-07-26T12:54:45Z",
       "age_days": 33,
-      "star_velocity": 56.67,
-      "score": 71.3,
+      "star_velocity": 57.28,
+      "score": 71.4,
       "breakdown": {
         "momentum": 88,
         "freshness": 56,
         "novelty": 75,
         "substance": 35,
-        "obscurity": 76
+        "obscurity": 75
       },
       "lanes": [
         "Devtools"
@@ -2514,9 +2698,9 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 1544,
-      "stars_gained": 328
+      "stars_gained": 349
     },
     {
       "type": "candidate",
@@ -2552,7 +2736,7 @@
       "created_at": "2026-07-10T05:57:02Z",
       "pushed_at": "2026-07-28T15:37:52Z",
       "age_days": 19,
-      "star_velocity": 45.05,
+      "star_velocity": 45.02,
       "score": 71,
       "breakdown": {
         "momentum": 83,
@@ -2572,7 +2756,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 855,
       "stars_gained": 1
     },
@@ -2715,7 +2899,7 @@
         "ffmpeg"
       ],
       "language": "Python",
-      "stars": 1889,
+      "stars": 1890,
       "topics": [
         "claude",
         "claude-code",
@@ -2733,7 +2917,7 @@
       "created_at": "2026-06-30T10:55:02Z",
       "pushed_at": "2026-07-29T01:39:38Z",
       "age_days": 29,
-      "star_velocity": 65.6,
+      "star_velocity": 65.61,
       "score": 70.1,
       "breakdown": {
         "momentum": 91,
@@ -2753,9 +2937,9 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 1875,
-      "stars_gained": 14
+      "stars_gained": 15
     },
     {
       "type": "candidate",
@@ -2787,7 +2971,7 @@
       "created_at": "2026-06-28T04:38:07Z",
       "pushed_at": "2026-07-29T01:54:09Z",
       "age_days": 31,
-      "star_velocity": 64.69,
+      "star_velocity": 64.67,
       "score": 69.5,
       "breakdown": {
         "momentum": 91,
@@ -2806,7 +2990,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 1898,
       "stars_gained": 111
     },
@@ -2826,7 +3010,7 @@
         "chatgpt"
       ],
       "language": "TypeScript",
-      "stars": 5605,
+      "stars": 5607,
       "topics": [
         "ai-gateway",
         "ai-tools",
@@ -2850,9 +3034,9 @@
         "typescript"
       ],
       "created_at": "2026-06-18T23:03:18Z",
-      "pushed_at": "2026-07-29T05:21:33Z",
+      "pushed_at": "2026-07-29T06:03:27Z",
       "age_days": 40,
-      "star_velocity": 139.12,
+      "star_velocity": 139.13,
       "score": 69.4,
       "breakdown": {
         "momentum": 100,
@@ -2874,9 +3058,9 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 5384,
-      "stars_gained": 221
+      "stars_gained": 223
     },
     {
       "type": "candidate",
@@ -2914,9 +3098,9 @@
         "sandbox"
       ],
       "created_at": "2026-06-11T12:18:13Z",
-      "pushed_at": "2026-07-29T05:51:40Z",
+      "pushed_at": "2026-07-29T06:09:41Z",
       "age_days": 48,
-      "star_velocity": 164.63,
+      "star_velocity": 164.6,
       "score": 69.4,
       "breakdown": {
         "momentum": 100,
@@ -2938,7 +3122,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 7825,
       "stars_gained": 34
     },
@@ -2958,7 +3142,7 @@
         "ai-agents"
       ],
       "language": "Rust",
-      "stars": 22056,
+      "stars": 22065,
       "topics": [
         "agent",
         "agent-orchestration",
@@ -2982,7 +3166,7 @@
       "created_at": "2026-03-27T17:54:33Z",
       "pushed_at": "2026-07-28T23:55:56Z",
       "age_days": 124,
-      "star_velocity": 178.59,
+      "star_velocity": 178.64,
       "score": 69.3,
       "breakdown": {
         "momentum": 100,
@@ -3009,9 +3193,9 @@
       ],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T16:49:48.226Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 21857,
-      "stars_gained": 199
+      "stars_gained": 208
     },
     {
       "type": "candidate",
@@ -3024,10 +3208,10 @@
       "hook": "OpenShell is the safe, private runtime for autonomous AI agents.",
       "tags": [],
       "language": "Rust",
-      "stars": 7866,
+      "stars": 7867,
       "topics": [],
       "created_at": "2026-02-24T22:52:22Z",
-      "pushed_at": "2026-07-29T05:37:34Z",
+      "pushed_at": "2026-07-29T06:13:37Z",
       "age_days": 154,
       "star_velocity": 50.98,
       "score": 68.1,
@@ -3054,9 +3238,9 @@
       ],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T16:49:48.226Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 7848,
-      "stars_gained": 18
+      "stars_gained": 19
     },
     {
       "type": "candidate",
@@ -3087,7 +3271,7 @@
       "created_at": "2026-06-14T16:57:27Z",
       "pushed_at": "2026-07-27T21:01:10Z",
       "age_days": 45,
-      "star_velocity": 76.94,
+      "star_velocity": 76.92,
       "score": 67.5,
       "breakdown": {
         "momentum": 95,
@@ -3106,7 +3290,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 3403,
       "stars_gained": 24
     },
@@ -3126,7 +3310,7 @@
         "claude"
       ],
       "language": "JavaScript",
-      "stars": 4370,
+      "stars": 4372,
       "topics": [
         "agent-skill",
         "ai-agent",
@@ -3146,7 +3330,7 @@
       "created_at": "2026-06-10T07:46:43Z",
       "pushed_at": "2026-07-20T09:29:26Z",
       "age_days": 49,
-      "star_velocity": 89.32,
+      "star_velocity": 89.34,
       "score": 67.5,
       "breakdown": {
         "momentum": 98,
@@ -3166,9 +3350,9 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 4326,
-      "stars_gained": 44
+      "stars_gained": 46
     },
     {
       "type": "candidate",
@@ -3186,7 +3370,7 @@
         "automation"
       ],
       "language": "JavaScript",
-      "stars": 2910,
+      "stars": 2911,
       "topics": [
         "agent-skills",
         "agentic-workflows",
@@ -3198,7 +3382,7 @@
       "created_at": "2026-06-12T14:44:22Z",
       "pushed_at": "2026-07-26T11:04:33Z",
       "age_days": 47,
-      "star_velocity": 62.4,
+      "star_velocity": 62.41,
       "score": 67.3,
       "breakdown": {
         "momentum": 90,
@@ -3218,9 +3402,9 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 2892,
-      "stars_gained": 18
+      "stars_gained": 19
     },
     {
       "type": "candidate",
@@ -3261,7 +3445,7 @@
       "created_at": "2026-06-09T06:28:20Z",
       "pushed_at": "2026-07-29T03:24:40Z",
       "age_days": 50,
-      "star_velocity": 191.28,
+      "star_velocity": 191.24,
       "score": 67.1,
       "breakdown": {
         "momentum": 100,
@@ -3284,7 +3468,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 9513,
       "stars_gained": 47
     },
@@ -3304,7 +3488,7 @@
         "backtesting"
       ],
       "language": "Python",
-      "stars": 2396,
+      "stars": 2397,
       "topics": [
         "a-stock",
         "ai-agent",
@@ -3330,7 +3514,7 @@
       "created_at": "2026-06-18T06:18:29Z",
       "pushed_at": "2026-07-28T10:57:41Z",
       "age_days": 41,
-      "star_velocity": 58.46,
+      "star_velocity": 58.47,
       "score": 67,
       "breakdown": {
         "momentum": 89,
@@ -3350,9 +3534,9 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 2387,
-      "stars_gained": 9
+      "stars_gained": 10
     },
     {
       "type": "candidate",
@@ -3370,7 +3554,7 @@
       "created_at": "2026-05-18T23:45:50Z",
       "pushed_at": "2026-07-29T01:24:46Z",
       "age_days": 71,
-      "star_velocity": 57.82,
+      "star_velocity": 57.81,
       "score": 66.9,
       "breakdown": {
         "momentum": 88,
@@ -3395,7 +3579,7 @@
       ],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T16:49:48.226Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 4092,
       "stars_gained": 28
     },
@@ -3441,7 +3625,7 @@
       "created_at": "2026-05-11T09:40:38Z",
       "pushed_at": "2026-07-28T09:50:53Z",
       "age_days": 79,
-      "star_velocity": 101.36,
+      "star_velocity": 101.35,
       "score": 66.9,
       "breakdown": {
         "momentum": 100,
@@ -3463,7 +3647,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 7983,
       "stars_gained": 9
     },
@@ -3483,7 +3667,7 @@
         "multimodal"
       ],
       "language": "Python",
-      "stars": 7491,
+      "stars": 7496,
       "topics": [
         "agent",
         "ai",
@@ -3498,7 +3682,7 @@
       "created_at": "2026-05-29T07:25:40Z",
       "pushed_at": "2026-07-27T22:54:41Z",
       "age_days": 61,
-      "star_velocity": 122.92,
+      "star_velocity": 122.99,
       "score": 66.7,
       "breakdown": {
         "momentum": 100,
@@ -3519,9 +3703,9 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 7382,
-      "stars_gained": 109
+      "stars_gained": 114
     },
     {
       "type": "candidate",
@@ -3562,9 +3746,9 @@
         "ochestration"
       ],
       "created_at": "2026-06-04T04:33:26Z",
-      "pushed_at": "2026-07-29T03:47:21Z",
+      "pushed_at": "2026-07-29T06:03:47Z",
       "age_days": 55,
-      "star_velocity": 21.18,
+      "star_velocity": 21.17,
       "score": 66.7,
       "breakdown": {
         "momentum": 67,
@@ -3591,7 +3775,7 @@
       ],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T19:54:13.585Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 1166,
       "stars_gained": 0
     },
@@ -3611,7 +3795,7 @@
         "mimo"
       ],
       "language": "TypeScript",
-      "stars": 12532,
+      "stars": 12533,
       "topics": [
         "ai",
         "ai-agents",
@@ -3622,7 +3806,7 @@
       "created_at": "2026-06-10T11:52:41Z",
       "pushed_at": "2026-07-28T15:19:41Z",
       "age_days": 49,
-      "star_velocity": 257.04,
+      "star_velocity": 257.01,
       "score": 66.6,
       "breakdown": {
         "momentum": 100,
@@ -3642,9 +3826,9 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 12504,
-      "stars_gained": 28
+      "stars_gained": 29
     },
     {
       "type": "candidate",
@@ -3674,7 +3858,7 @@
       "created_at": "2026-06-24T08:05:12Z",
       "pushed_at": "2026-07-28T11:43:41Z",
       "age_days": 35,
-      "star_velocity": 39.38,
+      "star_velocity": 39.37,
       "score": 66.4,
       "breakdown": {
         "momentum": 80,
@@ -3694,7 +3878,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 1373,
       "stars_gained": 2
     },
@@ -3714,7 +3898,7 @@
         "database"
       ],
       "language": "Rust",
-      "stars": 12276,
+      "stars": 12279,
       "topics": [
         "ai",
         "cli",
@@ -3738,7 +3922,7 @@
       "created_at": "2026-04-29T03:00:36Z",
       "pushed_at": "2026-07-29T05:31:52Z",
       "age_days": 91,
-      "star_velocity": 134.72,
+      "star_velocity": 134.73,
       "score": 66.4,
       "breakdown": {
         "momentum": 100,
@@ -3759,9 +3943,9 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 12081,
-      "stars_gained": 195
+      "stars_gained": 198
     },
     {
       "type": "candidate",
@@ -3791,7 +3975,7 @@
       "created_at": "2026-02-15T16:11:31Z",
       "pushed_at": "2026-07-27T00:55:39Z",
       "age_days": 164,
-      "star_velocity": 188.8,
+      "star_velocity": 188.79,
       "score": 66.4,
       "breakdown": {
         "momentum": 100,
@@ -3816,7 +4000,7 @@
       ],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T16:49:48.226Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 30857,
       "stars_gained": 26
     },
@@ -3831,12 +4015,12 @@
       "hook": "Turn any technical book PDF into a Claude Code skill — ready to study, reference, and use while you work.",
       "tags": [],
       "language": "Python",
-      "stars": 11759,
+      "stars": 11778,
       "topics": [],
       "created_at": "2026-05-01T02:09:39Z",
       "pushed_at": "2026-07-27T22:42:43Z",
       "age_days": 89,
-      "star_velocity": 131.89,
+      "star_velocity": 132.08,
       "score": 66,
       "breakdown": {
         "momentum": 100,
@@ -3860,9 +4044,9 @@
       ],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T16:49:48.226Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 11010,
-      "stars_gained": 749
+      "stars_gained": 768
     },
     {
       "type": "candidate",
@@ -3893,7 +4077,7 @@
       "created_at": "2026-06-19T13:24:44Z",
       "pushed_at": "2026-06-27T16:16:19Z",
       "age_days": 40,
-      "star_velocity": 29.58,
+      "star_velocity": 29.57,
       "score": 65.8,
       "breakdown": {
         "momentum": 74,
@@ -3914,7 +4098,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 1173,
       "stars_gained": 1
     },
@@ -3960,7 +4144,7 @@
       "created_at": "2026-06-19T16:19:37Z",
       "pushed_at": "2026-07-06T15:17:36Z",
       "age_days": 40,
-      "star_velocity": 33.84,
+      "star_velocity": 33.83,
       "score": 65.8,
       "breakdown": {
         "momentum": 77,
@@ -3981,7 +4165,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 1339,
       "stars_gained": 0
     },
@@ -4013,7 +4197,7 @@
       "created_at": "2026-04-30T15:48:54Z",
       "pushed_at": "2026-07-28T23:11:17Z",
       "age_days": 90,
-      "star_velocity": 72.43,
+      "star_velocity": 72.42,
       "score": 65.7,
       "breakdown": {
         "momentum": 93,
@@ -4037,7 +4221,7 @@
       ],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T16:49:48.226Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 6395,
       "stars_gained": 94
     },
@@ -4108,12 +4292,12 @@
       "hook": "Give Claude the ability to watch any video. /watch downloads, extracts frames, transcribes, hands it all to Claude.",
       "tags": [],
       "language": "Python",
-      "stars": 12303,
+      "stars": 12314,
       "topics": [],
       "created_at": "2026-04-24T04:40:43Z",
       "pushed_at": "2026-07-01T01:26:49Z",
       "age_days": 96,
-      "star_velocity": 128.08,
+      "star_velocity": 128.18,
       "score": 65.5,
       "breakdown": {
         "momentum": 100,
@@ -4134,9 +4318,9 @@
       ],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T16:49:48.226Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 11841,
-      "stars_gained": 462
+      "stars_gained": 473
     },
     {
       "type": "candidate",
@@ -4154,7 +4338,7 @@
         "claude-code"
       ],
       "language": "TypeScript",
-      "stars": 32022,
+      "stars": 32038,
       "topics": [
         "ade",
         "agent-ide",
@@ -4176,9 +4360,9 @@
         "yc-backed"
       ],
       "created_at": "2026-03-17T03:28:57Z",
-      "pushed_at": "2026-07-29T05:54:13Z",
+      "pushed_at": "2026-07-29T06:08:57Z",
       "age_days": 134,
-      "star_velocity": 238.78,
+      "star_velocity": 238.88,
       "score": 65.5,
       "breakdown": {
         "momentum": 100,
@@ -4203,9 +4387,9 @@
       ],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T16:49:48.226Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 31602,
-      "stars_gained": 420
+      "stars_gained": 436
     },
     {
       "type": "candidate",
@@ -4247,9 +4431,9 @@
         "skills"
       ],
       "created_at": "2026-06-03T11:12:40Z",
-      "pushed_at": "2026-07-29T05:02:12Z",
+      "pushed_at": "2026-07-29T06:11:02Z",
       "age_days": 56,
-      "star_velocity": 56.7,
+      "star_velocity": 56.69,
       "score": 65.5,
       "breakdown": {
         "momentum": 88,
@@ -4270,7 +4454,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 3147,
       "stars_gained": 16
     },
@@ -4326,7 +4510,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 10319,
       "stars_gained": 3
     },
@@ -4409,7 +4593,7 @@
         "codex"
       ],
       "language": "Python",
-      "stars": 31869,
+      "stars": 31872,
       "topics": [
         "agent-skills",
         "ai-writing",
@@ -4446,9 +4630,9 @@
       ],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T16:49:48.226Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 31771,
-      "stars_gained": 98
+      "stars_gained": 101
     },
     {
       "type": "candidate",
@@ -4486,7 +4670,7 @@
       "created_at": "2026-03-31T17:30:14Z",
       "pushed_at": "2026-07-29T03:16:18Z",
       "age_days": 120,
-      "star_velocity": 114.52,
+      "star_velocity": 114.51,
       "score": 65.2,
       "breakdown": {
         "momentum": 100,
@@ -4515,9 +4699,81 @@
       ],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T16:49:48.226Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 13672,
       "stars_gained": 16
+    },
+    {
+      "type": "candidate",
+      "id": "1290391863",
+      "full_name": "jasonsuhari/gridbash",
+      "owner": "jasonsuhari",
+      "name": "gridbash",
+      "url": "https://github.com/jasonsuhari/gridbash",
+      "description": "Cross-platform terminal grid for running Codex, Claude, Gemini, and other CLI agents side by side.",
+      "hook": "Cross-platform terminal grid for running Codex, Claude, Gemini, and other CLI agents side by side.",
+      "tags": [
+        "ai-agents",
+        "aider",
+        "claude",
+        "cli-agents"
+      ],
+      "language": "Rust",
+      "stars": 139,
+      "topics": [
+        "ai-agents",
+        "aider",
+        "claude",
+        "cli-agents",
+        "codex",
+        "coding-agents",
+        "developer-tools",
+        "gemini",
+        "git-bash",
+        "linux",
+        "macos",
+        "multiplexer",
+        "orchestration",
+        "ratatui",
+        "rust",
+        "terminal",
+        "terminal-grid",
+        "terminal-ui",
+        "tui",
+        "windows"
+      ],
+      "created_at": "2026-07-05T22:46:52Z",
+      "pushed_at": "2026-07-29T06:07:35Z",
+      "age_days": 23,
+      "star_velocity": 5.96,
+      "score": 65,
+      "breakdown": {
+        "momentum": 42,
+        "freshness": 63,
+        "novelty": 75,
+        "substance": 100,
+        "obscurity": 88
+      },
+      "lanes": [
+        "Under the radar"
+      ],
+      "ai_signals": [
+        "topic:ai-agents",
+        "claude",
+        "ai",
+        "ai-"
+      ],
+      "doc_files": [
+        "README.md",
+        "docs/AUTOMATED_REVIEW.md",
+        "docs/COMMUNITY_SETUP.md",
+        "docs/DAEMON_ARCHITECTURE.md"
+      ],
+      "skills_extracted": 1,
+      "first_seen": "2026-07-29T06:14:24.547Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
+      "stars_at_first_seen": 139,
+      "stars_gained": 0
     },
     {
       "type": "candidate",
@@ -4535,7 +4791,7 @@
         "harness-engineering"
       ],
       "language": "Python",
-      "stars": 29843,
+      "stars": 29850,
       "topics": [
         "agent",
         "agent-harness",
@@ -4550,7 +4806,7 @@
       "created_at": "2026-02-24T03:42:56Z",
       "pushed_at": "2026-07-29T03:25:21Z",
       "age_days": 155,
-      "star_velocity": 192.42,
+      "star_velocity": 192.45,
       "score": 64.8,
       "breakdown": {
         "momentum": 100,
@@ -4575,9 +4831,9 @@
       ],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T16:49:48.226Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 29671,
-      "stars_gained": 172
+      "stars_gained": 179
     },
     {
       "type": "candidate",
@@ -4615,7 +4871,7 @@
       "created_at": "2026-06-27T08:10:47Z",
       "pushed_at": "2026-07-10T06:39:50Z",
       "age_days": 32,
-      "star_velocity": 17.96,
+      "star_velocity": 17.95,
       "score": 64.4,
       "breakdown": {
         "momentum": 64,
@@ -4635,7 +4891,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 573,
       "stars_gained": 0
     },
@@ -4689,7 +4945,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 2724,
       "stars_gained": 7
     },
@@ -4793,7 +5049,7 @@
       "created_at": "2026-06-16T13:20:01Z",
       "pushed_at": "2026-07-10T04:27:35Z",
       "age_days": 43,
-      "star_velocity": 32.63,
+      "star_velocity": 32.62,
       "score": 64,
       "breakdown": {
         "momentum": 76,
@@ -4813,9 +5069,72 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 1376,
       "stars_gained": 17
+    },
+    {
+      "type": "candidate",
+      "id": "1308343294",
+      "full_name": "cporter202/coreclaw-api-directory",
+      "owner": "cporter202",
+      "name": "coreclaw-api-directory",
+      "url": "https://github.com/cporter202/coreclaw-api-directory",
+      "description": "An unofficial, categorized directory of 118 CoreClaw Worker APIs for web scraping, automation, lead generation, e-commerce, social data, and more.",
+      "hook": "An unofficial, categorized directory of 118 CoreClaw Worker APIs for web scraping, automation, lead generation, e-commerce, social data, and more.",
+      "tags": [
+        "api-directory",
+        "api-list",
+        "automation",
+        "awesome-list"
+      ],
+      "language": "Python",
+      "stars": 119,
+      "topics": [
+        "api-directory",
+        "api-list",
+        "automation",
+        "awesome-list",
+        "coreclaw",
+        "data-extraction",
+        "developer-tools",
+        "ecommerce",
+        "lead-generation",
+        "mcp",
+        "public-data",
+        "rest-api",
+        "scraping-api",
+        "social-media",
+        "web-automation",
+        "web-scraping"
+      ],
+      "created_at": "2026-07-22T03:35:56Z",
+      "pushed_at": "2026-07-29T06:08:39Z",
+      "age_days": 7,
+      "star_velocity": 16.74,
+      "score": 63.7,
+      "breakdown": {
+        "momentum": 62,
+        "freshness": 82,
+        "novelty": 27,
+        "substance": 95,
+        "obscurity": 84
+      },
+      "lanes": [
+        "Under the radar"
+      ],
+      "ai_signals": [
+        "topic:mcp",
+        "ai"
+      ],
+      "doc_files": [
+        "README.md"
+      ],
+      "skills_extracted": 0,
+      "first_seen": "2026-07-29T06:14:24.547Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
+      "stars_at_first_seen": 119,
+      "stars_gained": 0
     },
     {
       "type": "candidate",
@@ -4848,9 +5167,9 @@
         "skills"
       ],
       "created_at": "2026-05-06T17:43:05Z",
-      "pushed_at": "2026-07-29T05:45:06Z",
+      "pushed_at": "2026-07-29T06:01:49Z",
       "age_days": 84,
-      "star_velocity": 76.53,
+      "star_velocity": 76.52,
       "score": 63.6,
       "breakdown": {
         "momentum": 94,
@@ -4872,7 +5191,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 6378,
       "stars_gained": 13
     },
@@ -4892,7 +5211,7 @@
         "rag"
       ],
       "language": "CSS",
-      "stars": 9887,
+      "stars": 9888,
       "topics": [
         "agent",
         "claude",
@@ -4925,9 +5244,9 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 9849,
-      "stars_gained": 38
+      "stars_gained": 39
     },
     {
       "type": "candidate",
@@ -5013,7 +5332,7 @@
         "context-database"
       ],
       "language": "Python",
-      "stars": 27588,
+      "stars": 27590,
       "topics": [
         "agent-memory",
         "agent-plugins",
@@ -5022,7 +5341,7 @@
         "self-evolving"
       ],
       "created_at": "2026-01-05T07:11:17Z",
-      "pushed_at": "2026-07-29T05:37:11Z",
+      "pushed_at": "2026-07-29T06:08:17Z",
       "age_days": 205,
       "star_velocity": 134.61,
       "score": 63.4,
@@ -5049,9 +5368,9 @@
       ],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T16:49:48.226Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 27566,
-      "stars_gained": 22
+      "stars_gained": 24
     },
     {
       "type": "candidate",
@@ -5069,7 +5388,7 @@
         "claude-code"
       ],
       "language": "TypeScript",
-      "stars": 3009,
+      "stars": 3010,
       "topics": [
         "ai",
         "ai-agents",
@@ -5089,7 +5408,7 @@
       "created_at": "2026-05-25T07:56:45Z",
       "pushed_at": "2026-07-28T15:36:19Z",
       "age_days": 65,
-      "star_velocity": 46.35,
+      "star_velocity": 46.36,
       "score": 63.4,
       "breakdown": {
         "momentum": 84,
@@ -5112,9 +5431,9 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 2991,
-      "stars_gained": 18
+      "stars_gained": 19
     },
     {
       "type": "candidate",
@@ -5132,7 +5451,7 @@
         "claude-skills"
       ],
       "language": "Python",
-      "stars": 12979,
+      "stars": 12986,
       "topics": [
         "adhd",
         "claude-",
@@ -5144,7 +5463,7 @@
       "created_at": "2026-05-13T20:42:06Z",
       "pushed_at": "2026-07-28T17:41:32Z",
       "age_days": 76,
-      "star_velocity": 169.91,
+      "star_velocity": 169.98,
       "score": 63.3,
       "breakdown": {
         "momentum": 100,
@@ -5163,9 +5482,9 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 11659,
-      "stars_gained": 1320
+      "stars_gained": 1327
     },
     {
       "type": "candidate",
@@ -5183,7 +5502,7 @@
         "build123d"
       ],
       "language": "JavaScript",
-      "stars": 11604,
+      "stars": 11608,
       "topics": [
         "3mf",
         "agents",
@@ -5206,7 +5525,7 @@
       "created_at": "2026-04-22T01:09:45Z",
       "pushed_at": "2026-07-28T23:54:08Z",
       "age_days": 98,
-      "star_velocity": 118.17,
+      "star_velocity": 118.19,
       "score": 63.2,
       "breakdown": {
         "momentum": 100,
@@ -5226,9 +5545,9 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 11041,
-      "stars_gained": 563
+      "stars_gained": 567
     },
     {
       "type": "candidate",
@@ -5267,7 +5586,7 @@
       "created_at": "2026-03-26T10:32:44Z",
       "pushed_at": "2026-07-29T04:16:44Z",
       "age_days": 125,
-      "star_velocity": 116.09,
+      "star_velocity": 116.08,
       "score": 63.2,
       "breakdown": {
         "momentum": 100,
@@ -5287,7 +5606,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 14461,
       "stars_gained": 28
     },
@@ -5307,7 +5626,7 @@
         "cli-tool"
       ],
       "language": "Python",
-      "stars": 30989,
+      "stars": 30993,
       "topics": [
         "ai-agents",
         "ai-tutor",
@@ -5322,7 +5641,7 @@
       "created_at": "2025-12-28T15:35:54Z",
       "pushed_at": "2026-07-28T18:09:24Z",
       "age_days": 213,
-      "star_velocity": 145.76,
+      "star_velocity": 145.77,
       "score": 63.1,
       "breakdown": {
         "momentum": 100,
@@ -5346,9 +5665,9 @@
       ],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T16:49:48.226Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 30841,
-      "stars_gained": 148
+      "stars_gained": 152
     },
     {
       "type": "candidate",
@@ -5442,7 +5761,7 @@
       "created_at": "2026-03-31T08:36:50Z",
       "pushed_at": "2026-06-01T16:38:14Z",
       "age_days": 120,
-      "star_velocity": 36.97,
+      "star_velocity": 36.96,
       "score": 63,
       "breakdown": {
         "momentum": 79,
@@ -5470,7 +5789,7 @@
       ],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T16:49:48.226Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 4431,
       "stars_gained": 1
     },
@@ -5490,7 +5809,7 @@
         "chatgpt"
       ],
       "language": "Python",
-      "stars": 3159,
+      "stars": 3162,
       "topics": [
         "ai",
         "ai-agents",
@@ -5513,7 +5832,7 @@
       "created_at": "2026-05-21T08:45:07Z",
       "pushed_at": "2026-07-29T02:53:38Z",
       "age_days": 69,
-      "star_velocity": 45.86,
+      "star_velocity": 45.9,
       "score": 62.9,
       "breakdown": {
         "momentum": 84,
@@ -5535,9 +5854,9 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 2981,
-      "stars_gained": 178
+      "stars_gained": 181
     },
     {
       "type": "candidate",
@@ -5555,7 +5874,7 @@
         "ai-agents"
       ],
       "language": "TypeScript",
-      "stars": 2611,
+      "stars": 2614,
       "topics": [
         "adhd",
         "agents",
@@ -5579,7 +5898,7 @@
       "created_at": "2026-05-25T11:06:35Z",
       "pushed_at": "2026-07-23T12:57:58Z",
       "age_days": 65,
-      "star_velocity": 40.3,
+      "star_velocity": 40.34,
       "score": 62.8,
       "breakdown": {
         "momentum": 81,
@@ -5601,9 +5920,9 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 2454,
-      "stars_gained": 157
+      "stars_gained": 160
     },
     {
       "type": "candidate",
@@ -5666,7 +5985,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 730,
       "stars_gained": 0
     },
@@ -5686,7 +6005,7 @@
         "geopolitics"
       ],
       "language": "TypeScript",
-      "stars": 76076,
+      "stars": 76084,
       "topics": [
         "agent",
         "ai",
@@ -5704,7 +6023,7 @@
       "created_at": "2026-01-08T17:26:06Z",
       "pushed_at": "2026-07-29T05:24:18Z",
       "age_days": 202,
-      "star_velocity": 377.5,
+      "star_velocity": 377.53,
       "score": 62.7,
       "breakdown": {
         "momentum": 100,
@@ -5730,9 +6049,9 @@
       ],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T16:49:48.226Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 75796,
-      "stars_gained": 280
+      "stars_gained": 288
     },
     {
       "type": "candidate",
@@ -5774,7 +6093,7 @@
       "created_at": "2026-04-18T12:57:52Z",
       "pushed_at": "2026-05-23T11:58:48Z",
       "age_days": 102,
-      "star_velocity": 145.2,
+      "star_velocity": 145.18,
       "score": 62.6,
       "breakdown": {
         "momentum": 100,
@@ -5795,7 +6114,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 14763,
       "stars_gained": 5
     },
@@ -5855,7 +6174,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 3361,
       "stars_gained": 6
     },
@@ -5911,7 +6230,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 2289,
       "stars_gained": 8
     },
@@ -5931,7 +6250,7 @@
         "browser-use"
       ],
       "language": "Python",
-      "stars": 16325,
+      "stars": 16326,
       "topics": [
         "ai-agent",
         "browser-agent",
@@ -5951,7 +6270,7 @@
       "created_at": "2026-04-17T01:56:15Z",
       "pushed_at": "2026-07-26T03:16:13Z",
       "age_days": 103,
-      "star_velocity": 158.24,
+      "star_velocity": 158.23,
       "score": 62.3,
       "breakdown": {
         "momentum": 100,
@@ -5971,9 +6290,9 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 16304,
-      "stars_gained": 21
+      "stars_gained": 22
     },
     {
       "type": "candidate",
@@ -6005,7 +6324,7 @@
       "created_at": "2026-03-31T09:23:58Z",
       "pushed_at": "2026-07-25T11:27:59Z",
       "age_days": 120,
-      "star_velocity": 84.64,
+      "star_velocity": 84.63,
       "score": 62.3,
       "breakdown": {
         "momentum": 97,
@@ -6024,7 +6343,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 10147,
       "stars_gained": 0
     },
@@ -6062,7 +6381,7 @@
       "created_at": "2026-04-13T22:11:53Z",
       "pushed_at": "2026-07-28T01:52:06Z",
       "age_days": 106,
-      "star_velocity": 84.71,
+      "star_velocity": 84.7,
       "score": 62.3,
       "breakdown": {
         "momentum": 97,
@@ -6083,7 +6402,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 8973,
       "stars_gained": 34
     },
@@ -6103,7 +6422,7 @@
         "claude"
       ],
       "language": "Rust",
-      "stars": 12939,
+      "stars": 12950,
       "topics": [
         "ai",
         "ai-agent",
@@ -6121,7 +6440,7 @@
       "created_at": "2026-01-05T09:43:36Z",
       "pushed_at": "2026-07-29T01:16:06Z",
       "age_days": 205,
-      "star_velocity": 63.16,
+      "star_velocity": 63.22,
       "score": 62.3,
       "breakdown": {
         "momentum": 90,
@@ -6148,9 +6467,9 @@
       ],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T16:49:48.226Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 12626,
-      "stars_gained": 313
+      "stars_gained": 324
     },
     {
       "type": "candidate",
@@ -6168,7 +6487,7 @@
         "dashboard"
       ],
       "language": "TypeScript",
-      "stars": 9565,
+      "stars": 9567,
       "topics": [
         "agent",
         "ai-agent",
@@ -6186,9 +6505,9 @@
         "web-ui"
       ],
       "created_at": "2026-04-11T07:38:18Z",
-      "pushed_at": "2026-07-29T04:37:06Z",
+      "pushed_at": "2026-07-29T06:05:59Z",
       "age_days": 109,
-      "star_velocity": 87.81,
+      "star_velocity": 87.82,
       "score": 62.2,
       "breakdown": {
         "momentum": 97,
@@ -6209,9 +6528,9 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 9543,
-      "stars_gained": 22
+      "stars_gained": 24
     },
     {
       "type": "candidate",
@@ -6228,16 +6547,16 @@
         "react"
       ],
       "language": "TypeScript",
-      "stars": 4255,
+      "stars": 4256,
       "topics": [
         "agents",
         "ai",
         "react"
       ],
       "created_at": "2026-03-12T14:57:10Z",
-      "pushed_at": "2026-07-29T04:35:58Z",
+      "pushed_at": "2026-07-29T06:06:15Z",
       "age_days": 139,
-      "star_velocity": 30.69,
+      "star_velocity": 30.7,
       "score": 62.2,
       "breakdown": {
         "momentum": 75,
@@ -6262,9 +6581,9 @@
       ],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T16:49:48.226Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 4221,
-      "stars_gained": 34
+      "stars_gained": 35
     },
     {
       "type": "candidate",
@@ -6282,7 +6601,7 @@
         "self-hosted"
       ],
       "language": "TypeScript",
-      "stars": 9511,
+      "stars": 9515,
       "topics": [
         "agents",
         "ai",
@@ -6292,7 +6611,7 @@
       "created_at": "2026-03-05T20:16:56Z",
       "pushed_at": "2026-07-28T23:14:19Z",
       "age_days": 145,
-      "star_velocity": 65.41,
+      "star_velocity": 65.43,
       "score": 62.2,
       "breakdown": {
         "momentum": 91,
@@ -6317,9 +6636,9 @@
       ],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T16:49:48.226Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 9268,
-      "stars_gained": 243
+      "stars_gained": 247
     },
     {
       "type": "candidate",
@@ -6337,7 +6656,7 @@
         "developer-tools"
       ],
       "language": "Python",
-      "stars": 9492,
+      "stars": 9493,
       "topics": [
         "agent-workflows",
         "ai",
@@ -6369,9 +6688,9 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 9468,
-      "stars_gained": 24
+      "stars_gained": 25
     },
     {
       "type": "candidate",
@@ -6389,7 +6708,7 @@
         "berkshire-hathaway"
       ],
       "language": "Python",
-      "stars": 14627,
+      "stars": 14632,
       "topics": [
         "ai",
         "ai-agent",
@@ -6415,7 +6734,7 @@
       "created_at": "2026-04-07T11:19:51Z",
       "pushed_at": "2026-07-26T17:30:30Z",
       "age_days": 113,
-      "star_velocity": 129.7,
+      "star_velocity": 129.73,
       "score": 62.1,
       "breakdown": {
         "momentum": 100,
@@ -6439,9 +6758,9 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 14506,
-      "stars_gained": 121
+      "stars_gained": 126
     },
     {
       "type": "candidate",
@@ -6459,7 +6778,7 @@
         "china-stock-market"
       ],
       "language": "HTML",
-      "stars": 1463,
+      "stars": 1478,
       "topics": [
         "a-share",
         "algorithmic-trading",
@@ -6479,7 +6798,7 @@
       "created_at": "2026-05-08T13:34:17Z",
       "pushed_at": "2026-07-26T14:57:19Z",
       "age_days": 82,
-      "star_velocity": 17.91,
+      "star_velocity": 18.09,
       "score": 62,
       "breakdown": {
         "momentum": 64,
@@ -6500,9 +6819,9 @@
       ],
       "skills_extracted": 0,
       "first_seen": "2026-07-29T03:41:49.825Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 1414,
-      "stars_gained": 49
+      "stars_gained": 64
     },
     {
       "type": "candidate",
@@ -6566,7 +6885,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 7538,
       "stars_gained": 23
     },
@@ -6653,7 +6972,7 @@
       "created_at": "2026-04-21T08:27:02Z",
       "pushed_at": "2026-07-29T05:52:29Z",
       "age_days": 99,
-      "star_velocity": 282.87,
+      "star_velocity": 282.84,
       "score": 61.8,
       "breakdown": {
         "momentum": 100,
@@ -6675,7 +6994,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 27921,
       "stars_gained": 54
     },
@@ -6695,7 +7014,7 @@
         "claude-skill"
       ],
       "language": "HTML",
-      "stars": 7906,
+      "stars": 7908,
       "topics": [
         "agent-skills",
         "anthropic",
@@ -6718,7 +7037,7 @@
       "created_at": "2026-04-15T05:27:37Z",
       "pushed_at": "2026-07-27T13:36:35Z",
       "age_days": 105,
-      "star_velocity": 75.28,
+      "star_velocity": 75.29,
       "score": 61.8,
       "breakdown": {
         "momentum": 94,
@@ -6738,9 +7057,9 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 7671,
-      "stars_gained": 235
+      "stars_gained": 237
     },
     {
       "type": "candidate",
@@ -6758,7 +7077,7 @@
         "compliance"
       ],
       "language": "Python",
-      "stars": 5328,
+      "stars": 5335,
       "topics": [
         "agent-framework",
         "ai-agents",
@@ -6776,7 +7095,7 @@
       "created_at": "2026-03-02T22:11:47Z",
       "pushed_at": "2026-07-29T00:51:31Z",
       "age_days": 148,
-      "star_velocity": 35.92,
+      "star_velocity": 35.97,
       "score": 61.8,
       "breakdown": {
         "momentum": 78,
@@ -6803,9 +7122,9 @@
       ],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T16:49:48.226Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 5070,
-      "stars_gained": 258
+      "stars_gained": 265
     },
     {
       "type": "candidate",
@@ -6823,7 +7142,7 @@
         "linux"
       ],
       "language": "Rust",
-      "stars": 2889,
+      "stars": 2891,
       "topics": [
         "ai-prompt",
         "asr",
@@ -6845,7 +7164,7 @@
       "created_at": "2026-04-27T07:25:49Z",
       "pushed_at": "2026-07-22T00:52:10Z",
       "age_days": 93,
-      "star_velocity": 31.08,
+      "star_velocity": 31.1,
       "score": 61.7,
       "breakdown": {
         "momentum": 75,
@@ -6865,9 +7184,9 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 2881,
-      "stars_gained": 8
+      "stars_gained": 10
     },
     {
       "type": "candidate",
@@ -6885,7 +7204,7 @@
         "claude-code-hooks"
       ],
       "language": "TypeScript",
-      "stars": 19415,
+      "stars": 19416,
       "topics": [
         "antigravity",
         "claude",
@@ -6933,9 +7252,9 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 19389,
-      "stars_gained": 26
+      "stars_gained": 27
     },
     {
       "type": "candidate",
@@ -6953,7 +7272,7 @@
         "chemoinformatics"
       ],
       "language": "Python",
-      "stars": 32035,
+      "stars": 32038,
       "topics": [
         "agent-skills",
         "ai-scientist",
@@ -7002,9 +7321,9 @@
       ],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T16:49:48.226Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 31998,
-      "stars_gained": 37
+      "stars_gained": 40
     },
     {
       "type": "candidate",
@@ -7063,7 +7382,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 866,
       "stars_gained": 2
     },
@@ -7083,7 +7402,7 @@
         "byok"
       ],
       "language": "TypeScript",
-      "stars": 82335,
+      "stars": 82340,
       "topics": [
         "agent-skills",
         "ai-agents",
@@ -7107,9 +7426,9 @@
         "vibe-coding"
       ],
       "created_at": "2026-04-28T04:25:20Z",
-      "pushed_at": "2026-07-29T05:58:15Z",
+      "pushed_at": "2026-07-29T06:10:00Z",
       "age_days": 92,
-      "star_velocity": 894.31,
+      "star_velocity": 894.26,
       "score": 61.3,
       "breakdown": {
         "momentum": 100,
@@ -7129,9 +7448,9 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 82041,
-      "stars_gained": 294
+      "stars_gained": 299
     },
     {
       "type": "candidate",
@@ -7191,7 +7510,7 @@
       ],
       "skills_extracted": 0,
       "first_seen": "2026-07-29T03:41:49.825Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 1434,
       "stars_gained": 1
     },
@@ -7247,7 +7566,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 1528,
       "stars_gained": 6
     },
@@ -7300,7 +7619,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 2830,
       "stars_gained": 0
     },
@@ -7320,7 +7639,7 @@
         "code-review"
       ],
       "language": "Python",
-      "stars": 27417,
+      "stars": 27418,
       "topics": [
         "ai-coding",
         "claude",
@@ -7338,7 +7657,7 @@
       "created_at": "2026-02-26T17:25:13Z",
       "pushed_at": "2026-07-27T23:02:07Z",
       "age_days": 153,
-      "star_velocity": 179.76,
+      "star_velocity": 179.75,
       "score": 61.2,
       "breakdown": {
         "momentum": 100,
@@ -7361,9 +7680,9 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 27078,
-      "stars_gained": 339
+      "stars_gained": 340
     },
     {
       "type": "candidate",
@@ -7417,7 +7736,7 @@
       ],
       "skills_extracted": 0,
       "first_seen": "2026-07-29T03:41:49.825Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 1518,
       "stars_gained": 0
     },
@@ -7450,7 +7769,7 @@
       "created_at": "2026-06-14T13:47:44Z",
       "pushed_at": "2026-07-27T10:30:01Z",
       "age_days": 45,
-      "star_velocity": 24.98,
+      "star_velocity": 24.97,
       "score": 61,
       "breakdown": {
         "momentum": 71,
@@ -7470,7 +7789,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 1099,
       "stars_gained": 17
     },
@@ -7539,7 +7858,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 6667,
       "stars_gained": 6
     },
@@ -7572,7 +7891,7 @@
       "created_at": "2026-04-06T14:56:45Z",
       "pushed_at": "2026-07-27T14:09:46Z",
       "age_days": 114,
-      "star_velocity": 50.43,
+      "star_velocity": 50.42,
       "score": 61,
       "breakdown": {
         "momentum": 86,
@@ -7593,7 +7912,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 5722,
       "stars_gained": 8
     },
@@ -7647,7 +7966,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 18066,
       "stars_gained": 1
     },
@@ -7714,7 +8033,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 5529,
       "stars_gained": 5
     },
@@ -7771,7 +8090,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 2372,
       "stars_gained": 1
     },
@@ -7791,7 +8110,7 @@
         "code-analysis"
       ],
       "language": "C",
-      "stars": 36295,
+      "stars": 36299,
       "topics": [
         "aider",
         "ast",
@@ -7817,7 +8136,7 @@
       "created_at": "2026-02-24T22:01:00Z",
       "pushed_at": "2026-07-29T05:31:04Z",
       "age_days": 154,
-      "star_velocity": 235.17,
+      "star_velocity": 235.18,
       "score": 60.8,
       "breakdown": {
         "momentum": 100,
@@ -7837,9 +8156,9 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 36003,
-      "stars_gained": 292
+      "stars_gained": 296
     },
     {
       "type": "candidate",
@@ -7857,7 +8176,7 @@
         "fintech"
       ],
       "language": "Python",
-      "stars": 28404,
+      "stars": 28410,
       "topics": [
         "ai-agent",
         "algorithmic-trading",
@@ -7873,7 +8192,7 @@
       "created_at": "2026-04-01T09:52:20Z",
       "pushed_at": "2026-07-28T10:08:43Z",
       "age_days": 119,
-      "star_velocity": 239.01,
+      "star_velocity": 239.04,
       "score": 60.8,
       "breakdown": {
         "momentum": 100,
@@ -7894,9 +8213,9 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 28149,
-      "stars_gained": 255
+      "stars_gained": 261
     },
     {
       "type": "candidate",
@@ -8015,7 +8334,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 2652,
       "stars_gained": 9
     },
@@ -8050,7 +8369,7 @@
       "created_at": "2026-04-07T06:34:26Z",
       "pushed_at": "2026-07-24T08:44:55Z",
       "age_days": 113,
-      "star_velocity": 82.72,
+      "star_velocity": 82.71,
       "score": 60.7,
       "breakdown": {
         "momentum": 96,
@@ -8071,7 +8390,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 9323,
       "stars_gained": 22
     },
@@ -8091,7 +8410,7 @@
         "claude-code"
       ],
       "language": "Python",
-      "stars": 18628,
+      "stars": 18636,
       "topics": [
         "agent-skills",
         "ai-agents",
@@ -8106,7 +8425,7 @@
       "created_at": "2026-04-06T07:37:02Z",
       "pushed_at": "2026-07-28T20:25:30Z",
       "age_days": 114,
-      "star_velocity": 163.5,
+      "star_velocity": 163.56,
       "score": 60.6,
       "breakdown": {
         "momentum": 100,
@@ -8129,9 +8448,9 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 18500,
-      "stars_gained": 128
+      "stars_gained": 136
     },
     {
       "type": "candidate",
@@ -8170,7 +8489,7 @@
       "created_at": "2026-05-02T07:51:35Z",
       "pushed_at": "2026-07-29T03:15:02Z",
       "age_days": 88,
-      "star_velocity": 41.23,
+      "star_velocity": 41.22,
       "score": 60.5,
       "breakdown": {
         "momentum": 81,
@@ -8188,7 +8507,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 3610,
       "stars_gained": 15
     },
@@ -8244,7 +8563,7 @@
       ],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T16:49:48.226Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 51855,
       "stars_gained": 28
     },
@@ -8355,7 +8674,7 @@
       "created_at": "2026-05-05T11:22:32Z",
       "pushed_at": "2026-07-27T18:38:31Z",
       "age_days": 85,
-      "star_velocity": 38.08,
+      "star_velocity": 38.07,
       "score": 60.4,
       "breakdown": {
         "momentum": 80,
@@ -8375,7 +8694,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 3219,
       "stars_gained": 9
     },
@@ -8395,7 +8714,7 @@
         "mcp"
       ],
       "language": "Swift",
-      "stars": 12663,
+      "stars": 12664,
       "topics": [
         "ai-video",
         "claude",
@@ -8430,9 +8749,9 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 12571,
-      "stars_gained": 92
+      "stars_gained": 93
     },
     {
       "type": "candidate",
@@ -8450,7 +8769,7 @@
         "ai-roles"
       ],
       "language": "Shell",
-      "stars": 18479,
+      "stars": 18480,
       "topics": [
         "agency-orchestrator",
         "agent-definitions",
@@ -8496,9 +8815,9 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 18429,
-      "stars_gained": 50
+      "stars_gained": 51
     },
     {
       "type": "candidate",
@@ -8525,9 +8844,9 @@
         "worktrees"
       ],
       "created_at": "2026-07-23T07:58:34Z",
-      "pushed_at": "2026-07-29T05:04:43Z",
+      "pushed_at": "2026-07-29T06:09:53Z",
       "age_days": 6,
-      "star_velocity": 1.87,
+      "star_velocity": 1.86,
       "score": 60.4,
       "breakdown": {
         "momentum": 23,
@@ -8542,8 +8861,7 @@
       "ai_signals": [
         "topic:ai-agents",
         "agentic",
-        "ai-",
-        "eval"
+        "ai-"
       ],
       "doc_files": [
         "README.md",
@@ -8554,7 +8872,7 @@
       ],
       "skills_extracted": 0,
       "first_seen": "2026-07-29T05:11:36.667Z",
-      "last_seen": "2026-07-29T05:11:36.667Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 11,
       "stars_gained": 0
     },
@@ -8606,7 +8924,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 2343,
       "stars_gained": 78
     },
@@ -8638,7 +8956,7 @@
       "created_at": "2026-04-05T01:12:07Z",
       "pushed_at": "2026-07-26T20:42:37Z",
       "age_days": 115,
-      "star_velocity": 502.12,
+      "star_velocity": 502.07,
       "score": 60.3,
       "breakdown": {
         "momentum": 100,
@@ -8660,7 +8978,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 57809,
       "stars_gained": 35
     },
@@ -8680,7 +8998,7 @@
         "ats"
       ],
       "language": "JavaScript",
-      "stars": 62066,
+      "stars": 62069,
       "topics": [
         "ai",
         "ai-agent",
@@ -8706,7 +9024,7 @@
       "created_at": "2026-04-04T18:21:18Z",
       "pushed_at": "2026-07-29T03:16:21Z",
       "age_days": 115,
-      "star_velocity": 537.44,
+      "star_velocity": 537.42,
       "score": 60.3,
       "breakdown": {
         "momentum": 100,
@@ -8727,75 +9045,9 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 61897,
-      "stars_gained": 169
-    },
-    {
-      "type": "candidate",
-      "id": "1195360525",
-      "full_name": "calesthio/OpenMontage",
-      "owner": "calesthio",
-      "name": "OpenMontage",
-      "url": "https://github.com/calesthio/OpenMontage",
-      "description": "World's first open-source, agentic video production system. 12 production pipelines, 100+ tools, 700+ agent skill and production-knowledge files. Turn your AI coding assistant into a full video production studio.",
-      "hook": "World's first open-source, agentic video production system. 12 production pipelines, 100+ tools, 700+ agent skill and production-knowledge files.",
-      "tags": [
-        "agent",
-        "agentic-ai",
-        "ai",
-        "claude"
-      ],
-      "language": "Python",
-      "stars": 43494,
-      "topics": [
-        "agent",
-        "agentic-ai",
-        "ai",
-        "claude",
-        "copilot",
-        "cursor",
-        "elevenlabs",
-        "ffmpeg",
-        "flux",
-        "image-generation",
-        "open-source",
-        "openai",
-        "python",
-        "remotion",
-        "stable-diffusion",
-        "text-to-speech",
-        "text-to-video",
-        "video-generation",
-        "video-production"
-      ],
-      "created_at": "2026-03-29T15:23:22Z",
-      "pushed_at": "2026-07-24T19:25:54Z",
-      "age_days": 122,
-      "star_velocity": 357.66,
-      "score": 60.3,
-      "breakdown": {
-        "momentum": 100,
-        "freshness": 27,
-        "novelty": 63,
-        "substance": 45,
-        "obscurity": 7
-      },
-      "lanes": [
-        "Agent skills & prompts"
-      ],
-      "ai_signals": [
-        "topic:agent",
-        "agentic",
-        "ai",
-        "copilot"
-      ],
-      "doc_files": [],
-      "skills_extracted": 0,
-      "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
-      "stars_at_first_seen": 42844,
-      "stars_gained": 650
+      "stars_gained": 172
     },
     {
       "type": "candidate",
@@ -8864,6 +9116,72 @@
     },
     {
       "type": "candidate",
+      "id": "1195360525",
+      "full_name": "calesthio/OpenMontage",
+      "owner": "calesthio",
+      "name": "OpenMontage",
+      "url": "https://github.com/calesthio/OpenMontage",
+      "description": "World's first open-source, agentic video production system. 12 production pipelines, 100+ tools, 700+ agent skill and production-knowledge files. Turn your AI coding assistant into a full video production studio.",
+      "hook": "World's first open-source, agentic video production system. 12 production pipelines, 100+ tools, 700+ agent skill and production-knowledge files.",
+      "tags": [
+        "agent",
+        "agentic-ai",
+        "ai",
+        "claude"
+      ],
+      "language": "Python",
+      "stars": 43499,
+      "topics": [
+        "agent",
+        "agentic-ai",
+        "ai",
+        "claude",
+        "copilot",
+        "cursor",
+        "elevenlabs",
+        "ffmpeg",
+        "flux",
+        "image-generation",
+        "open-source",
+        "openai",
+        "python",
+        "remotion",
+        "stable-diffusion",
+        "text-to-speech",
+        "text-to-video",
+        "video-generation",
+        "video-production"
+      ],
+      "created_at": "2026-03-29T15:23:22Z",
+      "pushed_at": "2026-07-24T19:25:54Z",
+      "age_days": 122,
+      "star_velocity": 357.67,
+      "score": 60.2,
+      "breakdown": {
+        "momentum": 100,
+        "freshness": 27,
+        "novelty": 63,
+        "substance": 45,
+        "obscurity": 7
+      },
+      "lanes": [
+        "Agent skills & prompts"
+      ],
+      "ai_signals": [
+        "topic:agent",
+        "agentic",
+        "ai",
+        "copilot"
+      ],
+      "doc_files": [],
+      "skills_extracted": 0,
+      "first_seen": "2026-07-28T06:22:27.003Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
+      "stars_at_first_seen": 42844,
+      "stars_gained": 655
+    },
+    {
+      "type": "candidate",
       "id": "1164832776",
       "full_name": "cft0808/edict",
       "owner": "cft0808",
@@ -8897,7 +9215,7 @@
       "created_at": "2026-02-23T14:35:04Z",
       "pushed_at": "2026-07-27T11:24:34Z",
       "age_days": 156,
-      "star_velocity": 104.63,
+      "star_velocity": 104.62,
       "score": 60.2,
       "breakdown": {
         "momentum": 100,
@@ -8918,7 +9236,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 16278,
       "stars_gained": 7
     },
@@ -9008,7 +9326,7 @@
       "created_at": "2026-04-02T15:26:49Z",
       "pushed_at": "2026-07-29T05:55:23Z",
       "age_days": 118,
-      "star_velocity": 115.78,
+      "star_velocity": 115.77,
       "score": 60.1,
       "breakdown": {
         "momentum": 100,
@@ -9029,7 +9347,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 13610,
       "stars_gained": 6
     },
@@ -9087,7 +9405,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 1304,
       "stars_gained": 3
     },
@@ -9107,7 +9425,7 @@
         "autonomous-agent"
       ],
       "language": "Python",
-      "stars": 13975,
+      "stars": 13977,
       "topics": [
         "ai-research",
         "ai-tools",
@@ -9133,7 +9451,7 @@
       "created_at": "2026-03-10T07:31:45Z",
       "pushed_at": "2026-07-22T04:41:32Z",
       "age_days": 141,
-      "star_velocity": 99.16,
+      "star_velocity": 99.17,
       "score": 60,
       "breakdown": {
         "momentum": 100,
@@ -9155,9 +9473,9 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 13941,
-      "stars_gained": 34
+      "stars_gained": 36
     },
     {
       "type": "candidate",
@@ -9175,7 +9493,7 @@
         "coding-agent"
       ],
       "language": "JavaScript",
-      "stars": 591,
+      "stars": 592,
       "topics": [
         "agent-skills",
         "automation",
@@ -9188,7 +9506,7 @@
       "created_at": "2026-06-14T10:35:48Z",
       "pushed_at": "2026-07-26T15:07:47Z",
       "age_days": 45,
-      "star_velocity": 13.19,
+      "star_velocity": 13.21,
       "score": 59.9,
       "breakdown": {
         "momentum": 58,
@@ -9207,9 +9525,9 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 586,
-      "stars_gained": 5
+      "stars_gained": 6
     },
     {
       "type": "candidate",
@@ -9274,7 +9592,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 878,
       "stars_gained": 2
     },
@@ -9294,7 +9612,7 @@
         "ai-pentesting"
       ],
       "language": "Python",
-      "stars": 45424,
+      "stars": 45429,
       "topics": [
         "agents",
         "ai-hacking",
@@ -9320,7 +9638,7 @@
       "created_at": "2025-08-05T21:28:30Z",
       "pushed_at": "2026-07-29T03:28:34Z",
       "age_days": 357,
-      "star_velocity": 127.11,
+      "star_velocity": 127.12,
       "score": 59.9,
       "breakdown": {
         "momentum": 100,
@@ -9346,9 +9664,9 @@
       ],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T16:49:48.226Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 45233,
-      "stars_gained": 191
+      "stars_gained": 196
     },
     {
       "type": "candidate",
@@ -9366,7 +9684,7 @@
         "ai-agents"
       ],
       "language": "Python",
-      "stars": 667,
+      "stars": 668,
       "topics": [
         "agent-memory",
         "agent-skill",
@@ -9392,7 +9710,7 @@
       "created_at": "2026-06-15T06:28:04Z",
       "pushed_at": "2026-07-11T02:28:02Z",
       "age_days": 44,
-      "star_velocity": 15.17,
+      "star_velocity": 15.19,
       "score": 59.9,
       "breakdown": {
         "momentum": 60,
@@ -9413,9 +9731,9 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 665,
-      "stars_gained": 2
+      "stars_gained": 3
     },
     {
       "type": "candidate",
@@ -9475,7 +9793,7 @@
       ],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T16:49:48.226Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 37912,
       "stars_gained": 6
     },
@@ -9535,7 +9853,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 1178,
       "stars_gained": 1
     },
@@ -9606,7 +9924,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 3769,
       "stars_gained": 45
     },
@@ -9652,7 +9970,7 @@
       "created_at": "2026-02-01T07:16:15Z",
       "pushed_at": "2026-07-29T02:38:16Z",
       "age_days": 178,
-      "star_velocity": 260.49,
+      "star_velocity": 260.47,
       "score": 59.9,
       "breakdown": {
         "momentum": 100,
@@ -9673,7 +9991,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 46318,
       "stars_gained": 35
     },
@@ -9706,7 +10024,7 @@
       "created_at": "2026-05-04T06:24:37Z",
       "pushed_at": "2026-05-05T03:23:53Z",
       "age_days": 86,
-      "star_velocity": 42.28,
+      "star_velocity": 42.27,
       "score": 59.7,
       "breakdown": {
         "momentum": 82,
@@ -9726,7 +10044,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 3631,
       "stars_gained": 4
     },
@@ -9785,7 +10103,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 1019,
       "stars_gained": 0
     },
@@ -9805,7 +10123,7 @@
         "claude"
       ],
       "language": "TypeScript",
-      "stars": 25940,
+      "stars": 25941,
       "topics": [
         "agentmemory",
         "agents",
@@ -9845,9 +10163,9 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 25892,
-      "stars_gained": 48
+      "stars_gained": 49
     },
     {
       "type": "candidate",
@@ -9865,7 +10183,7 @@
         "cybersecurity"
       ],
       "language": "Python",
-      "stars": 26834,
+      "stars": 26837,
       "topics": [
         "ai-agents",
         "claude-code",
@@ -9912,9 +10230,9 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 26755,
-      "stars_gained": 79
+      "stars_gained": 82
     },
     {
       "type": "candidate",
@@ -10012,7 +10330,7 @@
       "created_at": "2026-06-01T08:25:21Z",
       "pushed_at": "2026-06-02T06:48:12Z",
       "age_days": 58,
-      "star_velocity": 23.56,
+      "star_velocity": 23.55,
       "score": 59.4,
       "breakdown": {
         "momentum": 70,
@@ -10032,7 +10350,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 1357,
       "stars_gained": 7
     },
@@ -10090,7 +10408,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 2164,
       "stars_gained": 5
     },
@@ -10149,7 +10467,7 @@
         "claude-desktop"
       ],
       "language": "TypeScript",
-      "stars": 1518,
+      "stars": 1519,
       "topics": [
         "ai-agents",
         "ai-tools",
@@ -10172,7 +10490,7 @@
       "created_at": "2026-05-24T04:22:22Z",
       "pushed_at": "2026-07-29T04:34:15Z",
       "age_days": 66,
-      "star_velocity": 22.98,
+      "star_velocity": 22.99,
       "score": 59.2,
       "breakdown": {
         "momentum": 69,
@@ -10193,9 +10511,9 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 1491,
-      "stars_gained": 27
+      "stars_gained": 28
     },
     {
       "type": "candidate",
@@ -10256,7 +10574,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 656,
       "stars_gained": 0
     },
@@ -10276,7 +10594,7 @@
         "claude"
       ],
       "language": "Python",
-      "stars": 39971,
+      "stars": 39973,
       "topics": [
         "academic-pipeline",
         "academic-writing",
@@ -10290,7 +10608,7 @@
       "created_at": "2026-02-26T06:31:01Z",
       "pushed_at": "2026-07-29T05:28:30Z",
       "age_days": 153,
-      "star_velocity": 261.29,
+      "star_velocity": 261.28,
       "score": 59.1,
       "breakdown": {
         "momentum": 100,
@@ -10310,9 +10628,9 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 39818,
-      "stars_gained": 153
+      "stars_gained": 155
     },
     {
       "type": "candidate",
@@ -10436,7 +10754,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 2683,
       "stars_gained": 20
     },
@@ -10456,7 +10774,7 @@
         "anthropic"
       ],
       "language": "TypeScript",
-      "stars": 33397,
+      "stars": 33411,
       "topics": [
         "a2a",
         "ai-agents",
@@ -10482,7 +10800,7 @@
       "created_at": "2026-02-13T12:38:31Z",
       "pushed_at": "2026-07-29T02:22:21Z",
       "age_days": 166,
-      "star_velocity": 201.52,
+      "star_velocity": 201.6,
       "score": 58.9,
       "breakdown": {
         "momentum": 100,
@@ -10505,9 +10823,9 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 32375,
-      "stars_gained": 1022
+      "stars_gained": 1036
     },
     {
       "type": "candidate",
@@ -10701,7 +11019,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 1181,
       "stars_gained": 3
     },
@@ -10764,7 +11082,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 7284,
       "stars_gained": 25
     },
@@ -10784,7 +11102,7 @@
         "framework"
       ],
       "language": "TypeScript",
-      "stars": 38455,
+      "stars": 38459,
       "topics": [
         "ai",
         "animation",
@@ -10801,7 +11119,7 @@
       "created_at": "2026-03-10T01:51:06Z",
       "pushed_at": "2026-07-29T05:58:00Z",
       "age_days": 141,
-      "star_velocity": 272.4,
+      "star_velocity": 272.41,
       "score": 58.6,
       "breakdown": {
         "momentum": 100,
@@ -10821,9 +11139,9 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 38173,
-      "stars_gained": 282
+      "stars_gained": 286
     },
     {
       "type": "candidate",
@@ -10866,7 +11184,7 @@
       ],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T16:49:48.226Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 7136,
       "stars_gained": 20
     },
@@ -10948,7 +11266,7 @@
         "ai-coding"
       ],
       "language": "Rust",
-      "stars": 3443,
+      "stars": 3444,
       "topics": [
         "agentic-coding",
         "ai",
@@ -10973,7 +11291,7 @@
       "created_at": "2026-03-23T19:48:59Z",
       "pushed_at": "2026-07-29T05:53:47Z",
       "age_days": 127,
-      "star_velocity": 27.02,
+      "star_velocity": 27.03,
       "score": 58.5,
       "breakdown": {
         "momentum": 72,
@@ -10994,9 +11312,9 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 3432,
-      "stars_gained": 11
+      "stars_gained": 12
     },
     {
       "type": "candidate",
@@ -11014,7 +11332,7 @@
         "claude-code"
       ],
       "language": "JavaScript",
-      "stars": 68711,
+      "stars": 68719,
       "topics": [
         "agent",
         "ai",
@@ -11033,7 +11351,7 @@
       "created_at": "2026-02-19T21:44:05Z",
       "pushed_at": "2026-07-23T16:01:24Z",
       "age_days": 159,
-      "star_velocity": 431.21,
+      "star_velocity": 431.23,
       "score": 58.5,
       "breakdown": {
         "momentum": 100,
@@ -11053,9 +11371,9 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 68371,
-      "stars_gained": 340
+      "stars_gained": 348
     },
     {
       "type": "candidate",
@@ -11188,7 +11506,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 2913,
       "stars_gained": 2
     },
@@ -11222,7 +11540,7 @@
       "created_at": "2026-04-14T06:21:51Z",
       "pushed_at": "2026-07-28T10:19:27Z",
       "age_days": 106,
-      "star_velocity": 45.52,
+      "star_velocity": 45.51,
       "score": 58.4,
       "breakdown": {
         "momentum": 83,
@@ -11242,7 +11560,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 4816,
       "stars_gained": 8
     },
@@ -11262,7 +11580,7 @@
         "book"
       ],
       "language": "Python",
-      "stars": 25146,
+      "stars": 25179,
       "topics": [
         "agent",
         "agent-memory",
@@ -11279,10 +11597,10 @@
         "reinforcement-learning"
       ],
       "created_at": "2025-09-09T02:41:44Z",
-      "pushed_at": "2026-07-29T05:55:43Z",
+      "pushed_at": "2026-07-29T06:02:09Z",
       "age_days": 323,
-      "star_velocity": 77.82,
-      "score": 58.3,
+      "star_velocity": 77.92,
+      "score": 58.4,
       "breakdown": {
         "momentum": 95,
         "freshness": 3,
@@ -11304,9 +11622,9 @@
       ],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T16:49:48.226Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 24212,
-      "stars_gained": 934
+      "stars_gained": 967
     },
     {
       "type": "candidate",
@@ -11342,7 +11660,7 @@
       "created_at": "2026-02-12T05:21:38Z",
       "pushed_at": "2026-05-21T23:33:07Z",
       "age_days": 167,
-      "star_velocity": 140.48,
+      "star_velocity": 140.47,
       "score": 58.2,
       "breakdown": {
         "momentum": 100,
@@ -11363,7 +11681,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 23430,
       "stars_gained": 34
     },
@@ -11420,7 +11738,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 1093,
       "stars_gained": 9
     },
@@ -11466,7 +11784,7 @@
       "created_at": "2026-05-27T05:46:25Z",
       "pushed_at": "2026-06-21T08:31:44Z",
       "age_days": 63,
-      "star_velocity": 16.78,
+      "star_velocity": 16.77,
       "score": 58.1,
       "breakdown": {
         "momentum": 62,
@@ -11487,7 +11805,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 1058,
       "stars_gained": 0
     },
@@ -11536,7 +11854,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 2964,
       "stars_gained": 0
     },
@@ -11556,7 +11874,7 @@
         "ai-agent"
       ],
       "language": "TypeScript",
-      "stars": 1513,
+      "stars": 1514,
       "topics": [
         "agent",
         "agent-skills",
@@ -11582,7 +11900,7 @@
       "created_at": "2026-05-10T19:42:32Z",
       "pushed_at": "2026-07-19T12:56:57Z",
       "age_days": 79,
-      "star_velocity": 19.05,
+      "star_velocity": 19.06,
       "score": 58,
       "breakdown": {
         "momentum": 65,
@@ -11603,9 +11921,9 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 1511,
-      "stars_gained": 2
+      "stars_gained": 3
     },
     {
       "type": "candidate",
@@ -11663,7 +11981,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 1708,
       "stars_gained": 32
     },
@@ -11683,7 +12001,7 @@
         "mcp"
       ],
       "language": "TypeScript",
-      "stars": 9086,
+      "stars": 9088,
       "topics": [
         "backlink-analysis",
         "google-search-console-mcp",
@@ -11696,7 +12014,7 @@
       "created_at": "2026-02-27T18:57:41Z",
       "pushed_at": "2026-07-23T21:44:55Z",
       "age_days": 151,
-      "star_velocity": 59.99,
+      "star_velocity": 60,
       "score": 57.9,
       "breakdown": {
         "momentum": 89,
@@ -11715,9 +12033,9 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 8776,
-      "stars_gained": 310
+      "stars_gained": 312
     },
     {
       "type": "candidate",
@@ -11761,7 +12079,7 @@
       "created_at": "2026-05-25T12:52:28Z",
       "pushed_at": "2026-07-16T16:45:46Z",
       "age_days": 65,
-      "star_velocity": 16.6,
+      "star_velocity": 16.59,
       "score": 57.8,
       "breakdown": {
         "momentum": 62,
@@ -11781,7 +12099,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 1072,
       "stars_gained": 2
     },
@@ -11801,7 +12119,7 @@
         "claude"
       ],
       "language": "Python",
-      "stars": 2084,
+      "stars": 2085,
       "topics": [
         "agent",
         "ai-agents",
@@ -11844,9 +12162,9 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 2062,
-      "stars_gained": 22
+      "stars_gained": 23
     },
     {
       "type": "candidate",
@@ -11864,7 +12182,7 @@
         "local-ai"
       ],
       "language": "Rust",
-      "stars": 27266,
+      "stars": 27269,
       "topics": [
         "ai",
         "ai-meeting-assistant",
@@ -11890,7 +12208,7 @@
       "created_at": "2024-12-26T12:52:14Z",
       "pushed_at": "2026-06-05T13:53:17Z",
       "age_days": 580,
-      "star_velocity": 47.03,
+      "star_velocity": 47.04,
       "score": 57.8,
       "breakdown": {
         "momentum": 84,
@@ -11917,9 +12235,9 @@
       ],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T16:49:48.226Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 27163,
-      "stars_gained": 103
+      "stars_gained": 106
     },
     {
       "type": "candidate",
@@ -11982,7 +12300,7 @@
       ],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T16:49:48.226Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 34861,
       "stars_gained": 18
     },
@@ -12002,7 +12320,7 @@
         "automation"
       ],
       "language": "Python",
-      "stars": 61948,
+      "stars": 61957,
       "topics": [
         "agent-infrastructure",
         "ai-agent",
@@ -12025,7 +12343,7 @@
       "created_at": "2026-02-24T02:10:24Z",
       "pushed_at": "2026-07-25T10:20:07Z",
       "age_days": 155,
-      "star_velocity": 399.25,
+      "star_velocity": 399.29,
       "score": 57.7,
       "breakdown": {
         "momentum": 100,
@@ -12046,9 +12364,9 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 61321,
-      "stars_gained": 627
+      "stars_gained": 636
     },
     {
       "type": "candidate",
@@ -12172,7 +12490,7 @@
       ],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T16:49:48.226Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 33924,
       "stars_gained": 14
     },
@@ -12192,7 +12510,7 @@
         "agent-protocol"
       ],
       "language": "JavaScript",
-      "stars": 8879,
+      "stars": 8880,
       "topics": [
         "a2a",
         "agent-evolution",
@@ -12239,7 +12557,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 8880,
       "stars_gained": 0
     },
@@ -12295,7 +12613,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 834,
       "stars_gained": 0
     },
@@ -12351,7 +12669,7 @@
       ],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T16:49:48.226Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 17046,
       "stars_gained": 10
     },
@@ -12385,7 +12703,7 @@
       "created_at": "2026-02-20T08:22:45Z",
       "pushed_at": "2026-07-28T23:22:46Z",
       "age_days": 159,
-      "star_velocity": 53.61,
+      "star_velocity": 53.6,
       "score": 56.9,
       "breakdown": {
         "momentum": 87,
@@ -12406,7 +12724,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 8505,
       "stars_gained": 13
     },
@@ -12454,7 +12772,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 1809,
       "stars_gained": 6
     },
@@ -12517,7 +12835,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 6164,
       "stars_gained": 14
     },
@@ -12585,7 +12903,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 4461,
       "stars_gained": 15
     },
@@ -12605,7 +12923,7 @@
         "claude"
       ],
       "language": "Shell",
-      "stars": 5402,
+      "stars": 5403,
       "topics": [
         "ai",
         "autonomous-agent",
@@ -12641,9 +12959,9 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 5402,
-      "stars_gained": 0
+      "stars_gained": 1
     },
     {
       "type": "candidate",
@@ -12675,7 +12993,7 @@
       ],
       "created_at": "2026-03-31T18:00:16Z",
       "pushed_at": "2026-06-19T05:47:21Z",
-      "age_days": 119,
+      "age_days": 120,
       "star_velocity": 33.65,
       "score": 56.6,
       "breakdown": {
@@ -12698,7 +13016,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 4014,
       "stars_gained": 7
     },
@@ -12737,7 +13055,7 @@
         "technical-debt"
       ],
       "created_at": "2026-03-23T09:12:28Z",
-      "pushed_at": "2026-07-29T05:44:13Z",
+      "pushed_at": "2026-07-29T06:10:12Z",
       "age_days": 128,
       "star_velocity": 33.4,
       "score": 56.5,
@@ -12758,7 +13076,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 4256,
       "stars_gained": 15
     },
@@ -12816,7 +13134,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 1802,
       "stars_gained": 6
     },
@@ -12836,7 +13154,7 @@
         "design"
       ],
       "language": "Python",
-      "stars": 6684,
+      "stars": 6685,
       "topics": [
         "claude",
         "claude-code",
@@ -12870,9 +13188,9 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 6646,
-      "stars_gained": 38
+      "stars_gained": 39
     },
     {
       "type": "candidate",
@@ -12904,13 +13222,13 @@
         "worst-case-optimal-join"
       ],
       "created_at": "2026-07-15T06:44:45Z",
-      "pushed_at": "2026-07-28T23:09:08Z",
+      "pushed_at": "2026-07-29T06:10:07Z",
       "age_days": 14,
-      "star_velocity": 1.46,
-      "score": 56.5,
+      "star_velocity": 1.43,
+      "score": 56.3,
       "breakdown": {
-        "momentum": 20,
-        "freshness": 73,
+        "momentum": 19,
+        "freshness": 72,
         "novelty": 89,
         "substance": 90,
         "obscurity": 35
@@ -12930,7 +13248,7 @@
       ],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T23:16:36.398Z",
-      "last_seen": "2026-07-28T23:16:36.398Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 20,
       "stars_gained": 0
     },
@@ -12971,7 +13289,7 @@
       "created_at": "2026-02-13T04:06:19Z",
       "pushed_at": "2026-07-27T00:18:09Z",
       "age_days": 166,
-      "star_velocity": 35.36,
+      "star_velocity": 35.35,
       "score": 56.3,
       "breakdown": {
         "momentum": 78,
@@ -12992,7 +13310,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 5863,
       "stars_gained": 9
     },
@@ -13028,7 +13346,7 @@
       "created_at": "2026-03-31T12:25:40Z",
       "pushed_at": "2026-07-12T09:37:30Z",
       "age_days": 120,
-      "star_velocity": 27.64,
+      "star_velocity": 27.63,
       "score": 56.3,
       "breakdown": {
         "momentum": 73,
@@ -13050,7 +13368,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 3302,
       "stars_gained": 7
     },
@@ -13122,7 +13440,7 @@
       ],
       "skills_extracted": 0,
       "first_seen": "2026-07-29T03:41:49.825Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 564,
       "stars_gained": 0
     },
@@ -13177,7 +13495,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 1842,
       "stars_gained": 3
     },
@@ -13243,7 +13561,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 3671,
       "stars_gained": 23
     },
@@ -13379,7 +13697,7 @@
       "created_at": "2026-04-13T05:03:06Z",
       "pushed_at": "2026-05-02T14:01:06Z",
       "age_days": 107,
-      "star_velocity": 19.96,
+      "star_velocity": 19.95,
       "score": 55.8,
       "breakdown": {
         "momentum": 66,
@@ -13399,7 +13717,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 2133,
       "stars_gained": 3
     },
@@ -13465,7 +13783,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 3774,
       "stars_gained": 2
     },
@@ -13519,7 +13837,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 3289,
       "stars_gained": 3
     },
@@ -13539,7 +13857,7 @@
         "ai-agent-security"
       ],
       "language": "Rust",
-      "stars": 3254,
+      "stars": 3255,
       "topics": [
         "agent-sandbox",
         "agent-security",
@@ -13560,7 +13878,7 @@
       "created_at": "2026-01-31T09:25:45Z",
       "pushed_at": "2026-07-28T15:20:25Z",
       "age_days": 179,
-      "star_velocity": 18.19,
+      "star_velocity": 18.2,
       "score": 55.8,
       "breakdown": {
         "momentum": 64,
@@ -13581,9 +13899,9 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 3181,
-      "stars_gained": 73
+      "stars_gained": 74
     },
     {
       "type": "candidate",
@@ -13639,7 +13957,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 1084,
       "stars_gained": 1
     },
@@ -13659,7 +13977,7 @@
         "claude-code"
       ],
       "language": "Swift",
-      "stars": 1557,
+      "stars": 1558,
       "topics": [
         "accessibility",
         "ai-agent",
@@ -13685,7 +14003,7 @@
       "created_at": "2026-04-17T06:51:32Z",
       "pushed_at": "2026-07-27T06:33:26Z",
       "age_days": 103,
-      "star_velocity": 15.12,
+      "star_velocity": 15.13,
       "score": 55.6,
       "breakdown": {
         "momentum": 60,
@@ -13705,9 +14023,9 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 1548,
-      "stars_gained": 9
+      "stars_gained": 10
     },
     {
       "type": "candidate",
@@ -13750,7 +14068,7 @@
       "created_at": "2026-03-13T11:14:39Z",
       "pushed_at": "2026-07-04T06:49:18Z",
       "age_days": 138,
-      "star_velocity": 221.32,
+      "star_velocity": 221.31,
       "score": 55.6,
       "breakdown": {
         "momentum": 100,
@@ -13771,7 +14089,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 30401,
       "stars_gained": 93
     },
@@ -13832,7 +14150,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 2106,
       "stars_gained": 13
     },
@@ -13954,7 +14272,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 1142,
       "stars_gained": 0
     },
@@ -13990,7 +14308,7 @@
       "created_at": "2026-05-11T11:19:40Z",
       "pushed_at": "2026-07-29T03:35:44Z",
       "age_days": 79,
-      "star_velocity": 13.04,
+      "star_velocity": 13.03,
       "score": 55.3,
       "breakdown": {
         "momentum": 57,
@@ -14011,7 +14329,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 1028,
       "stars_gained": 0
     },
@@ -14078,7 +14396,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 2081,
       "stars_gained": 7
     },
@@ -14096,7 +14414,7 @@
       "stars": 110,
       "topics": [],
       "created_at": "2026-06-19T10:36:19Z",
-      "pushed_at": "2026-07-29T05:55:10Z",
+      "pushed_at": "2026-07-29T06:09:50Z",
       "age_days": 40,
       "star_velocity": 2.76,
       "score": 55.3,
@@ -14111,10 +14429,7 @@
         "Under the radar"
       ],
       "ai_signals": [
-        "llm",
-        "ai",
-        "autonomous",
-        "reasoning"
+        "agentic"
       ],
       "doc_files": [
         "README.md",
@@ -14124,7 +14439,7 @@
       ],
       "skills_extracted": 2,
       "first_seen": "2026-07-29T05:59:38.299Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 110,
       "stars_gained": 0
     },
@@ -14185,7 +14500,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 2314,
       "stars_gained": 0
     },
@@ -14238,9 +14553,69 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 3161,
       "stars_gained": 3
+    },
+    {
+      "type": "candidate",
+      "id": "1281030225",
+      "full_name": "robocurve/inspect-robots",
+      "owner": "robocurve",
+      "name": "inspect-robots",
+      "url": "https://github.com/robocurve/inspect-robots",
+      "description": "Open source evals for physical AI. Run any LLM/VLA on any arm/humanoid against any real/sim benchmark.",
+      "hook": "Open source evals for physical AI. Run any LLM/VLA on any arm/humanoid against any real/sim benchmark.",
+      "tags": [
+        "benchmark",
+        "embodied-ai",
+        "evaluation",
+        "physical-ai"
+      ],
+      "language": "Python",
+      "stars": 92,
+      "topics": [
+        "benchmark",
+        "embodied-ai",
+        "evaluation",
+        "physical-ai",
+        "rerun",
+        "robotics",
+        "vision-language-action",
+        "vla"
+      ],
+      "created_at": "2026-06-26T06:55:29Z",
+      "pushed_at": "2026-07-29T06:12:29Z",
+      "age_days": 33,
+      "star_velocity": 2.79,
+      "score": 55.1,
+      "breakdown": {
+        "momentum": 29,
+        "freshness": 56,
+        "novelty": 63,
+        "substance": 100,
+        "obscurity": 78
+      },
+      "lanes": [
+        "Under the radar"
+      ],
+      "ai_signals": [
+        "llm",
+        "ml",
+        "eval",
+        "benchmark"
+      ],
+      "doc_files": [
+        "README.md",
+        "CLAUDE.md",
+        "docs/cookbooks/gr00t-on-yam.md",
+        "docs/guide/adapters.md"
+      ],
+      "skills_extracted": 1,
+      "first_seen": "2026-07-29T06:14:24.547Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
+      "stars_at_first_seen": 92,
+      "stars_gained": 0
     },
     {
       "type": "candidate",
@@ -14305,7 +14680,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 550,
       "stars_gained": 7
     },
@@ -14364,7 +14739,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 1479,
       "stars_gained": 10
     },
@@ -14384,7 +14759,7 @@
         "collective-intelligence"
       ],
       "language": "Python",
-      "stars": 2283,
+      "stars": 2284,
       "topics": [
         "agent",
         "agentic-ai",
@@ -14403,7 +14778,7 @@
       "created_at": "2026-04-10T03:25:47Z",
       "pushed_at": "2026-06-02T13:48:04Z",
       "age_days": 110,
-      "star_velocity": 20.73,
+      "star_velocity": 20.74,
       "score": 54.7,
       "breakdown": {
         "momentum": 67,
@@ -14423,9 +14798,9 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 2269,
-      "stars_gained": 14
+      "stars_gained": 15
     },
     {
       "type": "candidate",
@@ -14541,7 +14916,7 @@
       ],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T16:49:48.226Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 24897,
       "stars_gained": 29
     },
@@ -14577,7 +14952,7 @@
         "s3"
       ],
       "created_at": "2023-11-23T13:45:10Z",
-      "pushed_at": "2026-07-29T05:56:10Z",
+      "pushed_at": "2026-07-29T06:13:56Z",
       "age_days": 979,
       "star_velocity": 31.02,
       "score": 54.7,
@@ -14604,7 +14979,7 @@
       ],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T16:49:48.226Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 30331,
       "stars_gained": 29
     },
@@ -14658,7 +15033,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 3202,
       "stars_gained": 11
     },
@@ -14827,9 +15202,9 @@
         "tyepscript"
       ],
       "created_at": "2026-02-12T09:56:20Z",
-      "pushed_at": "2026-07-29T05:52:09Z",
+      "pushed_at": "2026-07-29T06:03:21Z",
       "age_days": 167,
-      "star_velocity": 34.26,
+      "star_velocity": 34.25,
       "score": 54.5,
       "breakdown": {
         "momentum": 77,
@@ -14850,64 +15225,9 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 5704,
       "stars_gained": 11
-    },
-    {
-      "type": "candidate",
-      "id": "1179124545",
-      "full_name": "NateBJones-Projects/OB1",
-      "owner": "NateBJones-Projects",
-      "name": "OB1",
-      "url": "https://github.com/NateBJones-Projects/OB1",
-      "description": "Open Brain — The infrastructure layer for your thinking. One database, one AI gateway, one chat channel — any AI plugs in. No middleware, no SaaS.",
-      "hook": "Open Brain — The infrastructure layer for your thinking. One database, one AI gateway, one chat channel — any AI plugs in.",
-      "tags": [
-        "ai-agents",
-        "mcp",
-        "memory-layer",
-        "memory-layer-for-ai"
-      ],
-      "language": "TypeScript",
-      "stars": 4280,
-      "topics": [
-        "ai-agents",
-        "mcp",
-        "memory-layer",
-        "memory-layer-for-ai",
-        "open-brain",
-        "open-source",
-        "personal-knowledge",
-        "personal-knowledge-management",
-        "supabase"
-      ],
-      "created_at": "2026-03-11T17:59:59Z",
-      "pushed_at": "2026-07-28T10:10:55Z",
-      "age_days": 139,
-      "star_velocity": 30.68,
-      "score": 54.5,
-      "breakdown": {
-        "momentum": 75,
-        "freshness": 23,
-        "novelty": 63,
-        "substance": 35,
-        "obscurity": 52
-      },
-      "lanes": [
-        "MCP & tool use"
-      ],
-      "ai_signals": [
-        "topic:ai-agents",
-        "ai",
-        "ai-"
-      ],
-      "doc_files": [],
-      "skills_extracted": 0,
-      "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
-      "stars_at_first_seen": 4274,
-      "stars_gained": 6
     },
     {
       "type": "candidate",
@@ -14973,6 +15293,61 @@
     },
     {
       "type": "candidate",
+      "id": "1179124545",
+      "full_name": "NateBJones-Projects/OB1",
+      "owner": "NateBJones-Projects",
+      "name": "OB1",
+      "url": "https://github.com/NateBJones-Projects/OB1",
+      "description": "Open Brain — The infrastructure layer for your thinking. One database, one AI gateway, one chat channel — any AI plugs in. No middleware, no SaaS.",
+      "hook": "Open Brain — The infrastructure layer for your thinking. One database, one AI gateway, one chat channel — any AI plugs in.",
+      "tags": [
+        "ai-agents",
+        "mcp",
+        "memory-layer",
+        "memory-layer-for-ai"
+      ],
+      "language": "TypeScript",
+      "stars": 4280,
+      "topics": [
+        "ai-agents",
+        "mcp",
+        "memory-layer",
+        "memory-layer-for-ai",
+        "open-brain",
+        "open-source",
+        "personal-knowledge",
+        "personal-knowledge-management",
+        "supabase"
+      ],
+      "created_at": "2026-03-11T17:59:59Z",
+      "pushed_at": "2026-07-28T10:10:55Z",
+      "age_days": 140,
+      "star_velocity": 30.68,
+      "score": 54.4,
+      "breakdown": {
+        "momentum": 75,
+        "freshness": 23,
+        "novelty": 63,
+        "substance": 35,
+        "obscurity": 52
+      },
+      "lanes": [
+        "MCP & tool use"
+      ],
+      "ai_signals": [
+        "topic:ai-agents",
+        "ai",
+        "ai-"
+      ],
+      "doc_files": [],
+      "skills_extracted": 0,
+      "first_seen": "2026-07-28T06:22:27.003Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
+      "stars_at_first_seen": 4274,
+      "stars_gained": 6
+    },
+    {
+      "type": "candidate",
       "id": "1151411061",
       "full_name": "op7418/CodePilot",
       "owner": "op7418",
@@ -14987,7 +15362,7 @@
         "claude-code"
       ],
       "language": "TypeScript",
-      "stars": 6212,
+      "stars": 6214,
       "topics": [
         "ai",
         "anthropic",
@@ -15021,9 +15396,9 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 6199,
-      "stars_gained": 13
+      "stars_gained": 15
     },
     {
       "type": "candidate",
@@ -15076,7 +15451,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 2234,
       "stars_gained": 6
     },
@@ -15258,12 +15633,12 @@
       "hook": "AI agent toolkit: unified LLM API, agent loop, TUI, coding agent CLI",
       "tags": [],
       "language": "TypeScript",
-      "stars": 79879,
+      "stars": 79894,
       "topics": [],
       "created_at": "2025-08-09T14:03:50Z",
       "pushed_at": "2026-07-28T16:51:57Z",
       "age_days": 354,
-      "star_velocity": 225.86,
+      "star_velocity": 225.9,
       "score": 53.8,
       "breakdown": {
         "momentum": 100,
@@ -15285,9 +15660,9 @@
       ],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T16:49:48.226Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 79582,
-      "stars_gained": 297
+      "stars_gained": 312
     },
     {
       "type": "candidate",
@@ -15305,7 +15680,7 @@
         "claude"
       ],
       "language": "Swift",
-      "stars": 596,
+      "stars": 597,
       "topics": [
         "agent",
         "ai-agents",
@@ -15325,8 +15700,8 @@
       "created_at": "2026-05-08T08:19:34Z",
       "pushed_at": "2026-07-29T03:01:03Z",
       "age_days": 82,
-      "star_velocity": 7.28,
-      "score": 53.6,
+      "star_velocity": 7.29,
+      "score": 53.7,
       "breakdown": {
         "momentum": 46,
         "freshness": 36,
@@ -15346,9 +15721,9 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 595,
-      "stars_gained": 1
+      "stars_gained": 2
     },
     {
       "type": "candidate",
@@ -15402,7 +15777,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 5093,
       "stars_gained": 27
     },
@@ -15440,7 +15815,7 @@
       "created_at": "2026-03-08T10:38:52Z",
       "pushed_at": "2026-07-27T18:06:41Z",
       "age_days": 143,
-      "star_velocity": 20.48,
+      "star_velocity": 20.47,
       "score": 53.6,
       "breakdown": {
         "momentum": 67,
@@ -15461,7 +15836,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 2902,
       "stars_gained": 22
     },
@@ -15823,7 +16198,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 1513,
       "stars_gained": 2
     },
@@ -15859,7 +16234,7 @@
       "created_at": "2026-04-01T19:54:54Z",
       "pushed_at": "2026-06-27T09:42:27Z",
       "age_days": 118,
-      "star_velocity": 13.38,
+      "star_velocity": 13.37,
       "score": 53.3,
       "breakdown": {
         "momentum": 58,
@@ -15881,7 +16256,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 1573,
       "stars_gained": 11
     },
@@ -15933,7 +16308,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 467,
       "stars_gained": 3
     },
@@ -16042,7 +16417,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 1426,
       "stars_gained": 4
     },
@@ -16098,7 +16473,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 5381,
       "stars_gained": 6
     },
@@ -16161,7 +16536,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 3485,
       "stars_gained": 4
     },
@@ -16279,7 +16654,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 3369,
       "stars_gained": 14
     },
@@ -16347,7 +16722,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 3156,
       "stars_gained": 3
     },
@@ -16392,7 +16767,7 @@
       "created_at": "2026-02-25T02:47:19Z",
       "pushed_at": "2026-04-26T13:40:30Z",
       "age_days": 154,
-      "star_velocity": 20.98,
+      "star_velocity": 20.97,
       "score": 53,
       "breakdown": {
         "momentum": 67,
@@ -16412,7 +16787,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 3230,
       "stars_gained": 3
     },
@@ -16476,7 +16851,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 1231,
       "stars_gained": 1
     },
@@ -16534,7 +16909,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 1651,
       "stars_gained": 7
     },
@@ -16596,7 +16971,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 1337,
       "stars_gained": 9
     },
@@ -16689,7 +17064,7 @@
         "code-analysis"
       ],
       "language": "TypeScript",
-      "stars": 1255,
+      "stars": 1256,
       "topics": [
         "ai",
         "claude",
@@ -16708,7 +17083,7 @@
       ],
       "created_at": "2026-04-04T18:10:16Z",
       "pushed_at": "2026-07-27T13:30:50Z",
-      "age_days": 115,
+      "age_days": 116,
       "star_velocity": 10.87,
       "score": 52.6,
       "breakdown": {
@@ -16730,9 +17105,9 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 1253,
-      "stars_gained": 2
+      "stars_gained": 3
     },
     {
       "type": "candidate",
@@ -16792,7 +17167,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 584,
       "stars_gained": 2
     },
@@ -16869,7 +17244,7 @@
         "esp32"
       ],
       "language": "Rust",
-      "stars": 87350,
+      "stars": 87351,
       "topics": [
         "awesome",
         "claude",
@@ -16915,9 +17290,9 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 87040,
-      "stars_gained": 310
+      "stars_gained": 311
     },
     {
       "type": "candidate",
@@ -16975,7 +17350,7 @@
         "codex"
       ],
       "language": "TypeScript",
-      "stars": 1279,
+      "stars": 1280,
       "topics": [
         "agent-orchestration",
         "ai",
@@ -16993,7 +17368,7 @@
       "created_at": "2026-04-02T01:49:14Z",
       "pushed_at": "2026-07-28T06:24:04Z",
       "age_days": 118,
-      "star_velocity": 10.82,
+      "star_velocity": 10.83,
       "score": 52.4,
       "breakdown": {
         "momentum": 54,
@@ -17012,9 +17387,9 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 1278,
-      "stars_gained": 1
+      "stars_gained": 2
     },
     {
       "type": "candidate",
@@ -17131,7 +17506,7 @@
       "created_at": "2026-02-07T13:17:25Z",
       "pushed_at": "2026-05-13T21:40:54Z",
       "age_days": 172,
-      "star_velocity": 21.95,
+      "star_velocity": 21.94,
       "score": 52.3,
       "breakdown": {
         "momentum": 68,
@@ -17152,7 +17527,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 3760,
       "stars_gained": 8
     },
@@ -17255,7 +17630,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 1167,
       "stars_gained": 0
     },
@@ -17322,7 +17697,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 1115,
       "stars_gained": 6
     },
@@ -17444,7 +17819,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 813,
       "stars_gained": 4
     },
@@ -17527,7 +17902,7 @@
         "code-analysis"
       ],
       "language": "Go",
-      "stars": 985,
+      "stars": 986,
       "topics": [
         "ai-tools",
         "antigravity",
@@ -17574,9 +17949,9 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 973,
-      "stars_gained": 12
+      "stars_gained": 13
     },
     {
       "type": "candidate",
@@ -17625,7 +18000,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 3532,
       "stars_gained": 14
     },
@@ -17747,73 +18122,6 @@
     },
     {
       "type": "candidate",
-      "id": "1198068829",
-      "full_name": "MioMioOS/MioIsland",
-      "owner": "MioMioOS",
-      "name": "MioIsland",
-      "url": "https://github.com/MioMioOS/MioIsland",
-      "description": "macOS Dynamic Island for AI coding agents. Monitor, approve, and jump to Claude Code sessions from the notch.",
-      "hook": "macOS Dynamic Island for AI coding agents. Monitor, approve, and jump to Claude Code sessions from the notch.",
-      "tags": [
-        "ai-coding",
-        "anthropic",
-        "claude",
-        "claude-code"
-      ],
-      "language": "Swift",
-      "stars": 521,
-      "topics": [
-        "ai-coding",
-        "anthropic",
-        "claude",
-        "claude-code",
-        "coding-agent",
-        "developer-tools",
-        "dynamic-island",
-        "macos",
-        "menubar",
-        "notch",
-        "productivity",
-        "swift",
-        "swiftui",
-        "vibe-coding"
-      ],
-      "created_at": "2026-04-01T05:10:53Z",
-      "pushed_at": "2026-07-13T13:41:49Z",
-      "age_days": 119,
-      "star_velocity": 4.38,
-      "score": 51.5,
-      "breakdown": {
-        "momentum": 37,
-        "freshness": 27,
-        "novelty": 63,
-        "substance": 80,
-        "obscurity": 99
-      },
-      "lanes": [
-        "Devtools"
-      ],
-      "ai_signals": [
-        "topic:claude",
-        "claude",
-        "ai",
-        "ai-"
-      ],
-      "doc_files": [
-        "README.md",
-        "docs/DEVELOPER-SETUP.md",
-        "docs/RELEASE-GUIDE.md",
-        "docs/qa/notch-customization.md",
-        "docs/themes/README.md"
-      ],
-      "skills_extracted": 0,
-      "first_seen": "2026-07-29T03:41:49.825Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
-      "stars_at_first_seen": 521,
-      "stars_gained": 0
-    },
-    {
-      "type": "candidate",
       "id": "1283231201",
       "full_name": "Eilodon/CALM",
       "owner": "Eilodon",
@@ -17880,6 +18188,73 @@
     },
     {
       "type": "candidate",
+      "id": "1198068829",
+      "full_name": "MioMioOS/MioIsland",
+      "owner": "MioMioOS",
+      "name": "MioIsland",
+      "url": "https://github.com/MioMioOS/MioIsland",
+      "description": "macOS Dynamic Island for AI coding agents. Monitor, approve, and jump to Claude Code sessions from the notch.",
+      "hook": "macOS Dynamic Island for AI coding agents. Monitor, approve, and jump to Claude Code sessions from the notch.",
+      "tags": [
+        "ai-coding",
+        "anthropic",
+        "claude",
+        "claude-code"
+      ],
+      "language": "Swift",
+      "stars": 521,
+      "topics": [
+        "ai-coding",
+        "anthropic",
+        "claude",
+        "claude-code",
+        "coding-agent",
+        "developer-tools",
+        "dynamic-island",
+        "macos",
+        "menubar",
+        "notch",
+        "productivity",
+        "swift",
+        "swiftui",
+        "vibe-coding"
+      ],
+      "created_at": "2026-04-01T05:10:53Z",
+      "pushed_at": "2026-07-13T13:41:49Z",
+      "age_days": 119,
+      "star_velocity": 4.38,
+      "score": 51.4,
+      "breakdown": {
+        "momentum": 37,
+        "freshness": 27,
+        "novelty": 63,
+        "substance": 80,
+        "obscurity": 99
+      },
+      "lanes": [
+        "Devtools"
+      ],
+      "ai_signals": [
+        "topic:claude",
+        "claude",
+        "ai",
+        "ai-"
+      ],
+      "doc_files": [
+        "README.md",
+        "docs/DEVELOPER-SETUP.md",
+        "docs/RELEASE-GUIDE.md",
+        "docs/qa/notch-customization.md",
+        "docs/themes/README.md"
+      ],
+      "skills_extracted": 0,
+      "first_seen": "2026-07-29T03:41:49.825Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
+      "stars_at_first_seen": 521,
+      "stars_gained": 0
+    },
+    {
+      "type": "candidate",
       "id": "1225427533",
       "full_name": "regent-vcs/re_gent",
       "owner": "regent-vcs",
@@ -17926,7 +18301,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 784,
       "stars_gained": 0
     },
@@ -18035,7 +18410,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 484,
       "stars_gained": 1
     },
@@ -18156,7 +18531,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 707,
       "stars_gained": 2
     },
@@ -18213,7 +18588,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 719,
       "stars_gained": 16
     },
@@ -18275,7 +18650,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 487,
       "stars_gained": 0
     },
@@ -18494,7 +18869,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 565,
       "stars_gained": 0
     },
@@ -18546,7 +18921,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 6116,
       "stars_gained": 34
     },
@@ -18601,7 +18976,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 653,
       "stars_gained": 1
     },
@@ -18660,7 +19035,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 1697,
       "stars_gained": 10
     },
@@ -18709,7 +19084,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 719,
       "stars_gained": 7
     },
@@ -18765,7 +19140,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 2702,
       "stars_gained": 4
     },
@@ -18800,7 +19175,7 @@
       "created_at": "2026-02-07T13:03:57Z",
       "pushed_at": "2026-05-07T02:55:44Z",
       "age_days": 172,
-      "star_velocity": 18.42,
+      "star_velocity": 18.41,
       "score": 50.6,
       "breakdown": {
         "momentum": 64,
@@ -18821,7 +19196,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 3159,
       "stars_gained": 3
     },
@@ -18885,7 +19260,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 1533,
       "stars_gained": 0
     },
@@ -19080,7 +19455,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 716,
       "stars_gained": 3
     },
@@ -19127,7 +19502,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 3902,
       "stars_gained": 1
     },
@@ -19194,7 +19569,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 814,
       "stars_gained": 6
     },
@@ -19255,7 +19630,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 1415,
       "stars_gained": 0
     },
@@ -19379,7 +19754,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 629,
       "stars_gained": 3
     },
@@ -19418,7 +19793,7 @@
       "created_at": "2026-03-21T07:28:38Z",
       "pushed_at": "2026-07-27T02:14:22Z",
       "age_days": 130,
-      "star_velocity": 17.59,
+      "star_velocity": 17.58,
       "score": 49.4,
       "breakdown": {
         "momentum": 63,
@@ -19439,7 +19814,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 2278,
       "stars_gained": 7
     },
@@ -19497,7 +19872,7 @@
       ],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T16:49:48.226Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 34957,
       "stars_gained": 19
     },
@@ -19534,7 +19909,7 @@
       "created_at": "2026-05-05T08:14:44Z",
       "pushed_at": "2026-07-28T08:38:43Z",
       "age_days": 85,
-      "star_velocity": 15.75,
+      "star_velocity": 15.74,
       "score": 49.1,
       "breakdown": {
         "momentum": 61,
@@ -19555,7 +19930,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 1318,
       "stars_gained": 19
     },
@@ -19601,7 +19976,7 @@
       "created_at": "2026-04-21T22:53:05Z",
       "pushed_at": "2026-07-28T10:40:26Z",
       "age_days": 98,
-      "star_velocity": 4.43,
+      "star_velocity": 4.42,
       "score": 49.1,
       "breakdown": {
         "momentum": 37,
@@ -19620,7 +19995,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 433,
       "stars_gained": 2
     },
@@ -19733,7 +20108,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 570,
       "stars_gained": 9
     },
@@ -19795,7 +20170,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 381,
       "stars_gained": 6
     },
@@ -19850,7 +20225,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 5466,
       "stars_gained": 12
     },
@@ -20008,7 +20383,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 5061,
       "stars_gained": 16
     },
@@ -20040,7 +20415,7 @@
         "typescript"
       ],
       "created_at": "2026-06-16T23:16:55Z",
-      "pushed_at": "2026-07-29T05:58:27Z",
+      "pushed_at": "2026-07-29T06:12:15Z",
       "age_days": 42,
       "star_velocity": 1.23,
       "score": 48.4,
@@ -20068,7 +20443,7 @@
       ],
       "skills_extracted": 0,
       "first_seen": "2026-07-29T05:59:38.299Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 52,
       "stars_gained": 0
     },
@@ -20088,7 +20463,7 @@
         "architecture-decision-records"
       ],
       "language": "Vue",
-      "stars": 1956,
+      "stars": 1957,
       "topics": [
         "ai-agents",
         "ai-coding",
@@ -20114,7 +20489,7 @@
       "created_at": "2026-05-23T02:44:43Z",
       "pushed_at": "2026-07-26T13:05:49Z",
       "age_days": 67,
-      "star_velocity": 29.14,
+      "star_velocity": 29.15,
       "score": 48.2,
       "breakdown": {
         "momentum": 74,
@@ -20135,9 +20510,9 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 1950,
-      "stars_gained": 6
+      "stars_gained": 7
     },
     {
       "type": "candidate",
@@ -20195,7 +20570,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 456,
       "stars_gained": 9
     },
@@ -20262,7 +20637,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 440,
       "stars_gained": 0
     },
@@ -20465,7 +20840,7 @@
         "llm-inference"
       ],
       "language": "Rust",
-      "stars": 7614,
+      "stars": 7616,
       "topics": [
         "diffusion",
         "disaggregated-serving",
@@ -20479,7 +20854,7 @@
         "vllm"
       ],
       "created_at": "2025-03-03T18:40:07Z",
-      "pushed_at": "2026-07-29T05:59:18Z",
+      "pushed_at": "2026-07-29T06:08:30Z",
       "age_days": 512,
       "star_velocity": 14.86,
       "score": 47.7,
@@ -20505,9 +20880,9 @@
       ],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T16:49:48.226Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 7608,
-      "stars_gained": 6
+      "stars_gained": 8
     },
     {
       "type": "candidate",
@@ -20561,7 +20936,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 3282,
       "stars_gained": 16
     },
@@ -20644,7 +21019,7 @@
       "created_at": "2026-05-04T22:18:51Z",
       "pushed_at": "2026-07-28T03:16:16Z",
       "age_days": 85,
-      "star_velocity": 57.81,
+      "star_velocity": 57.8,
       "score": 47,
       "breakdown": {
         "momentum": 88,
@@ -20667,7 +21042,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 4907,
       "stars_gained": 25
     },
@@ -20734,7 +21109,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 517,
       "stars_gained": 0
     },
@@ -20856,7 +21231,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 679,
       "stars_gained": 2
     },
@@ -20923,8 +21298,54 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 370,
+      "stars_gained": 0
+    },
+    {
+      "type": "candidate",
+      "id": "1295070151",
+      "full_name": "pleaseai/shunt",
+      "owner": "pleaseai",
+      "name": "shunt",
+      "url": "https://github.com/pleaseai/shunt",
+      "description": "Shunt Claude Code agents to any model — selective, per-agent inference-layer routing proxy",
+      "hook": "Shunt Claude Code agents to any model — selective, per-agent inference-layer routing proxy",
+      "tags": [],
+      "language": "Rust",
+      "stars": 9,
+      "topics": [],
+      "created_at": "2026-07-09T10:32:04Z",
+      "pushed_at": "2026-07-29T06:12:04Z",
+      "age_days": 20,
+      "star_velocity": 0.45,
+      "score": 46.6,
+      "breakdown": {
+        "momentum": 8,
+        "freshness": 66,
+        "novelty": 77,
+        "substance": 90,
+        "obscurity": 18
+      },
+      "lanes": [
+        "Under the radar"
+      ],
+      "ai_signals": [
+        "llm",
+        "ai",
+        "ml",
+        "token"
+      ],
+      "doc_files": [
+        "README.md",
+        "AGENTS.md",
+        "CLAUDE.md",
+        "docs/add-command.md"
+      ],
+      "skills_extracted": 0,
+      "first_seen": "2026-07-29T06:14:24.547Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
+      "stars_at_first_seen": 9,
       "stars_gained": 0
     },
     {
@@ -20959,7 +21380,7 @@
       "created_at": "2026-04-04T13:54:21Z",
       "pushed_at": "2026-07-27T22:06:15Z",
       "age_days": 116,
-      "star_velocity": 3.8,
+      "star_velocity": 3.79,
       "score": 46.3,
       "breakdown": {
         "momentum": 34,
@@ -20980,7 +21401,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 434,
       "stars_gained": 5
     },
@@ -21021,6 +21442,77 @@
       "first_seen": "2026-07-28T06:22:27.003Z",
       "last_seen": "2026-07-28T06:22:27.003Z",
       "stars_at_first_seen": 25,
+      "stars_gained": 0
+    },
+    {
+      "type": "candidate",
+      "id": "1303515095",
+      "full_name": "airomhq/airom",
+      "owner": "airomhq",
+      "name": "airom",
+      "url": "https://github.com/airomhq/airom",
+      "description": "Open-source AI Bill of Materials (AIBOM) scanner: inventories AI models, datasets, prompts, embeddings, vector DBs & RAG pipelines across code, containers & Kubernetes — with file:line evidence, load-time risk detection (poisoned pickle / Keras Lambda / unsafe torch.load) and NIST AI RMF / OWASP compliance mapping. CycloneDX · SARIF · JSON.",
+      "hook": "Open-source AI Bill of Materials (AIBOM) scanner: inventories AI models, datasets, prompts, embeddings, vector DBs & RAG pipelines across code, containers & Kubernetes — with file:line evidence, load-time risk detection (poisoned pickle / Keras Lambda / unsafe torch.load) and NIST AI RMF / OWASP compliance mapping. CycloneDX · SARIF · JSON.",
+      "tags": [
+        "ai-bill-of-materials",
+        "ai-governance",
+        "ai-security",
+        "aibom"
+      ],
+      "language": "Go",
+      "stars": 8,
+      "topics": [
+        "ai-bill-of-materials",
+        "ai-governance",
+        "ai-security",
+        "aibom",
+        "compliance",
+        "cyclonedx",
+        "devsecops",
+        "eu-ai-act",
+        "golang",
+        "llm-security",
+        "ml-security",
+        "mlops",
+        "mlsecops",
+        "model-scanning",
+        "nist-ai-rmf",
+        "owasp",
+        "sarif",
+        "sbom",
+        "supply-chain-security",
+        "vulnerability-scanner"
+      ],
+      "created_at": "2026-07-17T03:33:22Z",
+      "pushed_at": "2026-07-29T06:08:35Z",
+      "age_days": 12,
+      "star_velocity": 0.66,
+      "score": 45.9,
+      "breakdown": {
+        "momentum": 11,
+        "freshness": 75,
+        "novelty": 63,
+        "substance": 90,
+        "obscurity": 16
+      },
+      "lanes": [
+        "Under the radar"
+      ],
+      "ai_signals": [
+        "llm",
+        "ai",
+        "ai-"
+      ],
+      "doc_files": [
+        "README.md",
+        "docs/ARCHITECTURE.md",
+        "docs/cli.md",
+        "docs/compliance.md"
+      ],
+      "skills_extracted": 0,
+      "first_seen": "2026-07-29T06:14:24.547Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
+      "stars_at_first_seen": 8,
       "stars_gained": 0
     },
     {
@@ -21077,7 +21569,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 458,
       "stars_gained": 0
     },
@@ -21144,7 +21636,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 818,
       "stars_gained": 3
     },
@@ -21281,7 +21773,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 4399,
       "stars_gained": 0
     },
@@ -21342,7 +21834,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 352,
       "stars_gained": 4
     },
@@ -21459,7 +21951,7 @@
         "ai-engineering"
       ],
       "language": "Python",
-      "stars": 44678,
+      "stars": 44680,
       "topics": [
         "agents",
         "ai",
@@ -21485,7 +21977,7 @@
       "created_at": "2026-03-18T18:38:02Z",
       "pushed_at": "2026-07-26T11:07:40Z",
       "age_days": 132,
-      "star_velocity": 337.26,
+      "star_velocity": 337.25,
       "score": 44.9,
       "breakdown": {
         "momentum": 100,
@@ -21507,9 +21999,9 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 44349,
-      "stars_gained": 329
+      "stars_gained": 331
     },
     {
       "type": "candidate",
@@ -21562,7 +22054,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T16:49:48.226Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 43670,
       "stars_gained": 22
     },
@@ -21680,7 +22172,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 376,
       "stars_gained": 0
     },
@@ -21907,6 +22399,75 @@
     },
     {
       "type": "candidate",
+      "id": "1296293059",
+      "full_name": "akshinmrv/Voxa",
+      "owner": "akshinmrv",
+      "name": "Voxa",
+      "url": "https://github.com/akshinmrv/Voxa",
+      "description": "Dub any video into another language and keep it in sync. Single-file Python CLI · 4 speech engines · 4 translators · no API key required · MIT",
+      "hook": "Dub any video into another language and keep it in sync. Single-file Python CLI · 4 speech engines · 4 translators · no API key required · MIT",
+      "tags": [
+        "ai",
+        "dubbing",
+        "dubbing-ai",
+        "faster-whisper"
+      ],
+      "language": "Python",
+      "stars": 8,
+      "topics": [
+        "ai",
+        "dubbing",
+        "dubbing-ai",
+        "faster-whisper",
+        "ffmpeg",
+        "localization",
+        "ollama",
+        "openai-whisper",
+        "piper-tts",
+        "python",
+        "speech-to-text",
+        "text-to-speech",
+        "translation",
+        "video-dubbing",
+        "video-translation",
+        "voice-cloning",
+        "whisper",
+        "xttsv2"
+      ],
+      "created_at": "2026-07-10T08:49:42Z",
+      "pushed_at": "2026-07-29T06:11:59Z",
+      "age_days": 19,
+      "star_velocity": 0.42,
+      "score": 44.1,
+      "breakdown": {
+        "momentum": 8,
+        "freshness": 67,
+        "novelty": 63,
+        "substance": 100,
+        "obscurity": 16
+      },
+      "lanes": [
+        "Under the radar"
+      ],
+      "ai_signals": [
+        "llm",
+        "ai",
+        "ai-"
+      ],
+      "doc_files": [
+        "README.md",
+        "docs/ARCHITECTURE.md",
+        "docs/BENCHMARK.md",
+        "docs/RELEASING.md"
+      ],
+      "skills_extracted": 0,
+      "first_seen": "2026-07-29T06:14:24.547Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
+      "stars_at_first_seen": 8,
+      "stars_gained": 0
+    },
+    {
+      "type": "candidate",
       "id": "1279625094",
       "full_name": "bharat2808/codex-universal-proxy",
       "owner": "bharat2808",
@@ -22017,7 +22578,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 1609,
       "stars_gained": 3
     },
@@ -22215,7 +22776,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 3856,
       "stars_gained": 8
     },
@@ -22259,7 +22820,7 @@
         "wxt"
       ],
       "created_at": "2026-06-21T13:32:12Z",
-      "pushed_at": "2026-07-29T05:08:46Z",
+      "pushed_at": "2026-07-29T06:07:53Z",
       "age_days": 38,
       "star_velocity": 0.37,
       "score": 43.5,
@@ -22288,7 +22849,7 @@
       ],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T19:54:13.585Z",
-      "last_seen": "2026-07-29T05:11:36.667Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 14,
       "stars_gained": 0
     },
@@ -22341,7 +22902,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 404,
       "stars_gained": 2
     },
@@ -22635,7 +23196,7 @@
         "claude-skills"
       ],
       "language": "Python",
-      "stars": 695,
+      "stars": 697,
       "topics": [
         "ai-agent",
         "awesome-list",
@@ -22648,7 +23209,7 @@
       "created_at": "2026-04-14T09:08:18Z",
       "pushed_at": "2026-07-28T04:57:15Z",
       "age_days": 106,
-      "star_velocity": 6.56,
+      "star_velocity": 6.58,
       "score": 42.2,
       "breakdown": {
         "momentum": 44,
@@ -22668,9 +23229,9 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 690,
-      "stars_gained": 5
+      "stars_gained": 7
     },
     {
       "type": "candidate",
@@ -22856,9 +23417,55 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T16:49:48.226Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 25102,
       "stars_gained": 16
+    },
+    {
+      "type": "candidate",
+      "id": "1289858093",
+      "full_name": "lvy010/penguin-vl-ncnn",
+      "owner": "lvy010",
+      "name": "penguin-vl-ncnn",
+      "url": "https://github.com/lvy010/penguin-vl-ncnn",
+      "description": "Lightweight C++ runtime for Penguin-VL multimodal LLM on ncnn, with pnnx-based export pipeline and cross-platform deployment",
+      "hook": "Lightweight C++ runtime for Penguin-VL multimodal LLM on ncnn, with pnnx-based export pipeline and cross-platform deployment",
+      "tags": [],
+      "language": "C++",
+      "stars": 10,
+      "topics": [],
+      "created_at": "2026-07-05T09:36:48Z",
+      "pushed_at": "2026-07-29T06:12:02Z",
+      "age_days": 24,
+      "star_velocity": 0.42,
+      "score": 42,
+      "breakdown": {
+        "momentum": 8,
+        "freshness": 63,
+        "novelty": 65,
+        "substance": 80,
+        "obscurity": 20
+      },
+      "lanes": [
+        "Under the radar"
+      ],
+      "ai_signals": [
+        "llm",
+        "assistant",
+        "multimodal",
+        "token"
+      ],
+      "doc_files": [
+        "README.md",
+        "docs/ALIGNMENT.md",
+        "docs/DISCUSSION.md",
+        "docs/EXPORT.md"
+      ],
+      "skills_extracted": 0,
+      "first_seen": "2026-07-29T06:14:24.547Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
+      "stars_at_first_seen": 10,
+      "stars_gained": 0
     },
     {
       "type": "candidate",
@@ -22890,7 +23497,7 @@
         "self-hosted"
       ],
       "created_at": "2026-06-25T03:37:53Z",
-      "pushed_at": "2026-07-29T05:02:42Z",
+      "pushed_at": "2026-07-29T06:11:46Z",
       "age_days": 34,
       "star_velocity": 0.35,
       "score": 41.9,
@@ -22919,7 +23526,7 @@
       ],
       "skills_extracted": 0,
       "first_seen": "2026-07-29T05:11:36.667Z",
-      "last_seen": "2026-07-29T05:11:36.667Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 12,
       "stars_gained": 0
     },
@@ -22957,7 +23564,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T16:49:48.226Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 8722,
       "stars_gained": 21
     },
@@ -23151,7 +23758,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 4299,
       "stars_gained": 56
     },
@@ -23277,7 +23884,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T16:49:48.226Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 18152,
       "stars_gained": 19
     },
@@ -23478,7 +24085,7 @@
         "automation"
       ],
       "language": "Python",
-      "stars": 71215,
+      "stars": 71217,
       "topics": [
         "agent-skills",
         "ai-agents",
@@ -23522,9 +24129,9 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T16:49:48.226Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 71169,
-      "stars_gained": 46
+      "stars_gained": 48
     },
     {
       "type": "candidate",
@@ -23755,7 +24362,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 444,
       "stars_gained": 0
     },
@@ -23806,7 +24413,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T16:49:48.226Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 8686,
       "stars_gained": 38
     },
@@ -23826,7 +24433,7 @@
         "machine-learning"
       ],
       "language": "Python",
-      "stars": 7422,
+      "stars": 7432,
       "topics": [
         "ai",
         "assistant",
@@ -23841,7 +24448,7 @@
       "created_at": "2024-08-07T15:32:09Z",
       "pushed_at": "2026-07-28T00:05:09Z",
       "age_days": 721,
-      "star_velocity": 10.3,
+      "star_velocity": 10.31,
       "score": 40.2,
       "breakdown": {
         "momentum": 53,
@@ -23861,9 +24468,9 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T16:49:48.226Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 6985,
-      "stars_gained": 437
+      "stars_gained": 447
     },
     {
       "type": "candidate",
@@ -24051,6 +24658,47 @@
     },
     {
       "type": "candidate",
+      "id": "1284590036",
+      "full_name": "Gladiale/ComfyUI_Prompt_Recorder_EVA-01-Style",
+      "owner": "Gladiale",
+      "name": "ComfyUI_Prompt_Recorder_EVA-01-Style",
+      "url": "https://github.com/Gladiale/ComfyUI_Prompt_Recorder_EVA-01-Style",
+      "description": "comfyuiのprompt wordを記録と組み合わせるためのchromeの拡張機能 (react)",
+      "hook": "comfyuiのprompt wordを記録と組み合わせるためのchromeの拡張機能 (react)",
+      "tags": [],
+      "language": "TypeScript",
+      "stars": 12,
+      "topics": [],
+      "created_at": "2026-06-30T02:39:29Z",
+      "pushed_at": "2026-07-29T06:11:06Z",
+      "age_days": 29,
+      "star_velocity": 0.41,
+      "score": 39.2,
+      "breakdown": {
+        "momentum": 7,
+        "freshness": 59,
+        "novelty": 58,
+        "substance": 75,
+        "obscurity": 23
+      },
+      "lanes": [
+        "Under the radar"
+      ],
+      "ai_signals": [
+        "claude"
+      ],
+      "doc_files": [
+        "README.md",
+        "CLAUDE.md"
+      ],
+      "skills_extracted": 0,
+      "first_seen": "2026-07-29T06:14:24.547Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
+      "stars_at_first_seen": 12,
+      "stars_gained": 0
+    },
+    {
+      "type": "candidate",
       "id": "615403340",
       "full_name": "dottxt-ai/outlines",
       "owner": "dottxt-ai",
@@ -24098,7 +24746,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T16:49:48.226Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 15420,
       "stars_gained": 10
     },
@@ -24280,7 +24928,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T06:22:27.003Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 419,
       "stars_gained": 0
     },
@@ -24488,7 +25136,7 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T16:49:48.226Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 1917,
       "stars_gained": 3
     },
@@ -24772,7 +25420,7 @@
         "arbitrage-bot"
       ],
       "language": "Python",
-      "stars": 9851,
+      "stars": 9869,
       "topics": [
         "algorithmic-trading",
         "algotrading",
@@ -24797,7 +25445,7 @@
       "created_at": "2022-02-05T20:48:52Z",
       "pushed_at": "2025-01-22T07:49:32Z",
       "age_days": 1634,
-      "star_velocity": 6.03,
+      "star_velocity": 6.04,
       "score": 21.4,
       "breakdown": {
         "momentum": 42,
@@ -24815,9 +25463,9 @@
       "doc_files": [],
       "skills_extracted": 0,
       "first_seen": "2026-07-28T16:49:48.226Z",
-      "last_seen": "2026-07-29T05:59:38.299Z",
+      "last_seen": "2026-07-29T06:14:24.547Z",
       "stars_at_first_seen": 9381,
-      "stars_gained": 470
+      "stars_gained": 488
     }
   ]
 }
