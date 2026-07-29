@@ -13,9 +13,9 @@ const BREAKDOWN_LABELS: Record<string, string> = {
 };
 
 const VERDICT_LABEL: Record<string, string> = {
-  approve: 'approved',
-  hold: 'held for review',
-  reject: 'rejected',
+  approve: 'Approved',
+  hold: 'Needs review',
+  reject: 'Rejected',
 };
 
 interface Props {
@@ -44,8 +44,14 @@ export function SkillCard({
 
   const html = useMemo(() => renderMarkdown(item.body), [item.body]);
   const verdict = item.review?.verdict ?? 'hold';
-  // The README always counts, even when the tree walk found nothing else.
   const docCount = item.source.doc_files.length || 1;
+  const score = Math.round(item.skill_score);
+
+  // The most decision-useful signal on the card: whether the reviewer could
+  // trace the claims back to the docs. It gets its own chip rather than sitting
+  // buried in the breakdown, because it is the thing that decides whether a
+  // skill is worth reading at all.
+  const grounded = item.review?.grounded;
 
   const copy = async () => {
     try {
@@ -62,46 +68,86 @@ export function SkillCard({
   return (
     <article
       ref={cardRef}
-      className={`card skill${selected ? ' selected' : ''}${item.mock ? ' mock' : ''}`}
+      className={`card skill v-${verdict}${selected ? ' selected' : ''}${item.mock ? ' mock' : ''}`}
       aria-current={selected || undefined}
     >
-      <header className="card-top">
-        <span className="skill-name mono">{item.slug ?? item.name}</span>
-        <div className="card-top-right">
-          {item.mock && <span className="pill warn">mock</span>}
-          {isNew && <span className="pill new">new</span>}
-          {item.published ? (
-            <span className="pill published">published</span>
-          ) : (
+      <header className="sk-head">
+        <span className={`sk-score v-${verdict}`} title="Rule-based skill score out of 100">
+          {score}
+        </span>
+
+        <div className="sk-titles">
+          <h3 className="sk-name mono">{item.slug ?? item.name}</h3>
+          <div className="sk-chips">
             <span className={`pill verdict ${verdict}`}>{VERDICT_LABEL[verdict]}</span>
-          )}
+            {item.published && <span className="pill published">Published</span>}
+            {grounded === false && (
+              <span
+                className="pill flag"
+                title="The reviewer could not trace every claim back to the source documentation"
+              >
+                Unverified claims
+              </span>
+            )}
+            {item.mock && <span className="pill warn">Mock</span>}
+            {isNew && <span className="pill new">New</span>}
+          </div>
         </div>
       </header>
 
       <p className="hook">{item.description}</p>
 
-      <div className="meta">
-        <a className="meta-item source" href={item.source.url} target="_blank" rel="noreferrer noopener">
-          from <span className="mono">{item.source.full_name}</span>
-        </a>
-        {item.source.language && (
-          <span className="meta-item">
-            <span className="dot" style={{ background: languageColor(item.source.language) }} />
-            {item.source.language}
-          </span>
-        )}
-        <span className="meta-item mono">★ {compact(item.source.stars)}</span>
-        <span className="meta-item" title={item.source.doc_files.join(', ')}>
-          {docCount} doc{docCount === 1 ? '' : 's'} read
-        </span>
-        <span className="meta-item dim">generated {relative(item.first_seen)}</span>
-      </div>
+      <dl className="sk-facts">
+        <div>
+          <dt>Source</dt>
+          <dd>
+            <a href={item.source.url} target="_blank" rel="noreferrer noopener" className="mono">
+              {item.source.full_name}
+            </a>
+          </dd>
+        </div>
+        <div>
+          <dt>Language</dt>
+          <dd>
+            {item.source.language ? (
+              <>
+                <span
+                  className="dot"
+                  style={{ background: languageColor(item.source.language) }}
+                />
+                {item.source.language}
+              </>
+            ) : (
+              '—'
+            )}
+          </dd>
+        </div>
+        <div>
+          <dt>Stars</dt>
+          <dd className="mono">{compact(item.source.stars)}</dd>
+        </div>
+        <div>
+          <dt>Docs read</dt>
+          <dd className="mono" title={item.source.doc_files.join(', ')}>
+            {docCount}
+          </dd>
+        </div>
+        <div>
+          <dt>Steps</dt>
+          <dd className="mono">{item.steps.length || '—'}</dd>
+        </div>
+        <div>
+          <dt>Generated</dt>
+          <dd>{relative(item.first_seen)}</dd>
+        </div>
+      </dl>
 
       {item.review?.reasons?.length ? (
-        <p className="why">
-          <span className="why-tag">reviewer</span>
-          {item.review.reasons.join(' ')}
-        </p>
+        <ul className="sk-reasons">
+          {item.review.reasons.map((reason, i) => (
+            <li key={i}>{reason}</li>
+          ))}
+        </ul>
       ) : null}
 
       <footer className="actions">
@@ -127,12 +173,12 @@ export function SkillCard({
           {archived ? 'Unarchive' : 'Archive'}
         </button>
         <button
-          className="btn ghost score-btn"
+          className={`btn ghost score-btn${open === 'why' ? ' on' : ''}`}
           onClick={() => setOpen(open === 'why' ? 'none' : 'why')}
           aria-expanded={open === 'why'}
           title="How this scored"
         >
-          <span className="score mono">{Math.round(item.skill_score)}</span>
+          Scoring
           <span className="caret" aria-hidden="true">
             {open === 'why' ? '▾' : '▸'}
           </span>
@@ -149,7 +195,7 @@ export function SkillCard({
           <div className="skillmd-body" dangerouslySetInnerHTML={{ __html: html }} />
           {item.workflow?.evidence && (
             <p className="evidence">
-              <span className="why-tag">evidence</span>
+              <span className="why-tag">Evidence</span>
               {item.workflow.evidence}
             </p>
           )}
@@ -176,8 +222,13 @@ export function SkillCard({
             Rules score first, then the reviewer{' '}
             {item.review ? (
               <>
-                returned <strong>{VERDICT_LABEL[verdict]}</strong> at {item.review.quality}/100
-                {item.review.grounded ? ' and judged it grounded' : ' and could not confirm grounding'}.
+                returned <strong>{VERDICT_LABEL[verdict].toLowerCase()}</strong> at{' '}
+                {item.review.quality}/100
+                {item.review.grounded
+                  ? ' and judged it grounded'
+                  : ' and could not confirm grounding'}
+                . Where the two disagree, trust the reviewer — the rules measure
+                vocabulary overlap, not whether a claim is true.
               </>
             ) : (
               'has not run on this one yet.'

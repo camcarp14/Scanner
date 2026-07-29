@@ -61,6 +61,46 @@ export function Num({
   return <>{shown == null ? '—' : f(shown)}</>;
 }
 
+/**
+ * Render a long list a page at a time.
+ *
+ * Rendering all of them is not a performance nicety — at 391 candidates, each
+ * an animated card, mobile Safari runs out of memory and kills the tab ("a
+ * problem repeatedly occurred"). Nothing throws, so there is no error to catch;
+ * the fix is to not build the DOM in the first place.
+ *
+ * Returns the slice to render plus a ref to put on a sentinel element after it.
+ * When the sentinel comes into view the window grows; `resetKey` snaps it back
+ * whenever the list itself changes (a new view, filter or sort).
+ */
+export function useWindowed<T>(items: T[], resetKey: string, step = 30) {
+  const [limit, setLimit] = useState(step);
+  const sentinel = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    setLimit(step);
+  }, [resetKey, step]);
+
+  useEffect(() => {
+    const node = sentinel.current;
+    if (!node || limit >= items.length) return;
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          setLimit((n) => Math.min(n + step, items.length));
+        }
+      },
+      // Start loading before it's actually on screen so scrolling stays smooth.
+      { rootMargin: '600px 0px' },
+    );
+    io.observe(node);
+    return () => io.disconnect();
+  }, [limit, items.length, step]);
+
+  return { shown: items.slice(0, limit), sentinel, hasMore: limit < items.length };
+}
+
 /* ---------------- skeletons ---------------- */
 
 export const SkLine = ({ w }: { w?: 'w40' | 'w60' | 'w80' }) => (

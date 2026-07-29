@@ -37,6 +37,7 @@ export function Card({
   cardRef,
 }: Props) {
   const [showWhy, setShowWhy] = useState(false);
+  const score = Math.round(item.score);
 
   return (
     <article
@@ -44,55 +45,85 @@ export function Card({
       className={`card${selected ? ' selected' : ''}${opened ? ' opened' : ''}`}
       aria-current={selected || undefined}
     >
-      <header className="card-top">
-        <a
-          className="repo"
-          href={item.url}
-          target="_blank"
-          rel="noreferrer noopener"
-          onClick={onOpen}
-        >
-          <span className="owner">{item.owner}</span>
-          <span className="slash">/</span>
-          <span className="name">{item.name}</span>
-        </a>
+      {/* Same anatomy as a skill card — dominant score, title, then a labelled
+          fact grid — so both lists scan the same way and the columns line up
+          from one card to the next. */}
+      <header className="sk-head">
+        <span className="sk-score" title="Repo score out of 100">
+          {score}
+        </span>
 
-        <div className="card-top-right">
-          {isNew && <span className="pill new">new</span>}
-          {item.skills_extracted > 0 && (
-            <span className="pill published" title="Skills extracted from this repo">
-              {item.skills_extracted} skill{item.skills_extracted === 1 ? '' : 's'}
-            </span>
-          )}
+        <div className="sk-titles">
+          <h3 className="sk-name">
+            <a
+              className="repo"
+              href={item.url}
+              target="_blank"
+              rel="noreferrer noopener"
+              onClick={onOpen}
+            >
+              <span className="owner">{item.owner}</span>
+              <span className="slash">/</span>
+              <span className="name">{item.name}</span>
+            </a>
+          </h3>
+          <div className="sk-chips">
+            {item.skills_extracted > 0 && (
+              <span className="pill published" title="Skills extracted from this repo">
+                {item.skills_extracted} skill{item.skills_extracted === 1 ? '' : 's'}
+              </span>
+            )}
+            {isNew && <span className="pill new">New</span>}
+            {item.lanes.slice(0, 2).map((lane) => (
+              <span className="pill" key={lane}>
+                {lane}
+              </span>
+            ))}
+          </div>
         </div>
       </header>
 
       <p className="hook">{item.hook}</p>
 
-      <div className="meta">
-        {item.language && (
-          <span className="meta-item">
-            <span className="dot" style={{ background: languageColor(item.language) }} />
-            {item.language}
-          </span>
-        )}
-        <span className="meta-item mono" title={`${item.stars.toLocaleString()} stars`}>
-          ★ {compact(item.stars)}
-        </span>
-        {item.stars_gained > 0 && (
-          <span className="meta-item gain" title="Stars gained since this first appeared here">
-            +{compact(item.stars_gained)} since found
-          </span>
-        )}
-        <span className="meta-item mono">{velocityLabel(item.star_velocity)}</span>
-        <span className="meta-item">{ageLabel(item.age_days)}</span>
-        {item.doc_files.length > 0 && (
-          <span className="meta-item" title={item.doc_files.join(', ')}>
-            {item.doc_files.length} doc{item.doc_files.length === 1 ? '' : 's'} read
-          </span>
-        )}
-        <span className="meta-item dim">found {relative(item.first_seen)}</span>
-      </div>
+      <dl className="sk-facts">
+        <div>
+          <dt>Language</dt>
+          <dd>
+            {item.language ? (
+              <>
+                <span className="dot" style={{ background: languageColor(item.language) }} />
+                {item.language}
+              </>
+            ) : (
+              '—'
+            )}
+          </dd>
+        </div>
+        <div>
+          <dt>Stars</dt>
+          <dd className="mono">{compact(item.stars)}</dd>
+        </div>
+        <div>
+          <dt>Since found</dt>
+          <dd className={`mono${item.stars_gained > 0 ? ' gain' : ''}`}>
+            {item.stars_gained > 0 ? `+${compact(item.stars_gained)}` : '—'}
+          </dd>
+        </div>
+        <div>
+          <dt>Velocity</dt>
+          <dd className="mono">{velocityLabel(item.star_velocity)}</dd>
+        </div>
+        <div>
+          <dt>Age</dt>
+          <dd>{ageLabel(item.age_days)}</dd>
+        </div>
+        <div>
+          <dt>Docs read</dt>
+          <dd className="mono" title={item.doc_files.join(', ')}>
+            {item.doc_files.length || '—'}
+          </dd>
+        </div>
+      </dl>
 
       {item.tags.length > 0 && (
         <div className="tags">
@@ -127,16 +158,17 @@ export function Card({
           {archived ? 'Unarchive' : 'Archive'}
         </button>
         <button
-          className="btn ghost score-btn"
+          className={`btn ghost score-btn${showWhy ? ' on' : ''}`}
           onClick={() => setShowWhy((v) => !v)}
           aria-expanded={showWhy}
           title="Why this surfaced"
         >
-          <span className="score mono">{Math.round(item.score)}</span>
+          Scoring
           <span className="caret" aria-hidden="true">
             {showWhy ? '▾' : '▸'}
           </span>
         </button>
+        <span className="found">found {relative(item.first_seen)}</span>
       </footer>
 
       <Expand open={showWhy}>

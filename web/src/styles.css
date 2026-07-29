@@ -315,7 +315,7 @@ kbd {
 
 /* The one piece of ambient motion in the app: the sweep is literally scanning. */
 .brand-sweep {
-  transform-origin: 256px 256px;
+  transform-origin: 0 0;
   animation: sweep 9s linear infinite;
 }
 
@@ -1420,5 +1420,312 @@ kbd {
 
   .sk::after {
     animation: none;
+  }
+}
+
+/* ============================ v2: scan-first layout ==========================
+   The first version put every fact at the same weight, so comparing two skills
+   meant reading two paragraphs. This gives each card one dominant number, a
+   labelled fact grid that lines up row to row, and reviewer notes as discrete
+   findings rather than a run-on wall.
+   ========================================================================== */
+
+.eyebrow {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+}
+
+/* -------------------------------- funnel -------------------------------- */
+
+.funnel {
+  border: 1px solid var(--line);
+  background: var(--panel);
+  border-radius: var(--radius);
+  padding: 13px 16px 15px;
+  margin-bottom: 16px;
+}
+
+.funnel-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 11px;
+}
+
+.funnel-when {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.funnel-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+}
+
+.funnel-steps li {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.funnel-value {
+  font-size: 19px;
+  font-weight: 550;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  line-height: 1.1;
+}
+
+.funnel-label {
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.funnel-bar {
+  height: 3px;
+  border-radius: 2px;
+  background: var(--panel-2);
+  overflow: hidden;
+  margin-top: 3px;
+}
+
+.funnel-bar > span {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+  opacity: 0.8;
+  transform-origin: left;
+  animation: growx var(--dur-3) var(--ease-out) both;
+}
+
+@keyframes growx {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+/* ------------------------------ skill cards ------------------------------ */
+
+.sk-head {
+  display: flex;
+  gap: 13px;
+  align-items: flex-start;
+  margin-bottom: 9px;
+}
+
+/* One dominant number per card, coloured by verdict — the thing your eye
+   lands on when scrolling a list of twenty. */
+.sk-score {
+  flex: none;
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-sm);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-variant-numeric: tabular-nums;
+  font-size: 18px;
+  font-weight: 550;
+  letter-spacing: -0.03em;
+  border: 1px solid var(--line);
+  background: var(--panel-2);
+  color: var(--text-dim);
+}
+
+.sk-score.v-approve {
+  color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+  background: var(--accent-soft);
+}
+
+.sk-score.v-hold {
+  color: var(--warn);
+  border-color: color-mix(in srgb, var(--warn) 40%, transparent);
+  background: color-mix(in srgb, var(--warn) 10%, transparent);
+}
+
+.sk-titles {
+  min-width: 0;
+  flex: 1;
+}
+
+.sk-name {
+  font-size: 14px;
+  font-weight: 550;
+  letter-spacing: -0.01em;
+  color: var(--text);
+  /* Wrap rather than truncate: the slug is the skill's identity. */
+  overflow-wrap: anywhere;
+  margin-bottom: 5px;
+}
+
+.sk-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.pill.flag {
+  color: var(--danger);
+  border-color: color-mix(in srgb, var(--danger) 40%, transparent);
+  background: color-mix(in srgb, var(--danger) 9%, transparent);
+}
+
+/* A labelled grid instead of a run-on meta line: the columns line up between
+   cards, so you can compare down the page instead of re-reading each one. */
+.sk-facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
+  gap: 9px 14px;
+  margin: 0 0 11px;
+  padding: 11px 0 0;
+  border-top: 1px solid var(--line);
+}
+
+.sk-facts > div {
+  min-width: 0;
+}
+
+.sk-facts dt {
+  font-size: 9.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--muted);
+  margin-bottom: 2px;
+}
+
+.sk-facts dd {
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--text-dim);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sk-facts dd a {
+  color: var(--text-dim);
+  text-decoration: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sk-facts dd a:hover {
+  color: var(--accent);
+}
+
+/* Each reviewer finding is its own line. Joined with spaces they ran together
+   into an unreadable paragraph. */
+.sk-reasons {
+  list-style: none;
+  margin: 0 0 12px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sk-reasons li {
+  position: relative;
+  padding-left: 15px;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+.sk-reasons li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 8px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--line-strong);
+}
+
+/* Verdict as a left edge, so a column of cards reads as a status list. */
+.card.skill {
+  border-left: 2px solid var(--line-strong);
+}
+
+.card.skill.v-approve {
+  border-left-color: var(--accent);
+}
+
+.card.skill.v-hold {
+  border-left-color: var(--warn);
+}
+
+.card.skill.v-reject {
+  border-left-color: var(--line-strong);
+  opacity: 0.82;
+}
+
+@media (max-width: 820px) {
+  .funnel {
+    padding: 11px 13px 12px;
+  }
+
+  .funnel-steps {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 9px 10px;
+  }
+
+  .funnel-value {
+    font-size: 15px;
+  }
+
+  .funnel-label {
+    font-size: 9px;
+    letter-spacing: 0.05em;
+  }
+
+  .sk-facts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Candidate cards share the skill anatomy, so the repo link sits inside the
+   title slot and the timestamp trails the action row. */
+.sk-name .repo {
+  font-size: 14px;
+  white-space: normal;
+  overflow: visible;
+}
+
+.found {
+  margin-left: auto;
+  font-size: 11px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.sk-facts dd.gain {
+  color: var(--accent);
+}
+
+@media (max-width: 820px) {
+  .found {
+    display: none;
   }
 }

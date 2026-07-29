@@ -7,6 +7,7 @@ import {
   CommandK,
   Num,
   SkFeed,
+  useWindowed,
   ToastProvider,
   useToast,
   type Command,
@@ -164,6 +165,8 @@ function App() {
     });
   }, [feed, view, lane, query, sort, bookmarks, archived]);
 
+  const { shown, sentinel, hasMore } = useWindowed(visible, `${view}|${lane}|${sort}|${query}`);
+
   const newCount = useMemo(
     () =>
       (feed?.items ?? []).filter(
@@ -219,7 +222,7 @@ function App() {
   };
 
   const openSelected = () => {
-    const item = visible[selected];
+    const item = shown[selected];
     if (!item) return;
     markOpened(item);
     window.open(isSkill(item) ? item.source.url : item.url, '_blank', 'noopener,noreferrer');
@@ -261,7 +264,7 @@ function App() {
       switch (e.key) {
         case 'j':
           e.preventDefault();
-          setSelected((i) => Math.min(i + 1, visible.length - 1));
+          setSelected((i) => Math.min(i + 1, shown.length - 1));
           break;
         case 'k':
           e.preventDefault();
@@ -274,11 +277,11 @@ function App() {
           break;
         case 'b':
           e.preventDefault();
-          if (visible[selected]) toggleBookmark(visible[selected]);
+          if (shown[selected]) toggleBookmark(shown[selected]);
           break;
         case 'x':
           e.preventDefault();
-          if (visible[selected]) toggleArchive(visible[selected]);
+          if (shown[selected]) toggleArchive(shown[selected]);
           break;
         case '/':
           e.preventDefault();
@@ -505,6 +508,10 @@ function App() {
           </div>
         )}
 
+        {!loading && !error && feed && (view === 'skills' || view === 'candidates') && (
+          <Funnel feed={feed} />
+        )}
+
         {loading && <SkFeed />}
 
         {!loading && error && (
@@ -539,7 +546,7 @@ function App() {
         {!loading && !error && visible.length > 0 && (
           <div className="pagefade" key={`${view}-${lane}-${sort}`}>
             <div className="feed stagger">
-              {visible.map((item, i) =>
+              {shown.map((item, i) =>
                 isSkill(item) ? (
                   <SkillCard
                     key={item.id}
@@ -573,9 +580,15 @@ function App() {
                 ),
               )}
             </div>
+
+            {/* Grows the window when it scrolls into view. */}
+            <div ref={sentinel} aria-hidden="true" />
+
             <p className="footnote">
-              {visible.length} shown
-              {feed ? ` · ${feed.stats.scanned} repos scanned last run` : ''} ·{' '}
+              {hasMore
+                ? `${shown.length} of ${visible.length} — scroll for more`
+                : `${visible.length} shown`}
+              {' · '}
               <button className="linklike" onClick={exportSaved}>
                 export saved
               </button>
@@ -617,6 +630,43 @@ function BrandMark() {
         <circle r="38" fill="currentColor" />
       </g>
     </svg>
+  );
+}
+
+/**
+ * The last run, as a funnel. This is the most informative thing the app can
+ * show and it was missing entirely: the pipeline's defining behaviour is how
+ * much it throws away, and a bare "8 skills" hides that 425 repos went in.
+ */
+function Funnel({ feed }: { feed: Feed }) {
+  const s = feed.stats;
+  const steps = [
+    { label: 'Scanned', value: s.scanned, hint: 'Repos found by search + trending' },
+    { label: 'AI projects', value: s.kept_by_filter, hint: 'Kept by the filter' },
+    { label: 'Docs read', value: s.docs_read, hint: 'New repos whose documentation was read' },
+    { label: 'Skills', value: s.new_skills_this_run, hint: 'Generated from extracted workflows' },
+    { label: 'Published', value: s.published_this_run, hint: 'Cleared the reviewer and the score' },
+  ];
+  const max = Math.max(...steps.map((x) => x.value || 0), 1);
+
+  return (
+    <section className="funnel" aria-label="Last pipeline run">
+      <div className="funnel-head">
+        <span className="eyebrow">Last run</span>
+        <span className="funnel-when mono">{relative(feed.generated_at)}</span>
+      </div>
+      <ol className="funnel-steps">
+        {steps.map((step) => (
+          <li key={step.label} title={step.hint}>
+            <span className="funnel-value mono">{(step.value ?? 0).toLocaleString()}</span>
+            <span className="funnel-label">{step.label}</span>
+            <span className="funnel-bar" aria-hidden="true">
+              <span style={{ width: `${Math.max(((step.value || 0) / max) * 100, 1.5)}%` }} />
+            </span>
+          </li>
+        ))}
+      </ol>
+    </section>
   );
 }
 
