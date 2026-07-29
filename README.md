@@ -189,10 +189,10 @@ rather than estimated from prompt sizes, and stores it in `ideafeed_runs`:
 
 ```
 api spend
-  claude-haiku-4-5    3 calls ·  34,911 in /  4,993 out · $0.060
-  claude-sonnet-5     4 calls ·  14,727 in /  3,298 out · $0.094
-  claude-opus-5       1 calls ·   9,605 in /    581 out · $0.063
-  total               8 calls · $0.217 this run · ~$6.51/month daily
+  claude-haiku-4-5    2 calls ·  23,912 in /  4,602 out · $0.047
+  claude-sonnet-5     2 calls ·  11,788 in /  2,378 out · $0.071
+  claude-opus-5       1 calls ·   6,149 in /    703 out · $0.048
+  total               5 calls · $0.166 this run · ~$4.99/month daily
 ```
 
 That block is a real run, not an illustration. A model that isn't in
