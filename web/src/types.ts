@@ -121,8 +121,10 @@ export interface Feed {
   items: FeedItem[];
 }
 
-export type View = 'skills' | 'candidates' | 'saved' | 'archive';
-export type SortKey = 'score' | 'newest' | 'momentum' | 'stars';
+export type View = 'ideas' | 'saved' | 'skills';
+export type SortKey = 'popping' | 'gained' | 'newest' | 'stars' | 'score';
+/** Look-back window, in days of repo age. 0 = no limit. */
+export type Range = 0 | 7 | 30 | 90;
 
 export const isSkill = (item: FeedItem): item is SkillItem => item.type === 'skill';
 export const isCandidate = (item: FeedItem): item is CandidateItem =>

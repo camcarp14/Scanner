@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import type { Feed, FeedItem, SortKey, View } from './types';
+import type { Feed, FeedItem, Range, SortKey, View } from './types';
 import { isCandidate, isSkill } from './types';
 import { Card } from './components/Card';
 import { SkillCard } from './components/SkillCard';
@@ -18,21 +18,29 @@ import { relative } from './lib/format';
 const FEED_URL = `${import.meta.env.BASE_URL}feed.json`;
 
 const SORTS: { key: SortKey; label: string }[] = [
-  { key: 'score', label: 'Highest scoring' },
+  { key: 'popping', label: 'Popping now' },
+  { key: 'gained', label: 'Biggest gain' },
   { key: 'newest', label: 'Newest' },
-  { key: 'momentum', label: 'Fastest moving' },
   { key: 'stars', label: 'Most stars' },
+  { key: 'score', label: 'Top scored' },
 ];
 
 const VIEWS: { key: View; label: string }[] = [
-  { key: 'skills', label: 'Skills' },
-  { key: 'candidates', label: 'Candidates' },
+  { key: 'ideas', label: 'Ideas' },
   { key: 'saved', label: 'Saved' },
-  { key: 'archive', label: 'Archive' },
+  { key: 'skills', label: 'Skills' },
 ];
 
-/** Sort keys that only mean something for repos. */
-const REPO_ONLY_SORTS: SortKey[] = ['momentum', 'stars'];
+/** Look-back windows, by how long ago the repo itself was created. */
+const RANGES: { key: Range; label: string }[] = [
+  { key: 7, label: '7d' },
+  { key: 30, label: '30d' },
+  { key: 90, label: '90d' },
+  { key: 0, label: 'All' },
+];
+
+/** Sort keys that only mean something for repos, not generated skills. */
+const REPO_ONLY_SORTS: SortKey[] = ['popping', 'gained', 'stars'];
 
 function App() {
   const toast = useToast();
@@ -45,9 +53,13 @@ function App() {
   /** The visit timestamp from *before* this session — drives the "new" pills. */
   const previousVisit = useRef<string | null>(null);
 
-  const [view, setView] = useState<View>('skills');
-  const [sort, setSort] = useState<SortKey>('score');
+  // Opens on Ideas: the point of the app is what people are building, and the
+  // generated skills are a by-product you go looking for.
+  const [view, setView] = useState<View>('ideas');
+  const [sort, setSort] = useState<SortKey>('popping');
   const [lane, setLane] = useState<string>('all');
+  const [range, setRange] = useState<Range>(30);
+  const [showArchived, setShowArchived] = useState(false);
   const [query, setQuery] = useState('');
   const [selected, setSelected] = useState(0);
   const [paletteOpen, setPaletteOpen] = useState(false);
@@ -115,11 +127,17 @@ function App() {
     const needle = query.trim().toLowerCase();
 
     let list = all.filter((item) => {
-      if (view === 'saved') return bookmarks.has(item.id);
-      if (view === 'archive') return archived.has(item.id);
+      if (showArchived) return archived.has(item.id);
       if (archived.has(item.id)) return false;
+      if (view === 'saved') return bookmarks.has(item.id);
       return view === 'skills' ? isSkill(item) : isCandidate(item);
     });
+
+    // Look-back: how recently the project itself was created, which is the
+    // question "what have people built lately" actually asks.
+    if (range > 0) {
+      list = list.filter((item) => (isCandidate(item) ? item.age_days <= range : true));
+    }
 
     if (lane !== 'all') {
       list = list.filter((item) => isCandidate(item) && item.lanes.includes(lane));
@@ -150,22 +168,31 @@ function App() {
     const scoreOf = (item: FeedItem) => (isSkill(item) ? item.skill_score : item.score);
     const starsOf = (item: FeedItem) => (isSkill(item) ? item.source.stars : item.stars);
     const velocityOf = (item: FeedItem) => (isSkill(item) ? 0 : item.star_velocity);
+    const gainedOf = (item: FeedItem) => (isSkill(item) ? 0 : item.stars_gained);
+    // "Newest" means the project is new, not that we happened to notice it.
+    const createdOf = (item: FeedItem) =>
+      isCandidate(item) ? new Date(item.created_at).getTime() : new Date(item.first_seen).getTime();
 
     return [...list].sort((a, b) => {
       switch (sort) {
         case 'newest':
-          return new Date(b.first_seen).getTime() - new Date(a.first_seen).getTime();
-        case 'momentum':
+          return createdOf(b) - createdOf(a);
+        case 'popping':
           return velocityOf(b) - velocityOf(a);
+        case 'gained':
+          return gainedOf(b) - gainedOf(a);
         case 'stars':
           return starsOf(b) - starsOf(a);
         default:
           return scoreOf(b) - scoreOf(a);
       }
     });
-  }, [feed, view, lane, query, sort, bookmarks, archived]);
+  }, [feed, view, lane, query, sort, range, showArchived, bookmarks, archived]);
 
-  const { shown, sentinel, hasMore } = useWindowed(visible, `${view}|${lane}|${sort}|${query}`);
+  const { shown, sentinel, hasMore } = useWindowed(
+    visible,
+    `${view}|${lane}|${sort}|${query}|${range}|${showArchived}`,
+  );
 
   const newCount = useMemo(
     () =>
@@ -177,10 +204,10 @@ function App() {
 
   useEffect(() => {
     setSelected(0);
-  }, [view, lane, sort, query]);
+  }, [view, lane, sort, query, range, showArchived]);
 
   // Lanes and repo-only sorts don't apply to the skills view.
-  const showLanes = view === 'candidates' || view === 'saved' || view === 'archive';
+  const showFilters = view !== 'skills';
   const sortOptions = useMemo(
     () => (view === 'skills' ? SORTS.filter((s) => !REPO_ONLY_SORTS.includes(s.key)) : SORTS),
     [view],
@@ -189,6 +216,15 @@ function App() {
     if (view === 'skills' && REPO_ONLY_SORTS.includes(sort)) setSort('score');
     if (view === 'skills' && lane !== 'all') setLane('all');
   }, [view, sort, lane]);
+
+  // Newly-found skills count as "new" on the Skills tab; on Ideas it's repos.
+  const newBadge = useMemo(
+    () =>
+      (feed?.items ?? []).filter(
+        (item) => isCandidate(item) && isNew(item) && !archived.has(item.id),
+      ).length,
+    [feed, isNew, archived],
+  );
 
   /* ------------------------------ actions ------------------------------ */
 
@@ -288,16 +324,13 @@ function App() {
           searchRef.current?.focus();
           break;
         case '1':
-          setView('skills');
+          setView('ideas');
           break;
         case '2':
-          setView('candidates');
-          break;
-        case '3':
           setView('saved');
           break;
-        case '4':
-          setView('archive');
+        case '3':
+          setView('skills');
           break;
         default:
           break;
@@ -328,21 +361,27 @@ function App() {
         keywords: ['sort', s.key],
         run: () => setSort(s.key),
       })),
-      {
-        id: 'lane-all',
-        label: 'Show all lanes',
-        keywords: ['filter', 'lane', 'reset'],
+      ...RANGES.map((r) => ({
+        id: `range-${r.key}`,
+        label: r.key === 0 ? 'Look back: all time' : `Look back: last ${r.label}`,
+        keywords: ['range', 'date', 'window', 'look back'],
         run: () => {
-          setView('candidates');
-          setLane('all');
+          setView('ideas');
+          setRange(r.key);
         },
+      })),
+      {
+        id: 'archived',
+        label: 'Toggle archived',
+        keywords: ['archive', 'hidden'],
+        run: () => setShowArchived((v) => !v),
       },
       ...lanes.map((l) => ({
         id: `lane-${l.id}`,
         label: `Filter candidates to ${l.label}`,
         keywords: ['lane', 'filter', l.label.toLowerCase()],
         run: () => {
-          setView('candidates');
+          setView('ideas');
           setLane(l.id);
         },
       })),
@@ -372,15 +411,12 @@ function App() {
 
   cardRefs.current = [];
 
-  // The counts tween up rather than appearing, so the header reads as an
-  // instrument settling on a value instead of text swapping in.
   const subtitle = feed ? (
     <>
-      <Num v={feed.stats.skills} /> skills · <Num v={feed.stats.published} /> published ·{' '}
-      <Num v={feed.stats.candidates} /> candidates · {relative(feed.generated_at)}
+      <Num v={feed.stats.candidates} /> ideas · scanned every 2h
     </>
   ) : (
-    'Mining GitHub for reusable agent skills'
+    'Scanning GitHub for what people are building'
   );
 
   return (
@@ -439,6 +475,7 @@ function App() {
                 {v.key === 'saved' && bookmarks.size > 0 && (
                   <span className="count">{bookmarks.size}</span>
                 )}
+                {v.key === 'ideas' && newBadge > 0 && <span className="count">{newBadge}</span>}
               </button>
             ))}
           </div>
@@ -457,22 +494,58 @@ function App() {
           </label>
         </div>
 
-        {showLanes && lanes.length > 0 && (
-          <div className="lanes" role="group" aria-label="Filter by lane">
-            <button className={`chip${lane === 'all' ? ' on' : ''}`} onClick={() => setLane('all')}>
-              All
-            </button>
-            {lanes.map((l) => (
+        {showFilters && (
+          <>
+            <div className="filterbar">
+              <div className="rangeset" role="group" aria-label="How recently the project was created">
+                <span className="filter-label">Built</span>
+                {RANGES.map((r) => (
+                  <button
+                    key={r.key}
+                    className={`chip${range === r.key ? ' on' : ''}`}
+                    onClick={() => setRange(r.key)}
+                    title={
+                      r.key === 0
+                        ? 'Every project in the feed'
+                        : `Projects created in the last ${r.label}`
+                    }
+                  >
+                    {r.label}
+                  </button>
+                ))}
+              </div>
+
               <button
-                key={l.id}
-                className={`chip${lane === l.id ? ' on' : ''}`}
-                onClick={() => setLane(lane === l.id ? 'all' : l.id)}
-                title={l.blurb}
+                className={`chip archived-toggle${showArchived ? ' on' : ''}`}
+                onClick={() => setShowArchived((v) => !v)}
+                aria-pressed={showArchived}
+                title="Show what you've archived"
               >
-                {l.label}
+                Archived
               </button>
-            ))}
-          </div>
+            </div>
+
+            {lanes.length > 0 && (
+              <div className="lanes" role="group" aria-label="Filter by lane">
+                <button
+                  className={`chip${lane === 'all' ? ' on' : ''}`}
+                  onClick={() => setLane('all')}
+                >
+                  All
+                </button>
+                {lanes.map((l) => (
+                  <button
+                    key={l.id}
+                    className={`chip${lane === l.id ? ' on' : ''}`}
+                    onClick={() => setLane(lane === l.id ? 'all' : l.id)}
+                    title={l.blurb}
+                  >
+                    {l.label}
+                  </button>
+                ))}
+              </div>
+            )}
+          </>
         )}
       </header>
 
@@ -508,7 +581,7 @@ function App() {
           </div>
         )}
 
-        {!loading && !error && feed && (view === 'skills' || view === 'candidates') && (
+        {!loading && !error && feed && (view === 'skills' || view === 'ideas') && (
           <Funnel feed={feed} />
         )}
 
@@ -534,12 +607,14 @@ function App() {
             query={query}
             lane={lane}
             feed={feed}
+            showArchived={showArchived}
             onReset={() => {
               setQuery('');
               setLane('all');
+              setRange(0);
+              setShowArchived(false);
             }}
-            onGoCandidates={() => setView('candidates')}
-            onGoSkills={() => setView('skills')}
+            onGoIdeas={() => setView('ideas')}
           />
         )}
 
@@ -642,18 +717,12 @@ function Funnel({ feed }: { feed: Feed }) {
   const s = feed.stats;
   const steps = [
     { label: 'scanned', value: s.scanned, hint: 'Repos found by search + trending' },
-    { label: 'AI', value: s.kept_by_filter, hint: 'Kept by the AI-project filter' },
-    { label: 'read', value: s.docs_read, hint: 'New repos whose docs were read' },
+    { label: 'kept', value: s.kept_by_filter, hint: 'Kept by the AI-project filter' },
     { label: 'skills', value: s.new_skills_this_run, hint: 'Generated from extracted workflows' },
-    { label: 'published', value: s.published_this_run, hint: 'Cleared the reviewer and the score' },
   ];
 
   return (
     <section className="runbar" aria-label="Last pipeline run">
-      <span className="runbar-head">
-        <span className="eyebrow">Last run</span>
-        <span className="runbar-when mono">{relative(feed.generated_at)}</span>
-      </span>
       <span className="runbar-stats mono">
         {steps.map((step, i) => (
           <span key={step.label} title={step.hint}>
@@ -662,6 +731,7 @@ function Funnel({ feed }: { feed: Feed }) {
           </span>
         ))}
       </span>
+      <span className="runbar-when mono">{relative(feed.generated_at)}</span>
     </section>
   );
 }
@@ -709,18 +779,33 @@ function EmptyState({
   query,
   lane,
   feed,
+  showArchived,
   onReset,
-  onGoCandidates,
-  onGoSkills,
+  onGoIdeas,
 }: {
   view: View;
   query: string;
   lane: string;
   feed: Feed | null;
+  showArchived: boolean;
   onReset: () => void;
-  onGoCandidates: () => void;
-  onGoSkills: () => void;
+  onGoIdeas: () => void;
 }) {
+  if (showArchived) {
+    return (
+      <div className="state pagefade">
+        <h2>Nothing archived</h2>
+        <p>
+          Press <kbd>x</kbd> on anything you don’t want to see again. It lands here, not in
+          the bin.
+        </p>
+        <button className="btn primary" onClick={onReset}>
+          Back to the feed
+        </button>
+      </div>
+    );
+  }
+
   if (query || lane !== 'all') {
     return (
       <div className="state pagefade">
@@ -743,36 +828,23 @@ function EmptyState({
         <p>
           Press <kbd>b</kbd> on any skill or candidate to keep it here for later.
         </p>
-        <button className="btn primary" onClick={onGoSkills}>
-          Back to skills
+        <button className="btn primary" onClick={onGoIdeas}>
+          Back to ideas
         </button>
       </div>
     );
   }
 
-  if (view === 'archive') {
+  if (view === 'ideas') {
     return (
       <div className="state pagefade">
-        <h2>Archive is empty</h2>
+        <h2>Nothing in this window</h2>
         <p>
-          Press <kbd>x</kbd> on anything you don’t want to see again. It lands here, not in
-          the bin.
+          No projects match the current look-back. Widen it, or clear the lane filter.
         </p>
-        <button className="btn primary" onClick={onGoSkills}>
-          Back to skills
+        <button className="btn primary" onClick={onReset}>
+          Widen the window
         </button>
-      </div>
-    );
-  }
-
-  if (view === 'candidates') {
-    return (
-      <div className="state pagefade">
-        <h2>No candidates yet</h2>
-        <p>
-          The scanner hasn’t run, or nothing survived the AI filter. Run{' '}
-          <code>npm run scan</code> in <code>ideafeed/scanner</code>.
-        </p>
       </div>
     );
   }
@@ -786,7 +858,7 @@ function EmptyState({
           : 'Nothing has been through the pipeline yet.'}
       </p>
       {feed && feed.stats.candidates > 0 && (
-        <button className="btn primary" onClick={onGoCandidates}>
+        <button className="btn primary" onClick={onGoIdeas}>
           See the candidates
         </button>
       )}
