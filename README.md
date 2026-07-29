@@ -182,9 +182,36 @@ triggers a rebuild, so the live site stays current on its own.
 | `SUPABASE_URL` | Optional | No database mirror; `feed.json` is unaffected |
 | `SUPABASE_SERVICE_ROLE_KEY` | Optional | As above |
 
-Cost is bounded by `limits.maxSkillsPerRun` (8 per run) and
-`limits.maxCandidatesPerRun` (40 repos read per run). Extraction and review are
-batched; generation is one call per skill.
+## What it costs
+
+Each run reports its own spend, computed from the token usage the API returns
+rather than estimated from prompt sizes, and stores it in `ideafeed_runs`:
+
+```
+api spend
+  claude-haiku-4-5    4 calls ·  34,667 in /  8,000 out · $0.075
+  claude-sonnet-5     4 calls ·   8,000 in /  6,000 out · $0.114
+  claude-opus-5       1 calls ·   7,000 in /  1,500 out · $0.073
+  total               9 calls · $0.261 this run · ~$7.83/month daily
+```
+
+**One model per stage, matched to what the stage does.** Extraction is bulk
+reading — it carries most of the input tokens and the least judgement, so it
+runs on the cheapest model. Generation is a writing task. Review is the gate
+that has to catch a fluent lie, and it's the cheapest stage by volume, so it
+keeps the best model.
+
+The three levers, largest first:
+
+| Lever | Where |
+| --- | --- |
+| Cadence | the cron in `.github/workflows/scan.yml` — linear, and by far the biggest |
+| Stage models | `enrichment.stages` |
+| Volume caps | `limits.maxSkillsPerRun`, `maxCandidatesPerRun`, `docBytes`, `maxDocFiles` |
+
+Don't cut the review model to save money — it's the smallest line item and the
+only thing standing between a hallucinated `SKILL.md` and your skills
+directory.
 
 ---
 

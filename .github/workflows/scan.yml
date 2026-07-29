@@ -5,12 +5,15 @@ name: ideafeed scan
 # runs on; any newly approved skills go out as a pull request instead, so
 # nothing reaches the skills directory without a human merging it.
 #
-# Runs on `main` every two hours. Schedules only ever fire on the default
-# branch, so keep this file there — a copy on another branch will never tick.
+# Runs on `main` once a day. Schedules only ever fire on the default branch, so
+# keep this file there — a copy on another branch will never tick.
+#
+# Daily rather than 2-hourly on purpose: repos that break out don't do it in
+# two-hour windows, and the cadence is the single biggest cost lever there is.
 
 on:
   schedule:
-    - cron: '17 */2 * * *' # every two hours, off the hour to avoid the rush
+    - cron: '17 7 * * *' # 07:17 UTC daily, off the hour to avoid the rush
   workflow_dispatch:
     inputs:
       mode:

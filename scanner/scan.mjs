@@ -361,7 +361,12 @@ async function main() {
       const extracted =
         runMode === 'mock'
           ? mock.extractWorkflows(extractInput)
-          : await extractWorkflows(client, extractInput, config.enrichment, config.limits.extractBatchSize);
+          : await extractWorkflows(
+              client,
+              extractInput,
+              config.enrichment.stages.extract,
+              config.limits.extractBatchSize,
+            );
 
       // Flatten to individual workflows, best repos first, then cap.
       const workflowQueue = [];
@@ -397,7 +402,15 @@ async function main() {
           generated =
             runMode === 'mock'
               ? mock.generateSkill({ repo: entry.repo, workflow })
-              : await generateSkill(client, { repo: { ...entry.repo, stars: entry.repo.stargazers_count }, docs: entry.docs, workflow }, config.enrichment);
+              : await generateSkill(
+                  client,
+                  {
+                    repo: { ...entry.repo, stars: entry.repo.stargazers_count },
+                    docs: entry.docs,
+                    workflow,
+                  },
+                  config.enrichment.stages.generate,
+                );
         } catch (err) {
           console.warn(`  generation failed for ${entry.repo.full_name}: ${err.message}`);
           continue;
@@ -449,7 +462,12 @@ async function main() {
         const reviews =
           runMode === 'mock'
             ? mock.reviewSkills(newSkills)
-            : await reviewSkills(client, newSkills, config.enrichment, config.limits.reviewBatchSize);
+            : await reviewSkills(
+              client,
+              newSkills,
+              config.enrichment.stages.review,
+              config.limits.reviewBatchSize,
+            );
 
         for (const skill of newSkills) {
           skill.review = reviews.get(skill.id) || {
@@ -578,10 +596,17 @@ async function main() {
   );
 
   if (spend.calls > 0) {
+    console.log('\napi spend');
+    for (const [model, u] of Object.entries(spend.byModel)) {
+      console.log(
+        `  ${model.padEnd(18)} ${String(u.calls).padStart(2)} calls · ` +
+          `${u.input.toLocaleString().padStart(7)} in / ${u.output.toLocaleString().padStart(6)} out · ` +
+          `$${u.cost.toFixed(3)}${u.unpriced ? '  (no rate configured)' : ''}`,
+      );
+    }
     console.log(
-      `api — ${spend.calls} calls · ${spend.input.toLocaleString()} in / ` +
-        `${spend.output.toLocaleString()} out tokens · $${spend.cost.toFixed(2)} this run ` +
-        `(~$${(spend.cost * 12 * 30).toFixed(0)}/month at the current 2-hourly cadence)`,
+      `  ${'total'.padEnd(18)} ${String(spend.calls).padStart(2)} calls · ` +
+        `$${spend.cost.toFixed(3)} this run · ~$${(spend.cost * 30).toFixed(2)}/month daily`,
     );
   }
 

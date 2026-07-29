@@ -8,12 +8,12 @@
   "limits": {
     "perQuery": 50,
     "maxItemsInFeed": 500,
-    "maxCandidatesPerRun": 40,
-    "maxSkillsPerRun": 8,
-    "extractBatchSize": 5,
+    "maxCandidatesPerRun": 25,
+    "maxSkillsPerRun": 4,
+    "extractBatchSize": 6,
     "reviewBatchSize": 4,
-    "docBytes": 9000,
-    "maxDocFiles": 4,
+    "docBytes": 6000,
+    "maxDocFiles": 3,
     "keepUnseenDays": 45
   },
 
@@ -295,12 +295,19 @@
 
   "enrichment": {
     "enabled": true,
-    "model": "claude-opus-5",
-    "effort": "low",
-    "$pricing_comment": "Per million tokens, used only to report what a run cost. Update if rates change.",
+
+    "$comment": "One model per stage, matched to what the stage actually does. Extraction is bulk reading — it carries most of the input tokens and the least judgement, so it runs on the cheapest model. Generation is a writing task. Review is the gate that has to catch a fluent lie, and it is also the cheapest stage by volume, so it stays on the best model.",
+    "stages": {
+      "extract": { "model": "claude-haiku-4-5" },
+      "generate": { "model": "claude-sonnet-5", "effort": "low" },
+      "review": { "model": "claude-opus-5", "effort": "low" }
+    },
+
+    "$pricing_comment": "Per million tokens, used to report what a run cost. Update if rates change.",
     "pricing": {
-      "inputPerMTok": 5.0,
-      "outputPerMTok": 25.0
+      "claude-opus-5": { "inputPerMTok": 5.0, "outputPerMTok": 25.0 },
+      "claude-sonnet-5": { "inputPerMTok": 3.0, "outputPerMTok": 15.0 },
+      "claude-haiku-4-5": { "inputPerMTok": 1.0, "outputPerMTok": 5.0 }
     }
   }
 }

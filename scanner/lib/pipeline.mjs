@@ -16,32 +16,55 @@ const MAX_WORKFLOWS_PER_REPO = 2;
  * sizes; the API reports it exactly on every response, so the run can just add
  * it up and say what it actually cost.
  */
-const usage = { calls: 0, input: 0, output: 0, cacheRead: 0, cacheWrite: 0 };
+// Keyed by model, because the stages run on different models at different
+// rates — a single total would price Haiku tokens like Opus ones.
+const usage = new Map();
 
 export function resetUsage() {
-  Object.keys(usage).forEach((k) => {
-    usage[k] = 0;
-  });
+  usage.clear();
 }
 
 export function getUsage(pricing) {
-  // Cache reads bill at ~10% of input; writes at ~1.25x. Counted separately so
-  // the number stays right if caching is ever introduced here.
-  const inputCost =
-    ((usage.input + usage.cacheWrite * 1.25 + usage.cacheRead * 0.1) / 1e6) *
-    (pricing?.inputPerMTok ?? 0);
-  const outputCost = (usage.output / 1e6) * (pricing?.outputPerMTok ?? 0);
-  return { ...usage, cost: Math.round((inputCost + outputCost) * 10000) / 10000 };
+  const total = { calls: 0, input: 0, output: 0, cost: 0, byModel: {} };
+
+  for (const [model, u] of usage) {
+    const rates = pricing?.[model];
+    // Cache reads bill at ~10% of input, writes at ~1.25x. Broken out so the
+    // number stays right if prompt caching is ever introduced here.
+    const billableInput = u.input + u.cacheWrite * 1.25 + u.cacheRead * 0.1;
+    const cost =
+      (billableInput / 1e6) * (rates?.inputPerMTok ?? 0) +
+      (u.output / 1e6) * (rates?.outputPerMTok ?? 0);
+
+    total.calls += u.calls;
+    total.input += u.input;
+    total.output += u.output;
+    total.cost += cost;
+    total.byModel[model] = { ...u, cost: Math.round(cost * 10000) / 10000 };
+    if (!rates) total.byModel[model].unpriced = true;
+  }
+
+  total.cost = Math.round(total.cost * 10000) / 10000;
+  return total;
 }
 
 function record(response) {
   const u = response?.usage;
   if (!u) return;
-  usage.calls += 1;
-  usage.input += u.input_tokens || 0;
-  usage.output += u.output_tokens || 0;
-  usage.cacheRead += u.cache_read_input_tokens || 0;
-  usage.cacheWrite += u.cache_creation_input_tokens || 0;
+  const model = response.model || 'unknown';
+  const entry = usage.get(model) || {
+    calls: 0,
+    input: 0,
+    output: 0,
+    cacheRead: 0,
+    cacheWrite: 0,
+  };
+  entry.calls += 1;
+  entry.input += u.input_tokens || 0;
+  entry.output += u.output_tokens || 0;
+  entry.cacheRead += u.cache_read_input_tokens || 0;
+  entry.cacheWrite += u.cache_creation_input_tokens || 0;
+  usage.set(model, entry);
 }
 
 /* --------------------------------- schemas --------------------------------- */
@@ -220,30 +243,42 @@ function parseResponse(response) {
  * so a safety-classifier decline on one odd repo doesn't cost the whole batch,
  * then retries once on the plain endpoint.
  */
+/**
+ * One model call with a JSON schema.
+ *
+ * `effort` is omitted when the stage config doesn't set it — Haiku 4.5 rejects
+ * the parameter outright, and the extract stage runs there.
+ */
 async function callModel(client, { system, prompt, schema, cfg, maxTokens = 8000 }) {
+  const outputConfig = { format: { type: 'json_schema', schema } };
+  if (cfg.effort) outputConfig.effort = cfg.effort;
+
   const request = {
     model: cfg.model,
     max_tokens: maxTokens,
     system,
-    output_config: {
-      effort: cfg.effort,
-      format: { type: 'json_schema', schema },
-    },
+    output_config: outputConfig,
     messages: [{ role: 'user', content: prompt }],
   };
 
-  try {
-    return parseResponse(
-      await client.beta.messages.create({
-        ...request,
-        betas: ['server-side-fallback-2026-07-01'],
-        fallbacks: 'default',
-      }),
-    );
-  } catch (err) {
-    console.warn(`    retrying without server-side fallbacks: ${err.message}`);
-    return parseResponse(await client.messages.create(request));
+  // Server-side fallbacks exist so a safety-classifier decline on one odd repo
+  // doesn't cost the whole batch. Only the Opus tier has fallback targets, so
+  // attempting it elsewhere just burns a failed call.
+  if (cfg.model.startsWith('claude-opus')) {
+    try {
+      return parseResponse(
+        await client.beta.messages.create({
+          ...request,
+          betas: ['server-side-fallback-2026-07-01'],
+          fallbacks: 'default',
+        }),
+      );
+    } catch (err) {
+      console.warn(`    retrying without server-side fallbacks: ${err.message}`);
+    }
   }
+
+  return parseResponse(await client.messages.create(request));
 }
 
 /* ------------------------------- stage 4: extract ------------------------------- */
