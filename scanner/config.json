@@ -296,6 +296,11 @@
   "enrichment": {
     "enabled": true,
     "model": "claude-opus-5",
-    "effort": "low"
+    "effort": "low",
+    "$pricing_comment": "Per million tokens, used only to report what a run cost. Update if rates change.",
+    "pricing": {
+      "inputPerMTok": 5.0,
+      "outputPerMTok": 25.0
+    }
   }
 }

@@ -40,6 +40,8 @@ import {
   generateSkill,
   reviewSkills,
   mock,
+  getUsage,
+  resetUsage,
 } from './lib/pipeline.mjs';
 import { writeSkill } from './lib/skillfile.mjs';
 import { supabaseConfigured, syncRun } from './lib/supabase.mjs';
@@ -306,6 +308,7 @@ async function main() {
   /* ------------------- stages 4-7: extract, generate, review ------------------- */
 
   const newSkills = [];
+  resetUsage();
   const runMode = MOCK_LLM ? 'mock' : NO_LLM ? 'off' : enrichmentAvailable() ? 'live' : 'unavailable';
 
   if (runMode === 'off') {
@@ -544,6 +547,8 @@ async function main() {
 
   const skills = items.filter((i) => i.type === 'skill');
 
+  const spend = getUsage(config.enrichment.pricing);
+
   const feed = {
     version: 2,
     generated_at: nowIso,
@@ -559,6 +564,10 @@ async function main() {
       docs_read: toRead.length,
       new_skills_this_run: newSkills.length,
       published_this_run: published.length,
+      api_calls: spend.calls,
+      input_tokens: spend.input,
+      output_tokens: spend.output,
+      cost_usd: spend.cost,
     },
     items,
   };
@@ -567,6 +576,14 @@ async function main() {
     `\n${items.length} items in feed · ${skills.length} skills ` +
       `(${feed.stats.published} published) · ${feed.stats.candidates} candidates`,
   );
+
+  if (spend.calls > 0) {
+    console.log(
+      `api — ${spend.calls} calls · ${spend.input.toLocaleString()} in / ` +
+        `${spend.output.toLocaleString()} out tokens · $${spend.cost.toFixed(2)} this run ` +
+        `(~$${(spend.cost * 12 * 30).toFixed(0)}/month at the current 2-hourly cadence)`,
+    );
+  }
 
   if (DRY_RUN) {
     console.log('\n--dry: nothing written');

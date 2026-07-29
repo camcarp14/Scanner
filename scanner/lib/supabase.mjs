@@ -139,6 +139,10 @@ export async function syncRun({ items, stats, mode }) {
       docs_read: stats.docs_read ?? null,
       skills_generated: stats.new_skills_this_run ?? null,
       published: stats.published_this_run ?? null,
+      api_calls: stats.api_calls ?? null,
+      input_tokens: stats.input_tokens ?? null,
+      output_tokens: stats.output_tokens ?? null,
+      cost_usd: stats.cost_usd ?? null,
       stats,
     },
   ]);

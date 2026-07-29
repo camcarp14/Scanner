@@ -11,6 +11,39 @@
 
 const MAX_WORKFLOWS_PER_REPO = 2;
 
+/*
+ * Token accounting. Estimating this from the outside means guessing at prompt
+ * sizes; the API reports it exactly on every response, so the run can just add
+ * it up and say what it actually cost.
+ */
+const usage = { calls: 0, input: 0, output: 0, cacheRead: 0, cacheWrite: 0 };
+
+export function resetUsage() {
+  Object.keys(usage).forEach((k) => {
+    usage[k] = 0;
+  });
+}
+
+export function getUsage(pricing) {
+  // Cache reads bill at ~10% of input; writes at ~1.25x. Counted separately so
+  // the number stays right if caching is ever introduced here.
+  const inputCost =
+    ((usage.input + usage.cacheWrite * 1.25 + usage.cacheRead * 0.1) / 1e6) *
+    (pricing?.inputPerMTok ?? 0);
+  const outputCost = (usage.output / 1e6) * (pricing?.outputPerMTok ?? 0);
+  return { ...usage, cost: Math.round((inputCost + outputCost) * 10000) / 10000 };
+}
+
+function record(response) {
+  const u = response?.usage;
+  if (!u) return;
+  usage.calls += 1;
+  usage.input += u.input_tokens || 0;
+  usage.output += u.output_tokens || 0;
+  usage.cacheRead += u.cache_read_input_tokens || 0;
+  usage.cacheWrite += u.cache_creation_input_tokens || 0;
+}
+
 /* --------------------------------- schemas --------------------------------- */
 
 const EXTRACT_SCHEMA = {
@@ -168,6 +201,7 @@ export async function createClient() {
 }
 
 function parseResponse(response) {
+  record(response);
   if (response.stop_reason === 'refusal') {
     throw new Error(
       `model declined (${response.stop_details?.category || 'unknown category'})`,
