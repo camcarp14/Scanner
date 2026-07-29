@@ -431,6 +431,7 @@ test('shouldExclude drops the unreadable repos and keeps the bilingual ones', ()
 test('stripExcludedScript keeps the English half of a bilingual description', () => {
   const han = ['han'];
 
+  // Cleanly split by a separator.
   assert.equal(
     stripExcludedScript(
       'Consider it done. The open-source AI agent that works out of the box · 想到，就能做到。开源、开箱即用的 AI Agent。',
@@ -439,17 +440,50 @@ test('stripExcludedScript keeps the English half of a bilingual description', ()
     'Consider it done. The open-source AI agent that works out of the box',
   );
 
-  // Latin product names embedded in the stripped half must not survive as a
-  // dangling tail — the separator split is what prevents "· AI Agent".
-  assert.ok(!stripExcludedScript('English text here · 中文 AI Agent 说明', han).includes('AI Agent'));
+  // Split by nothing at all — the two languages just abut.
+  assert.equal(
+    stripExcludedScript(
+      'A practical, open-source guide to mastering WorkBuddy through real-world workflows.开源的 WorkBuddy 实战蓝皮书。',
+      han,
+    ),
+    'A practical, open-source guide to mastering WorkBuddy through real-world workflows.',
+  );
 
-  // Nothing worth keeping.
-  assert.equal(stripExcludedScript('面向 AI 创作的开源无限画布工作台，集成 AI 生图', han), '');
+  // Interleaved. Cutting on punctuation left the debris from the mixed half
+  // welded onto the good sentence: "…from scratch. Claude Code 50 ~5000
+  // TypeScript / Python 11 coding agent". Cutting on the script transition,
+  // then requiring each surviving run to read as prose, is what fixes it.
+  assert.equal(
+    stripExcludedScript(
+      'Build your own Claude Code from scratch. 从零开始构建 Claude Code，50 节课 ~5000 行 TypeScript / Python，11 个 coding agent',
+      han,
+    ),
+    'Build your own Claude Code from scratch.',
+  );
+
+  // A residue of product names is not a description.
+  assert.equal(stripExcludedScript('企业数据分析、统计分析｜Analysis Lab、FastAPI、Next.js', han), '');
+  assert.equal(stripExcludedScript('面向 AI 创作的开源无限画布工作台', han), '');
 
   // Untouched when there is nothing to strip.
   const plain = 'A perfectly ordinary English description';
   assert.equal(stripExcludedScript(plain, han), plain);
   assert.equal(stripExcludedScript(plain, []), plain);
+});
+
+test('emoji are not mistaken for Chinese', () => {
+  // Astral-plane characters are surrogate pairs, and a character class tested
+  // without the `u` flag can match the halves. A naive
+  // /[一-鿿豈-﫿]/ does exactly that and reports every
+  // rocket-ship README as Chinese — which is how this was nearly missed.
+  const emoji = 'The agentic HTML editor 🚀 75 Skills 🛡️ Sandboxed preview 📤 1-click 🔑 Zero API key';
+
+  assert.equal(hasExcludedScript(emoji, ['han']), false);
+  assert.equal(stripExcludedScript(emoji, ['han']), emoji);
+  for (const ch of ['🚀', '🔍', '🐙', '📤', '🔑', '✨', '→', 'é', '·']) {
+    assert.equal(hasExcludedScript(ch, ['han']), false, `${ch} should not read as Chinese`);
+  }
+  assert.equal(hasExcludedScript('一', ['han']), true);
 });
 
 /* --------------------------- tool-build weighting --------------------------- */

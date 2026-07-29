@@ -198,7 +198,28 @@ export function stripExcludedScript(text, scripts) {
   // A run of excluded-script characters together with the CJK punctuation and
   // spacing binding it, so a whole clause goes at once rather than leaving
   // punctuation confetti behind.
-  const run = new RegExp(`[${cls}${CJK_PUNCT}]+(?:[\\s${CJK_PUNCT}]*[${cls}${CJK_PUNCT}]+)*`, 'g');
+  const excluded = new RegExp(
+    `[${cls}${CJK_PUNCT}]+(?:[\\s${CJK_PUNCT}]*[${cls}${CJK_PUNCT}]+)*`,
+    'g',
+  );
+
+  const matches = [...text.matchAll(excluded)];
+  if (!matches.length) return text;
+
+  // Cut at every transition between the excluded script and everything else,
+  // rather than at punctuation. The two languages are as often interleaved
+  //   "…from scratch. 从零开始构建 Claude Code，50 节课 ~5000 行 TypeScript"
+  // as they are cleanly split, and a punctuation split leaves the debris from
+  // the interleaved half — "Claude Code 50 ~5000 TypeScript / Python 11
+  // coding agent" — attached to the perfectly good sentence in front of it.
+  const runs = [];
+  let cursor = 0;
+  for (const match of matches) {
+    runs.push(text.slice(cursor, match.index));
+    cursor = match.index + match[0].length;
+  }
+  runs.push(text.slice(cursor));
+
   const tidy = (s) =>
     s
       .replace(/\s*[·|｜/\\–—:;,-]+\s*$/, '')
@@ -206,26 +227,21 @@ export function stripExcludedScript(text, scripts) {
       .replace(/\s{2,}/g, ' ')
       .trim();
 
-  // Split on the separators that actually join the two halves of a bilingual
-  // line BEFORE stripping, and judge each half on its own. Stripping the whole
-  // string in one pass leaves the Latin fragments embedded in the Chinese half
-  // stranded on the end -- "…out of the box · AI Agent".
-  const segments = text.split(/\s*[·|｜]\s*|\n+/);
-  const kept = [];
+  // Each surviving run has to read as a sentence rather than as the loose
+  // product and framework names that get sprinkled through the other
+  // language. Function words are the cheap test for that difference: prose has
+  // them, a residue of proper nouns doesn't.
+  const prose = runs
+    .map(tidy)
+    .filter((run) => run.split(/\s+/).filter(Boolean).length >= 4 && FUNCTION_WORDS.test(run));
 
-  for (const segment of segments) {
-    if (!hasExcludedScript(segment, scripts)) {
-      if (segment.trim()) kept.push(segment.trim());
-      continue;
-    }
-    // What survives has to read as a sentence, not as the loose Latin words
-    // (product names, framework names) sprinkled through the other language.
-    const stripped = tidy(segment.replace(run, ' '));
-    if (stripped.split(/\s+/).filter(Boolean).length >= 4) kept.push(stripped);
-  }
-
-  return tidy(kept.join(' · '));
+  return tidy(prose.join(' '));
 }
+
+// Ordinary English connective tissue. Their absence from a stripped fragment
+// is what separates a sentence from a residue of product names.
+const FUNCTION_WORDS =
+  /\b(the|a|an|and|or|for|with|to|of|in|on|your|you|that|this|it|is|are|from|into|by|as)\b/i;
 
 // Below this, whatever survived the strip is a fragment, not a summary.
 export const MIN_READABLE = 25;
