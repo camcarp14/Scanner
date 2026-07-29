@@ -31,8 +31,10 @@ skills, and save the ones worth coming back to.
                         feed.json → web app
 ```
 
-There is no server and no database. The pipeline is a cron job, the feed is a
-static file, the app is static, and your saves live in your browser.
+There is no server. The pipeline is a cron job, the feed is a static file, the
+app is static, and your saves live in your browser. Each run is also mirrored
+into Postgres if credentials are present — optional, and additive: the site
+never reads from it.
 
 ---
 
@@ -48,6 +50,7 @@ static file, the app is static, and your saves live in your browser.
 | `scanner/lib/pipeline.mjs` | Stages 4, 6, 7 — extract, generate, review |
 | `scanner/lib/skillscore.mjs` | Stage 5 — the rule-based skill score |
 | `scanner/lib/skillfile.mjs` | Stage 8 — renders and writes `SKILL.md` |
+| `scanner/lib/supabase.mjs` | Optional mirror of each run into Postgres |
 | `scanner/test/` | Offline tests for every stage that has no network in it |
 | `skills/` | Published skills. Written by the pipeline, merged by you |
 | `web/` | Vite + React + TypeScript app |
@@ -74,6 +77,7 @@ cd ../web && npm install && npm run dev
 | `--dry` | Runs every stage, writes nothing |
 | `--no-llm` | Stages 1–3 only: collect candidates, generate no skills |
 | `--mock-llm` | Runs all eight stages against deterministic stand-ins |
+| `--no-db` | Skip the Postgres mirror |
 | `IDEAFEED_CONFIG=./other.json` | Use a different config |
 
 **`--mock-llm` is worth knowing about.** It exercises the whole pipeline —
@@ -175,10 +179,53 @@ triggers a rebuild, so the live site stays current on its own.
 | --- | --- | --- |
 | `GITHUB_TOKEN` | Provided automatically in Actions | 60 requests/hour, so stage 3 reads almost nothing |
 | `ANTHROPIC_API_KEY` | Optional | Stages 4–8 are skipped; candidates are still collected |
+| `SUPABASE_URL` | Optional | No database mirror; `feed.json` is unaffected |
+| `SUPABASE_SERVICE_ROLE_KEY` | Optional | As above |
 
 Cost is bounded by `limits.maxSkillsPerRun` (8 per run) and
 `limits.maxCandidatesPerRun` (40 repos read per run). Extraction and review are
 batched; generation is one call per skill.
+
+---
+
+## The database mirror (optional)
+
+`feed.json` is the source of truth. It's a static file, it costs nothing to
+serve, and the app works with no database at all — so the mirror is strictly
+additive, and a failure in it is logged rather than allowed to fail a scan that
+already produced its output.
+
+What it buys you is the two things a snapshot file can't: **history**, and
+**queryability from outside the app**.
+
+Three tables, in the existing `the-pentagon` project rather than a new one:
+
+| Table | One row per |
+| --- | --- |
+| `ideafeed_candidates` | Repo the scout has ever kept |
+| `ideafeed_skills` | Generated SKILL.md, including the held and rejected ones |
+| `ideafeed_runs` | Pipeline run, with the funnel counts |
+
+Rejected skills are kept on purpose: they're the record of what the pipeline
+decided *not* to ship, which is what you tune the thresholds against.
+
+All three are RLS-enabled with a read-only policy for `anon`. The scanner writes
+with the service role, which bypasses RLS — so no policy grants insert anywhere,
+and a leaked publishable key cannot write.
+
+```sql
+-- what's growing fastest since we found it
+select full_name, stars - stars_at_first_seen as gained, score
+from ideafeed_candidates order by gained desc limit 20;
+
+-- is the extractor getting stricter or looser over time?
+select ran_at::date, scanned, kept_by_filter, docs_read, skills_generated, published
+from ideafeed_runs order by ran_at desc;
+
+-- everything the reviewer held, worst grounding first
+select name, skill_score, skill_breakdown->>'grounding' as grounding, review->>'reasons'
+from ideafeed_skills where verdict = 'hold' order by skill_score;
+```
 
 ---
 

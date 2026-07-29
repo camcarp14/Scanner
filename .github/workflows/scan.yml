@@ -58,6 +58,11 @@ jobs:
           # Optional. Without it, stages 4-8 are skipped and only candidates are
           # collected — the run still succeeds.
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          # Optional. Mirrors each run into the `the-pentagon` Postgres project.
+          # feed.json is written either way; the sync is additive, and a failure
+          # in it is logged rather than allowed to fail the scan.
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: |
           case "${{ inputs.mode || 'full' }}" in
             no-llm)   node scan.mjs --no-llm ;;

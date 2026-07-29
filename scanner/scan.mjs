@@ -7,6 +7,7 @@
 //   node scan.mjs --dry        run everything, write nothing
 //   node scan.mjs --no-llm     scout/filter/read only; no skills generated
 //   node scan.mjs --mock-llm   run every stage against deterministic stand-ins
+//   node scan.mjs --no-db      skip mirroring the run to Postgres
 //
 // Designed to run unattended on a cron. Every network call is retried, every
 // model stage degrades to "no skills this run" rather than failing the run, and
@@ -41,12 +42,14 @@ import {
   mock,
 } from './lib/pipeline.mjs';
 import { writeSkill } from './lib/skillfile.mjs';
+import { supabaseConfigured, syncRun } from './lib/supabase.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const args = new Set(process.argv.slice(2));
 const DRY_RUN = args.has('--dry');
 const NO_LLM = args.has('--no-llm');
 const MOCK_LLM = args.has('--mock-llm');
+const NO_DB = args.has('--no-db');
 
 const DAY = 86_400_000;
 // The feed embeds each skill's body so the app can render it without a second
@@ -573,6 +576,24 @@ async function main() {
   await mkdir(dirname(outPath), { recursive: true });
   await writeFile(outPath, `${JSON.stringify(feed, null, 2)}\n`, 'utf8');
   console.log(`wrote ${outPath}`);
+
+  // The feed is written and the run has succeeded by this point. Mirroring to
+  // Postgres is additive, so a failure here is reported and swallowed rather
+  // than allowed to fail a scan that already produced its output.
+  if (NO_DB) {
+    console.log('database sync skipped (--no-db)');
+  } else if (!supabaseConfigured()) {
+    console.log(
+      'database sync skipped — set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY to mirror runs.',
+    );
+  } else {
+    try {
+      const summary = await syncRun({ items, stats: feed.stats, mode: runMode });
+      console.log(`synced to supabase: ${summary}`);
+    } catch (err) {
+      console.warn(`supabase sync failed (feed is still written): ${err.message}`);
+    }
+  }
 }
 
 main().catch((err) => {
