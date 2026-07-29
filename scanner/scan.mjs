@@ -30,7 +30,14 @@ import {
 import { fetchTrending } from './lib/trending.mjs';
 import { aiRelevance } from './lib/filter.mjs';
 import { readDocs } from './lib/docs.mjs';
-import { scoreRepo, shouldExclude, starVelocity, daysSince } from './lib/score.mjs';
+import {
+  scoreRepo,
+  shouldExclude,
+  starVelocity,
+  daysSince,
+  stripExcludedScript,
+  readableAfterStrip,
+} from './lib/score.mjs';
 import { scoreSkill } from './lib/skillscore.mjs';
 import { buildHook, cleanDescription } from './lib/summarize.mjs';
 import {
@@ -183,12 +190,13 @@ async function main() {
 
   console.log('\n[2] filter — keep AI projects');
   const passed = [];
-  let excluded = 0;
+  const excludedBy = new Map();
   let notAi = 0;
 
   for (const { repo, lanes } of candidatesFound.values()) {
-    if (shouldExclude(repo, config.scoring)) {
-      excluded++;
+    const reason = shouldExclude(repo, config.scoring);
+    if (reason) {
+      excludedBy.set(reason, (excludedBy.get(reason) || 0) + 1);
       continue;
     }
     const relevance = aiRelevance(repo, '', config.filter);
@@ -199,8 +207,10 @@ async function main() {
     passed.push({ repo, lanes: [...lanes], relevance });
   }
 
+  const excluded = [...excludedBy.values()].reduce((a, b) => a + b, 0);
+  const why = [...excludedBy.entries()].map(([reason, n]) => `${n} ${reason}`).join(', ');
   console.log(
-    `  ${passed.length} kept · ${notAi} not AI projects · ${excluded} excluded (forks, archived, too well known)`,
+    `  ${passed.length} kept · ${notAi} not AI projects · ${excluded} excluded${why ? ` (${why})` : ''}`,
   );
 
   /* ---------------------------- stage 3: reader ---------------------------- */
@@ -260,6 +270,9 @@ async function main() {
 
   const labels = laneLabels(config);
   const nowIso = new Date().toISOString();
+  const scripts = config.scoring.excludeScripts;
+  const strip = (text) => stripExcludedScript(text, scripts);
+  const hasScript = (text) => !readableAfterStrip(text, scripts) || strip(text) !== text;
 
   const buildCandidate = (entry, prior) => {
     const { repo, lanes, docs, readme, relevance } = entry;
@@ -278,9 +291,11 @@ async function main() {
       owner: repo.owner?.login || repo.full_name.split('/')[0],
       name: repo.name,
       url: repo.html_url,
-      description: cleanDescription(repo.description || ''),
-      hook: prior?.hook || buildHook(repo, readme || ''),
-      tags: (repo.topics || []).slice(0, 4),
+      // Everything card-visible passes through the script strip, so a
+      // bilingual repo shows its English half instead of a wall of characters.
+      description: strip(cleanDescription(repo.description || '')),
+      hook: strip(prior?.hook || buildHook(repo, readme || '')),
+      tags: (repo.topics || []).filter((t) => !hasScript(t)).slice(0, 4),
       language: repo.language || null,
       stars: repo.stargazers_count,
       topics: repo.topics || [],
@@ -534,6 +549,41 @@ async function main() {
     // docs_excerpt is prompt context, not feed content — don't ship it.
     const { docs_excerpt, ...rest } = skill;
     merged.set(skill.id, { ...rest, body: clampBody(rest.body) });
+  }
+
+  // Script handling runs over the MERGED feed, not just this run's finds, for
+  // two reasons: the hook is built from the README, so a repo can carry an
+  // English description and still render a card nobody can read; and items
+  // banked before the rule existed would otherwise sit there forever.
+  //
+  // Strip first, drop second. Most matches are bilingual — an English sentence
+  // and the same thing again in Chinese — and those are real projects whose
+  // readable half is worth keeping.
+  let cleaned = 0;
+  let dropped = 0;
+  for (const [id, item] of merged) {
+    if (item.type === 'skill') continue;
+
+    const hook = strip(item.hook || '');
+    const description = strip(item.description || '');
+    const usable = hook || description;
+
+    if (!usable || usable.length < 25 || hasScript(item.name || '')) {
+      merged.delete(id);
+      dropped++;
+      continue;
+    }
+    if (hook !== item.hook || description !== item.description) {
+      merged.set(id, { ...item, hook, description });
+      cleaned++;
+    }
+  }
+  if (cleaned || dropped) {
+    console.log(
+      `\nscript filter (${scripts.join(', ')}) — ` +
+        `${cleaned} card${cleaned === 1 ? '' : 's'} trimmed to their readable half, ` +
+        `${dropped} dropped`,
+    );
   }
 
   const cutoff = Date.now() - config.limits.keepUnseenDays * DAY;

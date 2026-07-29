@@ -12,6 +12,12 @@ import { parseTrending } from '../lib/trending.mjs';
 import { aiRelevance } from '../lib/filter.mjs';
 import { rankDocPaths } from '../lib/docs.mjs';
 import { scoreSkill, distinctiveTerms } from '../lib/skillscore.mjs';
+import {
+  scoreRepo,
+  shouldExclude,
+  hasExcludedScript,
+  stripExcludedScript,
+} from '../lib/score.mjs';
 import { renderSkillMd, slugify } from '../lib/skillfile.mjs';
 import { readmeSummary, buildHook } from '../lib/summarize.mjs';
 import { rateFor, orderWorkflows } from '../lib/pipeline.mjs';
@@ -367,4 +373,135 @@ test('orderWorkflows drops repos the extractor rejected or found nothing in', ()
 
 test('orderWorkflows handles an empty extraction without throwing', () => {
   assert.deepEqual(orderWorkflows([], new Map()), { queue: [], repos: 0 });
+});
+
+/* ------------------------------ script filter ------------------------------ */
+
+test('hasExcludedScript catches Chinese but leaves English and accents alone', () => {
+  assert.equal(hasExcludedScript('一个基于大模型的智能体框架', ['han']), true);
+  assert.equal(hasExcludedScript('AgentKit — 中文文档', ['han']), true);
+  assert.equal(hasExcludedScript('An agent framework for LLM apps', ['han']), false);
+  // Accented Latin, em dashes, arrows and emoji all turn up in real English
+  // descriptions and must not trip the filter.
+  assert.equal(hasExcludedScript('Café → naïve résumé parser ✨ (v2)', ['han']), false);
+  // Japanese written with kanji trips `han` on purpose — the two share the
+  // ideograph blocks, and the rule is "can I read this card", not "which
+  // language is it". Pure katakana doesn't, until kana is switched on.
+  assert.equal(hasExcludedScript('日本語のドキュメント', ['han']), true);
+  assert.equal(hasExcludedScript('ドキュメント', ['han']), false);
+  assert.equal(hasExcludedScript('ドキュメント', ['han', 'kana']), true);
+  assert.equal(hasExcludedScript('anything at all', []), false);
+});
+
+test('shouldExclude drops the unreadable repos and keeps the bilingual ones', () => {
+  const cfg = { hardExcludeIfStarsAbove: 90000, excludeScripts: ['han'] };
+  const base = { stargazers_count: 100, name: 'agentkit', topics: [] };
+
+  assert.equal(shouldExclude({ ...base, description: 'An agent toolkit for LLM apps' }, cfg), null);
+
+  // Nothing readable left once the Chinese is gone.
+  assert.equal(
+    shouldExclude({ ...base, description: '一个智能体工具包' }, cfg),
+    'not in a script we read',
+  );
+
+  // Bilingual: the English half stands on its own, so the repo stays. This is
+  // the common case by a wide margin — dropping these lost real tools.
+  assert.equal(
+    shouldExclude(
+      { ...base, description: 'The open-source AI agent that works out of the box · 想到，就能做到。' },
+      cfg,
+    ),
+    null,
+  );
+
+  // The name is the repo's URL and can't be rewritten, so it's a hard drop.
+  assert.equal(
+    shouldExclude({ ...base, name: '智能体', description: 'An agent toolkit for LLM apps' }, cfg),
+    'not in a script we read',
+  );
+
+  // Topics are card-visible but disposable — filtered at render, not fatal.
+  assert.equal(
+    shouldExclude({ ...base, description: 'An agent toolkit for LLM apps', topics: ['中文', 'llm'] }, cfg),
+    null,
+  );
+});
+
+test('stripExcludedScript keeps the English half of a bilingual description', () => {
+  const han = ['han'];
+
+  assert.equal(
+    stripExcludedScript(
+      'Consider it done. The open-source AI agent that works out of the box · 想到，就能做到。开源、开箱即用的 AI Agent。',
+      han,
+    ),
+    'Consider it done. The open-source AI agent that works out of the box',
+  );
+
+  // Latin product names embedded in the stripped half must not survive as a
+  // dangling tail — the separator split is what prevents "· AI Agent".
+  assert.ok(!stripExcludedScript('English text here · 中文 AI Agent 说明', han).includes('AI Agent'));
+
+  // Nothing worth keeping.
+  assert.equal(stripExcludedScript('面向 AI 创作的开源无限画布工作台，集成 AI 生图', han), '');
+
+  // Untouched when there is nothing to strip.
+  const plain = 'A perfectly ordinary English description';
+  assert.equal(stripExcludedScript(plain, han), plain);
+  assert.equal(stripExcludedScript(plain, []), plain);
+});
+
+/* --------------------------- tool-build weighting --------------------------- */
+
+const SCORING = {
+  weights: { momentum: 34, freshness: 22, novelty: 24, substance: 10, obscurity: 10 },
+  penalizeKeywords: ['from scratch', 'compiler', 'simd', 'tutorial'],
+  rewardKeywords: ['cli', 'self-hosted', 'lets you', 'browser extension'],
+  installSignals: ['npm install', 'brew install'],
+  obscurityIdealStars: 400,
+  hardExcludeIfStarsAbove: 90000,
+  excludeScripts: [],
+};
+
+const repoOf = (description) => ({
+  name: 'thing',
+  description,
+  topics: ['ai', 'llm'],
+  language: 'TypeScript',
+  stargazers_count: 300,
+  created_at: new Date(Date.now() - 20 * 86_400_000).toISOString(),
+  license: {},
+});
+
+test('a shipped tool outscores a from-scratch demonstration', () => {
+  const tool = scoreRepo(
+    repoOf('A CLI that lets you run evals against your own prompts, self-hosted.'),
+    'Install with `npm install -g thing`. '.padEnd(2000, 'x'),
+    SCORING,
+  );
+  const trick = scoreRepo(
+    repoOf('A transformer compiler written from scratch with SIMD kernels.'),
+    'A walkthrough of the approach. '.padEnd(2000, 'x'),
+    SCORING,
+  );
+
+  assert.ok(
+    tool.breakdown.novelty > trick.breakdown.novelty + 20,
+    `expected the tool to lead clearly, got ${tool.breakdown.novelty} vs ${trick.breakdown.novelty}`,
+  );
+});
+
+test('keyword stuffing cannot saturate the novelty component', () => {
+  // Every reward term at once. Before the cap this alone cleared 1.0 and the
+  // component stopped discriminating between anything.
+  const stuffed = scoreRepo(
+    repoOf('cli self-hosted lets you browser extension ' + 'cli self-hosted lets you'),
+    'no install line here. '.padEnd(2000, 'x'),
+    SCORING,
+  );
+  assert.ok(
+    stuffed.breakdown.novelty < 100,
+    `expected the cap to bite, got ${stuffed.breakdown.novelty}`,
+  );
 });
