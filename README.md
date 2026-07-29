@@ -145,8 +145,16 @@ what's worth keeping.
   deleting it.
 - **Score breakdown** — the number on every card expands into its components, so
   you can see *why* something scored the way it did.
+- **Appearance** — 20 colour schemes on one axis, light/dark on the other, so
+  every scheme has both. Generated: `npm run themes` rewrites `design/themes.css`,
+  `design/palettes.ts` and the pre-paint block in `index.html` from the single
+  table in `scripts/gen-themes.mjs`, and refuses to emit a palette that fails
+  WCAG AA. Add a theme by adding a row.
+- **Refresh** — the feed is a static file rebuilt by cron, so this re-fetches it.
+  Mostly for the installed app, which will otherwise sit on a cached copy.
 - **Keyboard** — `j`/`k` move, `o` opens the source, `b` saves, `x` archives,
-  `/` searches, `1`–`4` switch views, `⌘K` for the command palette.
+  `/` searches, `r` refreshes, `t` opens appearance, `1`–`3` switch views,
+  `⌘K` for the command palette.
 - **Export** — saved items come back out as JSON.
 
 Saves live in `localStorage` under `ideafeed.state.v1`. If you ever want them
@@ -294,6 +302,15 @@ Everything worth changing is in `scanner/config.json`:
 - **Different interests?** `scout.lanes` — any GitHub search query works.
 - **Wrong things getting through the filter?** `filter.strongKeywords` /
   `weakKeywords`, or raise `requireScore`.
+- **Too many feats of engineering, not enough tools?** `scoring.rewardKeywords`
+  is the vocabulary of something shipped, `penalizeKeywords` covers both
+  non-projects (lists, tutorials) and technique demonstrations (compilers,
+  allocators, hand-written kernels). `installSignals` is the strongest single
+  signal that a repo is a build rather than a writeup.
+- **Cards you can't read?** `scoring.excludeScripts` — `han` by default.
+  Bilingual repos keep their English half; only the ones with nothing readable
+  left are dropped. `kana`, `hangul`, `cyrillic`, `arabic`, `hebrew`,
+  `devanagari` and `thai` are available.
 - **Skills too generic?** Raise `skillScoring.publishThreshold`, or add the
   offending phrasing to `genericPhrases`.
 - **Not finding docs?** `reader.preferredFiles` and `docDirectories`.
