@@ -24,6 +24,7 @@ interface Props {
   cardRef?: (el: HTMLElement | null) => void;
 }
 
+/** Same face as a skill card: what it is, what it does, where it came from. */
 export function Card({
   item,
   isNew,
@@ -36,8 +37,7 @@ export function Card({
   onOpen,
   cardRef,
 }: Props) {
-  const [showWhy, setShowWhy] = useState(false);
-  const score = Math.round(item.score);
+  const [showDetails, setShowDetails] = useState(false);
 
   return (
     <article
@@ -45,95 +45,52 @@ export function Card({
       className={`card${selected ? ' selected' : ''}${opened ? ' opened' : ''}`}
       aria-current={selected || undefined}
     >
-      {/* Same anatomy as a skill card — dominant score, title, then a labelled
-          fact grid — so both lists scan the same way and the columns line up
-          from one card to the next. */}
-      <header className="sk-head">
-        <span className="sk-score" title="Repo score out of 100">
-          {score}
-        </span>
-
-        <div className="sk-titles">
-          <h3 className="sk-name">
-            <a
-              className="repo"
-              href={item.url}
-              target="_blank"
-              rel="noreferrer noopener"
-              onClick={onOpen}
-            >
-              <span className="owner">{item.owner}</span>
-              <span className="slash">/</span>
-              <span className="name">{item.name}</span>
-            </a>
-          </h3>
-          <div className="sk-chips">
-            {item.skills_extracted > 0 && (
-              <span className="pill published" title="Skills extracted from this repo">
-                {item.skills_extracted} skill{item.skills_extracted === 1 ? '' : 's'}
-              </span>
-            )}
-            {isNew && <span className="pill new">New</span>}
-            {item.lanes.slice(0, 2).map((lane) => (
-              <span className="pill" key={lane}>
-                {lane}
-              </span>
-            ))}
-          </div>
+      <header className="c-head">
+        <h3 className="c-name">
+          <a
+            className="repo"
+            href={item.url}
+            target="_blank"
+            rel="noreferrer noopener"
+            onClick={onOpen}
+          >
+            <span className="owner">{item.owner}</span>
+            <span className="slash">/</span>
+            <span className="name">{item.name}</span>
+          </a>
+        </h3>
+        <div className="c-chips">
+          {item.skills_extracted > 0 && (
+            <span className="pill published">
+              {item.skills_extracted} skill{item.skills_extracted === 1 ? '' : 's'}
+            </span>
+          )}
+          {isNew && <span className="pill new">New</span>}
         </div>
       </header>
 
       <p className="hook">{item.hook}</p>
 
-      <dl className="sk-facts">
-        <div>
-          <dt>Language</dt>
-          <dd>
-            {item.language ? (
-              <>
-                <span className="dot" style={{ background: languageColor(item.language) }} />
-                {item.language}
-              </>
-            ) : (
-              '—'
-            )}
-          </dd>
-        </div>
-        <div>
-          <dt>Stars</dt>
-          <dd className="mono">{compact(item.stars)}</dd>
-        </div>
-        <div>
-          <dt>Since found</dt>
-          <dd className={`mono${item.stars_gained > 0 ? ' gain' : ''}`}>
-            {item.stars_gained > 0 ? `+${compact(item.stars_gained)}` : '—'}
-          </dd>
-        </div>
-        <div>
-          <dt>Velocity</dt>
-          <dd className="mono">{velocityLabel(item.star_velocity)}</dd>
-        </div>
-        <div>
-          <dt>Age</dt>
-          <dd>{ageLabel(item.age_days)}</dd>
-        </div>
-        <div>
-          <dt>Docs read</dt>
-          <dd className="mono" title={item.doc_files.join(', ')}>
-            {item.doc_files.length || '—'}
-          </dd>
-        </div>
-      </dl>
-
-      {item.tags.length > 0 && (
-        <div className="tags">
-          {item.tags.slice(0, 5).map((tag) => (
-            <span key={tag} className="tag">
-              {tag}
-            </span>
-          ))}
-        </div>
-      )}
+      {/* One line of the numbers that actually drive scanning: how big, how
+          fast, how new. Everything else is behind Details. */}
+      <p className="c-origin">
+        {item.language && (
+          <>
+            <span className="dot" style={{ background: languageColor(item.language) }} />
+            {item.language}
+            <span className="c-sep">·</span>
+          </>
+        )}
+        <span className="mono">{compact(item.stars)}★</span>
+        {item.stars_gained > 0 && (
+          <>
+            <span className="c-sep">·</span>
+            <span className="mono gain">+{compact(item.stars_gained)}</span>
+          </>
+        )}
+        <span className="c-sep">·</span>
+        {ageLabel(item.age_days)}
+      </p>
 
       <footer className="actions">
         <button
@@ -154,25 +111,52 @@ export function Card({
         >
           Open ↗
         </a>
-        <button className="btn ghost" onClick={onArchive} title="Archive (x)">
-          {archived ? 'Unarchive' : 'Archive'}
-        </button>
         <button
-          className={`btn ghost score-btn${showWhy ? ' on' : ''}`}
-          onClick={() => setShowWhy((v) => !v)}
-          aria-expanded={showWhy}
-          title="Why this surfaced"
+          className={`btn ghost${showDetails ? ' on' : ''}`}
+          onClick={() => setShowDetails((v) => !v)}
+          aria-expanded={showDetails}
         >
-          Scoring
+          Details
           <span className="caret" aria-hidden="true">
-            {showWhy ? '▾' : '▸'}
+            {showDetails ? '▾' : '▸'}
           </span>
         </button>
-        <span className="found">found {relative(item.first_seen)}</span>
       </footer>
 
-      <Expand open={showWhy}>
-        <div className="breakdown">
+      <Expand open={showDetails}>
+        <div className="details">
+          <dl className="facts">
+            <div>
+              <dt>Velocity</dt>
+              <dd className="mono">{velocityLabel(item.star_velocity)}</dd>
+            </div>
+            <div>
+              <dt>Docs read</dt>
+              <dd className="mono" title={item.doc_files.join(', ')}>
+                {item.doc_files.length || '—'}
+              </dd>
+            </div>
+            <div>
+              <dt>Score</dt>
+              <dd className="mono">{Math.round(item.score)}</dd>
+            </div>
+            <div>
+              <dt>Found</dt>
+              <dd>{relative(item.first_seen)}</dd>
+            </div>
+          </dl>
+
+          {item.tags.length > 0 && (
+            <div className="tags">
+              {item.tags.slice(0, 6).map((tag) => (
+                <span key={tag} className="tag">
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )}
+
+          <p className="eyebrow panel-label">Scoring</p>
           {Object.entries(item.breakdown).map(([key, value]) => (
             <div className="bar-row" key={key}>
               <span className="bar-label">{BREAKDOWN_LABELS[key] ?? key}</span>
@@ -182,6 +166,7 @@ export function Card({
               <span className="bar-val mono">{value}</span>
             </div>
           ))}
+
           <p className="breakdown-note">
             {item.ai_signals.length > 0
               ? `Kept by the AI filter on: ${item.ai_signals.join(', ')}.`
@@ -190,6 +175,12 @@ export function Card({
               ? `${item.skills_extracted} skill${item.skills_extracted === 1 ? '' : 's'} extracted so far.`
               : 'No reusable workflow extracted from its docs yet.'}
           </p>
+
+          <div className="panel-actions">
+            <button className="btn ghost" onClick={onArchive}>
+              {archived ? 'Unarchive' : 'Archive'}
+            </button>
+          </div>
         </div>
       </Expand>
     </article>

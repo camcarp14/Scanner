@@ -634,38 +634,34 @@ function BrandMark() {
 }
 
 /**
- * The last run, as a funnel. This is the most informative thing the app can
- * show and it was missing entirely: the pipeline's defining behaviour is how
- * much it throws away, and a bare "8 skills" hides that 425 repos went in.
+ * The last run as one compact strip. It was a five-column block with bars,
+ * which pushed the first skill most of a screen down — the funnel is context,
+ * not the content, so it gets one line.
  */
 function Funnel({ feed }: { feed: Feed }) {
   const s = feed.stats;
   const steps = [
-    { label: 'Scanned', value: s.scanned, hint: 'Repos found by search + trending' },
-    { label: 'AI projects', value: s.kept_by_filter, hint: 'Kept by the filter' },
-    { label: 'Docs read', value: s.docs_read, hint: 'New repos whose documentation was read' },
-    { label: 'Skills', value: s.new_skills_this_run, hint: 'Generated from extracted workflows' },
-    { label: 'Published', value: s.published_this_run, hint: 'Cleared the reviewer and the score' },
+    { label: 'scanned', value: s.scanned, hint: 'Repos found by search + trending' },
+    { label: 'AI', value: s.kept_by_filter, hint: 'Kept by the AI-project filter' },
+    { label: 'read', value: s.docs_read, hint: 'New repos whose docs were read' },
+    { label: 'skills', value: s.new_skills_this_run, hint: 'Generated from extracted workflows' },
+    { label: 'published', value: s.published_this_run, hint: 'Cleared the reviewer and the score' },
   ];
-  const max = Math.max(...steps.map((x) => x.value || 0), 1);
 
   return (
-    <section className="funnel" aria-label="Last pipeline run">
-      <div className="funnel-head">
+    <section className="runbar" aria-label="Last pipeline run">
+      <span className="runbar-head">
         <span className="eyebrow">Last run</span>
-        <span className="funnel-when mono">{relative(feed.generated_at)}</span>
-      </div>
-      <ol className="funnel-steps">
-        {steps.map((step) => (
-          <li key={step.label} title={step.hint}>
-            <span className="funnel-value mono">{(step.value ?? 0).toLocaleString()}</span>
-            <span className="funnel-label">{step.label}</span>
-            <span className="funnel-bar" aria-hidden="true">
-              <span style={{ width: `${Math.max(((step.value || 0) / max) * 100, 1.5)}%` }} />
-            </span>
-          </li>
+        <span className="runbar-when mono">{relative(feed.generated_at)}</span>
+      </span>
+      <span className="runbar-stats mono">
+        {steps.map((step, i) => (
+          <span key={step.label} title={step.hint}>
+            {i > 0 && <span className="c-sep"> › </span>}
+            <b>{(step.value ?? 0).toLocaleString()}</b> {step.label}
+          </span>
         ))}
-      </ol>
+      </span>
     </section>
   );
 }
