@@ -215,7 +215,19 @@ runs on the cheapest model. Generation is a writing task. Review is the gate
 that has to catch a fluent lie, and it's the cheapest stage by volume, so it
 keeps the best model.
 
-### Scouting is free
+### Scouting is free — so it runs four times a day
+
+The workflow has two schedules. `17 7 * * *` runs everything. `17 1,13,19 * * *`
+runs `--no-llm`: stages 1-3 only, which are GitHub API calls and therefore cost
+nothing, on a public repo whose Actions minutes are also free. New ideas land in
+the feed four times a day; skills are generated once, because that is the half
+that costs money.
+
+The refresh button in the app is a third thing again, and the cheapest: the feed
+is a static file, so refreshing re-fetches it. It never starts a pipeline run and
+never costs anything, however often it is pressed.
+
+### Why scouting is free
 
 Worth being precise about, because it's the natural place to start cutting and
 it saves nothing. That run swept 426 repos across 8 search lanes and 8 trending
@@ -237,7 +249,7 @@ nothing. The levers in order:
 
 | Lever | Where | Effect |
 | --- | --- | --- |
-| Cadence | the cron in `.github/workflows/scan.yml` | Linear, and by far the biggest |
+| Cadence of the FULL run | the `17 7 * * *` cron in `.github/workflows/scan.yml` | Linear, and by far the biggest |
 | `maxSkillsPerRun` | `limits` | ~$0.04 per skill, both stages |
 | Stage models | `enrichment.stages` | See above |
 | `docBytes` / `maxDocFiles` | `limits` | Small, and it cuts into grounding — the reader is what the score checks claims against, so starving it makes the reviewer reject more |

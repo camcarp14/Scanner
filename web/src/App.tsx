@@ -27,10 +27,12 @@ import { relative } from './lib/format';
 
 const FEED_URL = `${import.meta.env.BASE_URL}feed.json`;
 
+// Three, not five. "Biggest gain" was a slower restatement of "Popping now",
+// and "Top scored" sorted by a number that no longer appears on a card, which
+// makes it impossible to tell whether the sort did anything.
 const SORTS: { key: SortKey; label: string }[] = [
-  { key: 'popping', label: 'Popping now' },
-  { key: 'gained', label: 'Biggest gain' },
   { key: 'newest', label: 'Newest' },
+  { key: 'popping', label: 'Popping now' },
   { key: 'stars', label: 'Most stars' },
   { key: 'score', label: 'Top scored' },
 ];
@@ -52,6 +54,9 @@ const RANGES: { key: Range; label: string }[] = [
 /** Sort keys that only mean something for repos, not generated skills. */
 const REPO_ONLY_SORTS: SortKey[] = ['popping', 'gained', 'stars'];
 
+/** ...and the reverse: a skill has a score worth sorting on, a repo doesn't. */
+const SKILL_ONLY_SORTS: SortKey[] = ['score'];
+
 function App() {
   const toast = useToast();
 
@@ -66,7 +71,7 @@ function App() {
   // Opens on Ideas: the point of the app is what people are building, and the
   // generated skills are a by-product you go looking for.
   const [view, setView] = useState<View>('ideas');
-  const [sort, setSort] = useState<SortKey>('popping');
+  const [sort, setSort] = useState<SortKey>('newest');
   const [lane, setLane] = useState<string>('all');
   const [range, setRange] = useState<Range>(30);
   const [showArchived, setShowArchived] = useState(false);
@@ -200,14 +205,22 @@ function App() {
     const starsOf = (item: FeedItem) => (isSkill(item) ? item.source.stars : item.stars);
     const velocityOf = (item: FeedItem) => (isSkill(item) ? 0 : item.star_velocity);
     const gainedOf = (item: FeedItem) => (isSkill(item) ? 0 : item.stars_gained);
-    // "Newest" means the project is new, not that we happened to notice it.
-    const createdOf = (item: FeedItem) =>
-      isCandidate(item) ? new Date(item.created_at).getTime() : new Date(item.first_seen).getTime();
+    // "Newest" is when it turned up HERE, not when the repo was created. This
+    // is a feed: what belongs at the top is whatever wasn't there yesterday.
+    // Sorting on the repo's own creation date buried a two-year-old project
+    // the scanner found this morning under every fresh repo it had already
+    // shown you twice.
+    //
+    // The tiebreak is score, and it matters more than the primary key does:
+    // everything found in one run is stamped with the same timestamp, so the
+    // tiebreak orders the entire batch. Breaking ties on creation date put
+    // three hours-old repos with eight stars at the top of the app.
+    const foundOf = (item: FeedItem) => new Date(item.first_seen).getTime();
 
     return [...list].sort((a, b) => {
       switch (sort) {
         case 'newest':
-          return createdOf(b) - createdOf(a);
+          return foundOf(b) - foundOf(a) || scoreOf(b) - scoreOf(a);
         case 'popping':
           return velocityOf(b) - velocityOf(a);
         case 'gained':
@@ -240,7 +253,10 @@ function App() {
   // Lanes and repo-only sorts don't apply to the skills view.
   const showFilters = view !== 'skills';
   const sortOptions = useMemo(
-    () => (view === 'skills' ? SORTS.filter((s) => !REPO_ONLY_SORTS.includes(s.key)) : SORTS),
+    () =>
+      SORTS.filter((s) =>
+        view === 'skills' ? !REPO_ONLY_SORTS.includes(s.key) : !SKILL_ONLY_SORTS.includes(s.key),
+      ),
     [view],
   );
   useEffect(() => {
@@ -548,27 +564,41 @@ function App() {
           </label>
         </div>
 
+        {/* One row of filters, not three. The lane chips came off the bar
+            entirely: with eight lanes the row scrolled sideways, "Under the
+            radar" and "Brand new" restate what the sort already does, and
+            every lane is still one keystroke away in the command palette.
+            Archived appears only once there is something archived. */}
         {showFilters && (
-          <>
-            <div className="filterbar">
-              <div className="rangeset" role="group" aria-label="How recently the project was created">
-                <span className="filter-label">Built</span>
-                {RANGES.map((r) => (
-                  <button
-                    key={r.key}
-                    className={`chip${range === r.key ? ' on' : ''}`}
-                    onClick={() => setRange(r.key)}
-                    title={
-                      r.key === 0
-                        ? 'Every project in the feed'
-                        : `Projects created in the last ${r.label}`
-                    }
-                  >
-                    {r.label}
-                  </button>
-                ))}
-              </div>
+          <div className="filterbar">
+            <div className="rangeset" role="group" aria-label="How recently the project was created">
+              <span className="filter-label">Built</span>
+              {RANGES.map((r) => (
+                <button
+                  key={r.key}
+                  className={`chip${range === r.key ? ' on' : ''}`}
+                  onClick={() => setRange(r.key)}
+                  title={
+                    r.key === 0 ? 'Every project in the feed' : `Projects created in the last ${r.label}`
+                  }
+                >
+                  {r.label}
+                </button>
+              ))}
+            </div>
 
+            {lane !== 'all' && (
+              <button
+                className="chip on lane-clear"
+                onClick={() => setLane('all')}
+                title="Clear the lane filter"
+              >
+                {lanes.find((l) => l.id === lane)?.label ?? lane}
+                <span aria-hidden="true"> ×</span>
+              </button>
+            )}
+
+            {archived.size > 0 && (
               <button
                 className={`chip archived-toggle${showArchived ? ' on' : ''}`}
                 onClick={() => setShowArchived((v) => !v)}
@@ -577,29 +607,8 @@ function App() {
               >
                 Archived
               </button>
-            </div>
-
-            {lanes.length > 0 && (
-              <div className="lanes" role="group" aria-label="Filter by lane">
-                <button
-                  className={`chip${lane === 'all' ? ' on' : ''}`}
-                  onClick={() => setLane('all')}
-                >
-                  All
-                </button>
-                {lanes.map((l) => (
-                  <button
-                    key={l.id}
-                    className={`chip${lane === l.id ? ' on' : ''}`}
-                    onClick={() => setLane(lane === l.id ? 'all' : l.id)}
-                    title={l.blurb}
-                  >
-                    {l.label}
-                  </button>
-                ))}
-              </div>
             )}
-          </>
+          </div>
         )}
       </header>
 
