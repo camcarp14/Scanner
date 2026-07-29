@@ -24,11 +24,31 @@ export function resetUsage() {
   usage.clear();
 }
 
+/**
+ * The API answers with the resolved model ID, which can carry a release date
+ * the config key doesn't have: we ask for `claude-haiku-4-5` and get back
+ * `claude-haiku-4-5-20251001`. An exact-key lookup missed that and silently
+ * priced the whole extract stage at zero, so fall back to the dateless ID and
+ * then to the longest configured prefix.
+ */
+export function rateFor(pricing, model) {
+  if (!pricing || !model) return undefined;
+  if (pricing[model]) return pricing[model];
+
+  const dateless = model.replace(/-\d{8}$/, '');
+  if (pricing[dateless]) return pricing[dateless];
+
+  const prefix = Object.keys(pricing)
+    .filter((key) => model.startsWith(key))
+    .sort((a, b) => b.length - a.length)[0];
+  return prefix ? pricing[prefix] : undefined;
+}
+
 export function getUsage(pricing) {
   const total = { calls: 0, input: 0, output: 0, cost: 0, byModel: {} };
 
   for (const [model, u] of usage) {
-    const rates = pricing?.[model];
+    const rates = rateFor(pricing, model);
     // Cache reads bill at ~10% of input, writes at ~1.25x. Broken out so the
     // number stays right if prompt caching is ever introduced here.
     const billableInput = u.input + u.cacheWrite * 1.25 + u.cacheRead * 0.1;

@@ -14,6 +14,7 @@ import { rankDocPaths } from '../lib/docs.mjs';
 import { scoreSkill, distinctiveTerms } from '../lib/skillscore.mjs';
 import { renderSkillMd, slugify } from '../lib/skillfile.mjs';
 import { readmeSummary, buildHook } from '../lib/summarize.mjs';
+import { rateFor } from '../lib/pipeline.mjs';
 
 /* --------------------------------- trending --------------------------------- */
 
@@ -304,4 +305,24 @@ test('buildHook falls back to the README when the description is thin', () => {
   const repo = { name: 'thing', description: 'wip' };
   const readme = '# thing\n\nThing is a deterministic scheduler for GPU inference workloads.';
   assert.match(buildHook(repo, readme), /^Thing is a deterministic scheduler/);
+});
+
+/* --------------------------------- pricing --------------------------------- */
+
+const PRICING = {
+  'claude-opus-5': { inputPerMTok: 5, outputPerMTok: 25 },
+  'claude-haiku-4-5': { inputPerMTok: 1, outputPerMTok: 5 },
+};
+
+test('rateFor matches a model ID the API returned with a release date on it', () => {
+  // The live run asked for claude-haiku-4-5 and the response said
+  // claude-haiku-4-5-20251001, so the exact-key lookup found nothing and the
+  // whole extract stage was reported as free.
+  assert.deepEqual(rateFor(PRICING, 'claude-haiku-4-5-20251001'), PRICING['claude-haiku-4-5']);
+  assert.deepEqual(rateFor(PRICING, 'claude-opus-5'), PRICING['claude-opus-5']);
+});
+
+test('rateFor still returns nothing for a model that is genuinely unpriced', () => {
+  assert.equal(rateFor(PRICING, 'claude-sonnet-5'), undefined);
+  assert.equal(rateFor(undefined, 'claude-opus-5'), undefined);
 });

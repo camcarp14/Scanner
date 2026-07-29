@@ -189,11 +189,17 @@ rather than estimated from prompt sizes, and stores it in `ideafeed_runs`:
 
 ```
 api spend
-  claude-haiku-4-5    4 calls ·  34,667 in /  8,000 out · $0.075
-  claude-sonnet-5     4 calls ·   8,000 in /  6,000 out · $0.114
-  claude-opus-5       1 calls ·   7,000 in /  1,500 out · $0.073
-  total               9 calls · $0.261 this run · ~$7.83/month daily
+  claude-haiku-4-5    3 calls ·  34,911 in /  4,993 out · $0.060
+  claude-sonnet-5     4 calls ·  14,727 in /  3,298 out · $0.094
+  claude-opus-5       1 calls ·   9,605 in /    581 out · $0.063
+  total               8 calls · $0.217 this run · ~$6.51/month daily
 ```
+
+That block is a real run, not an illustration. A model that isn't in
+`enrichment.pricing` is marked `(no rate configured)` rather than quietly
+costing nothing — the rate lookup tolerates the dated model IDs the API
+answers with (`claude-haiku-4-5-20251001`), because an exact-key match priced
+that stage at zero.
 
 **One model per stage, matched to what the stage does.** Extraction is bulk
 reading — it carries most of the input tokens and the least judgement, so it
