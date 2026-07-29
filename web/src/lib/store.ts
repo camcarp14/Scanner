@@ -5,6 +5,8 @@
 // ever wanted, implement `IdeaStore` against Supabase (or anything else) and
 // swap the export at the bottom — nothing in the UI changes.
 
+import { DEFAULT_PALETTE, PALETTES, paletteByKey } from '../design/palettes';
+
 export interface StoreState {
   bookmarks: string[];
   dismissed: string[];
@@ -86,6 +88,47 @@ export function writeTheme(theme: Theme) {
   } catch {
     // Preference won't survive a reload; the current session is unaffected.
   }
+  paintBrowserChrome();
+}
+
+/* ---------- palette: the second, independent axis ---------- */
+
+// Two axes on purpose. Mode is light/dark; palette is which of the twenty
+// colour schemes. Folding them into one flat list of forty would cost the
+// light/dark pairing, which is load-bearing here: on an installed iOS app the
+// status bar follows system appearance, so a pinned-light app under a dark
+// system leaves a visible seam across the top of the screen.
+
+export function readPalette(): string {
+  let saved: string | null = null;
+  try {
+    saved = localStorage.getItem('ideafeed.palette');
+  } catch {
+    saved = null;
+  }
+  return saved && PALETTES.some((p) => p.key === saved) ? saved : DEFAULT_PALETTE;
+}
+
+export function writePalette(key: string) {
+  document.documentElement.setAttribute('data-palette', key);
+  try {
+    localStorage.setItem('ideafeed.palette', key);
+  } catch {
+    // As above.
+  }
+  paintBrowserChrome();
+}
+
+/**
+ * Keep <meta name="theme-color"> in step with whatever is showing. On an
+ * installed iOS app this paints the strip behind the status bar; leave it on
+ * the old palette and a band of the wrong colour sits above the app.
+ */
+function paintBrowserChrome() {
+  const root = document.documentElement;
+  const mode = root.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+  const palette = paletteByKey(root.getAttribute('data-palette') || DEFAULT_PALETTE);
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', palette[mode].bg);
 }
 
 /* ---------- export, for getting saved items back out ---------- */

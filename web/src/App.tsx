@@ -12,7 +12,17 @@ import {
   useToast,
   type Command,
 } from './components/primitives';
-import { downloadJson, readTheme, store, writeTheme, type StoreState, type Theme } from './lib/store';
+import {
+  downloadJson,
+  readPalette,
+  readTheme,
+  store,
+  writePalette,
+  writeTheme,
+  type StoreState,
+  type Theme,
+} from './lib/store';
+import { Appearance } from './components/Appearance';
 import { relative } from './lib/format';
 
 const FEED_URL = `${import.meta.env.BASE_URL}feed.json`;
@@ -64,6 +74,9 @@ function App() {
   const [selected, setSelected] = useState(0);
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [theme, setTheme] = useState<Theme>('dark');
+  const [palette, setPalette] = useState<string>('ink');
+  const [appearanceOpen, setAppearanceOpen] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   const searchRef = useRef<HTMLInputElement>(null);
   const cardRefs = useRef<(HTMLElement | null)[]>([]);
@@ -92,6 +105,7 @@ function App() {
 
   useEffect(() => {
     setTheme(readTheme());
+    setPalette(readPalette());
     void store.load().then((loaded) => {
       previousVisit.current = loaded.lastVisit;
       setState({ ...loaded, lastVisit: new Date().toISOString() });
@@ -106,6 +120,23 @@ function App() {
   useEffect(() => {
     writeTheme(theme);
   }, [theme]);
+
+  useEffect(() => {
+    writePalette(palette);
+  }, [palette]);
+
+  // The feed is a static file rebuilt by the cron job, so "refresh" means
+  // re-fetch it — worth a button because an installed PWA can sit on a cached
+  // copy for a long time, and because the pull happens on a schedule you
+  // didn't choose. The minimum spin is deliberate: an instant 304 otherwise
+  // looks like the button did nothing.
+  const refresh = useCallback(async () => {
+    setRefreshing(true);
+    const started = Date.now();
+    await loadFeed({ silent: true });
+    const elapsed = Date.now() - started;
+    window.setTimeout(() => setRefreshing(false), Math.max(0, 420 - elapsed));
+  }, [loadFeed]);
 
   /* ------------------------------ derived ------------------------------ */
 
@@ -295,7 +326,7 @@ function App() {
         if (e.key === 'Escape') (target as HTMLInputElement).blur();
         return;
       }
-      if (paletteOpen || e.metaKey || e.ctrlKey || e.altKey) return;
+      if (paletteOpen || appearanceOpen || e.metaKey || e.ctrlKey || e.altKey) return;
 
       switch (e.key) {
         case 'j':
@@ -322,6 +353,14 @@ function App() {
         case '/':
           e.preventDefault();
           searchRef.current?.focus();
+          break;
+        case 'r':
+          e.preventDefault();
+          void refresh();
+          break;
+        case 't':
+          e.preventDefault();
+          setAppearanceOpen(true);
           break;
         case '1':
           setView('ideas');
@@ -389,7 +428,7 @@ function App() {
         id: 'refresh',
         label: 'Refresh feed',
         keywords: ['reload', 'fetch'],
-        run: () => void loadFeed({ silent: true }).then(() => toast('Feed refreshed')),
+        run: () => void refresh().then(() => toast('Feed refreshed')),
       },
       {
         id: 'export',
@@ -399,13 +438,19 @@ function App() {
       },
       {
         id: 'theme',
-        label: `Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`,
-        keywords: ['theme', 'dark', 'light', 'appearance'],
+        label: `Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`,
+        keywords: ['theme', 'dark', 'light', 'mode'],
         run: () => setTheme(theme === 'dark' ? 'light' : 'dark'),
+      },
+      {
+        id: 'appearance',
+        label: 'Change the colour scheme',
+        keywords: ['theme', 'colour', 'color', 'palette', 'appearance'],
+        run: () => setAppearanceOpen(true),
       },
     ];
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [lanes, theme, feed, bookmarks]);
+  }, [lanes, theme, feed, bookmarks, refresh]);
 
   /* ------------------------------- render ------------------------------- */
 
@@ -413,7 +458,7 @@ function App() {
 
   const subtitle = feed ? (
     <>
-      <Num v={feed.stats.candidates} /> ideas · scanned every 2h
+      <Num v={feed.stats.candidates} /> ideas · scanned daily
     </>
   ) : (
     'Scanning GitHub for what people are building'
@@ -448,10 +493,19 @@ function App() {
               )}
             </div>
             <button
+              className={`btn ghost icon${refreshing ? ' spinning' : ''}`}
+              onClick={() => void refresh()}
+              disabled={refreshing}
+              title="Check for new items (r)"
+              aria-label="Refresh the feed"
+            >
+              <RefreshIcon />
+            </button>
+            <button
               className="btn ghost icon"
-              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-              title="Toggle theme"
-              aria-label="Toggle theme"
+              onClick={() => setAppearanceOpen(true)}
+              title="Appearance"
+              aria-label="Appearance"
             >
               <ThemeIcon theme={theme} />
             </button>
@@ -675,11 +729,43 @@ function App() {
       <div className="keyhints" aria-hidden="true">
         <kbd>j</kbd>
         <kbd>k</kbd> move · <kbd>o</kbd> source · <kbd>b</kbd> save · <kbd>x</kbd> archive ·{' '}
-        <kbd>/</kbd> search
+        <kbd>/</kbd> search · <kbd>r</kbd> refresh · <kbd>t</kbd> theme
       </div>
 
       <CommandK commands={commands} open={paletteOpen} onOpenChange={setPaletteOpen} />
+
+      {appearanceOpen && (
+        <Appearance
+          theme={theme}
+          palette={palette}
+          onTheme={setTheme}
+          onPalette={setPalette}
+          onClose={() => setAppearanceOpen(false)}
+        />
+      )}
     </div>
+  );
+}
+
+/** Two arcs and two arrowheads — a cycle, not a reload glyph. */
+function RefreshIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" aria-hidden="true">
+      <path
+        d="M20 11a8 8 0 0 0-13.7-5.6L3 8.5"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
+      <path d="M3 4v4.5h4.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+      <path
+        d="M4 13a8 8 0 0 0 13.7 5.6L21 15.5"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
+      <path d="M21 20v-4.5h-4.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
   );
 }
 

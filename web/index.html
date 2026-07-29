@@ -6,7 +6,7 @@
     <meta name="color-scheme" content="dark light" />
     <meta
       name="description"
-      content="Reusable agent skills, mined from GitHub every couple of hours."
+      content="Reusable agent skills, mined from GitHub every day."
     />
     <title>ideafeed</title>
 
@@ -26,14 +26,30 @@
     <meta name="apple-mobile-web-app-title" content="ideafeed" />
 
     <link rel="manifest" href="./manifest.webmanifest" />
-    <!-- Tints the browser and status bar to match whichever theme is showing. -->
-    <meta name="theme-color" content="#eef1f4" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#0b0d11" media="(prefers-color-scheme: dark)" />
+    <!-- Tints the browser and status bar. The script below rewrites this once
+         the stored palette is known; this value is the cold-start fallback. -->
+    <meta name="theme-color" content="#16191A" />
     <script>
-      // Applied before first paint so the theme never flashes.
+      // Runs before first paint, so neither the mode nor the palette flashes.
+      // The grounds are inlined rather than read out of the cascade because the
+      // stylesheet does not exist yet at this point in the document — and they
+      // are generated, because a hand-copied colour map is exactly the thing
+      // that goes stale and paints the wrong strip behind the iOS status bar.
+      /* THEME-GROUNDS:GENERATED — scripts/gen-themes.mjs */
+      var G = {"porcelain":["#F4F3F0","#0F0E0B"],"graphite":["#F3F2F2","#151514"],"lapis":["#E9EBF1","#07090D"],"slate":["#F3F5F6","#1F2329"],"forest":["#EDF2F0","#0D120F"],"claret":["#ECE4E6","#1E1517"],"ink":["#F7F8F8","#070808"],"navy":["#E6E9EF","#090C10"],"plum":["#EFEAF0","#1F1721"],"moss":["#E7EAE1","#13150F"],"copper":["#E9E2DD","#1C1612"],"teal":["#F0F4F5","#182325"],"iris":["#EDECF3","#0D0C13"],"arctic":["#F6F8F9","#202C32"],"ember":["#E3DFDD","#0B0A09"],"mono":["#F5F5F5","#080808"],"sand":["#EDE9E3","#28231A"],"rose":["#F1EEEF","#322A2D"],"pine":["#E0EBE8","#080D0B"],"oxide":["#E0DDDC","#292524"]};
+      /* /THEME-GROUNDS */
       try {
-        var saved = localStorage.getItem('ideafeed.theme');
-        if (saved) document.documentElement.setAttribute('data-theme', saved);
+        var el = document.documentElement;
+        var mode = localStorage.getItem('ideafeed.theme');
+        if (mode !== 'light' && mode !== 'dark') {
+          mode = matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+        }
+        var palette = localStorage.getItem('ideafeed.palette');
+        if (!palette || !G[palette]) palette = 'ink';
+        el.setAttribute('data-theme', mode);
+        el.setAttribute('data-palette', palette);
+        var meta = document.querySelector('meta[name="theme-color"]');
+        if (meta) meta.content = G[palette][mode === 'dark' ? 1 : 0];
       } catch (e) {}
     </script>
   </head>

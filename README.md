@@ -3,7 +3,7 @@
 A self-running pipeline that mines GitHub for reusable agent skills, and a feed
 for reviewing what it finds.
 
-Every couple of hours it sweeps GitHub for new AI projects, reads their
+Once a day it sweeps GitHub for new AI projects, reads their
 documentation, extracts the reusable workflows buried in there, writes each one
 up as a `SKILL.md`, scores it, reviews it, and opens a pull request for the ones
 that survive. The web app is where you skim the output, read the generated

@@ -1,7 +1,7 @@
 {
   "name": "ideafeed",
   "short_name": "ideafeed",
-  "description": "Reusable agent skills, mined from GitHub every couple of hours.",
+  "description": "Reusable agent skills, mined from GitHub every day.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
