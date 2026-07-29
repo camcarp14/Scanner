@@ -199,6 +199,43 @@ test('distinctiveTerms picks up code identifiers and flags', () => {
   assert.ok(terms.some((t) => t.startsWith('retriever.chunk')));
 });
 
+test('distinctiveTerms captures the numbers hallucinations hide in', () => {
+  const terms = distinctiveTerms('Serve on port 4104, covering 19 of 103 entries, requires v2.1.0');
+  assert.ok(terms.includes('4104'), 'port');
+  assert.ok(terms.includes('103'), 'count');
+  assert.ok(terms.includes('v2.1.0'), 'version');
+});
+
+// The regression this exists for: on the first live run the rule scored 94-97
+// on skills the reviewer then proved were invented, because only the *numbers*
+// were fabricated — every identifier around them was real.
+test('grounding falls when only the numbers are invented', () => {
+  const docs = {
+    files: ['README.md'],
+    text: 'x'.repeat(4000),
+    raw: 'toolport gateway. run `toolport serve` and set toolport_discovery. the /mcp endpoint is streamable-http.',
+  };
+  const shared = {
+    when_to_use: 'Setting up the gateway.',
+    steps: ['Run `toolport serve`', 'Set toolport_discovery', 'Call the /mcp endpoint'],
+    prerequisites: ['cargo'],
+    tools: ['toolport'],
+    description: 'Use when configuring the toolport gateway and its /mcp endpoint.',
+  };
+  const truthful = {
+    ...shared,
+    body: 'Run `toolport serve`, set toolport_discovery, then call the /mcp endpoint over streamable-http. '.repeat(6),
+  };
+  const invented = {
+    ...shared,
+    body: 'Run `toolport serve` on port 4104, set toolport_discovery across 103 servers, then call the /mcp endpoint over streamable-http. Ports 4105 and 4106 are reserved and 8721 entries cached. '.repeat(6),
+  };
+
+  const a = scoreSkill(truthful, REPO, docs, SKILL_CFG).skill_breakdown.grounding;
+  const b = scoreSkill(invented, REPO, docs, SKILL_CFG).skill_breakdown.grounding;
+  assert.ok(b < a, `invented numbers should lower grounding: ${a} -> ${b}`);
+});
+
 /* ------------------------------- skill rendering ------------------------------- */
 
 test('slugify produces safe directory names', () => {

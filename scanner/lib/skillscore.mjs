@@ -13,7 +13,18 @@ const IMPERATIVE =
 const TRIGGER =
   /\b(when|whenever|if you|use this|for tasks|before|after|any time|anytime)\b/i;
 
-/** Distinctive tokens: code identifiers, flags, dotted names, CamelCase. */
+/**
+ * Distinctive tokens: code identifiers, flags, dotted names, CamelCase, and
+ * specific numbers.
+ *
+ * The numbers were added after the first live run, where this check scored
+ * 94–97 on skills the reviewer then showed were invented — because the
+ * fabrications were *numeric*. "port 4104", "19 of 103 entries", "runs in under
+ * a minute": the identifiers around them did appear in the docs, so the score
+ * stayed high while the specifics were fiction. A number of three or more
+ * digits is nearly always a concrete claim — a port, a count, a version — so an
+ * unsupported one is exactly the thing worth failing on.
+ */
 function distinctiveTerms(text) {
   const terms = new Set();
   const patterns = [
@@ -22,11 +33,15 @@ function distinctiveTerms(text) {
     /\b([a-z]+\.[a-z][a-z0-9_.]{2,})\b/gi, // dotted paths
     /\b([A-Z][a-z]+[A-Z][A-Za-z]+)\b/g, // CamelCase
     /(--[a-z][a-z0-9-]+)/g, // CLI flags
+    /\b(\d{3,6})\b/g, // ports, counts, sizes
+    /\b(v?\d+\.\d+(?:\.\d+)?)\b/g, // version numbers
   ];
   for (const pattern of patterns) {
     for (const match of text.matchAll(pattern)) {
       const term = match[1].toLowerCase().trim();
-      if (term.length >= 4 && term.length <= 40) terms.add(term);
+      // Numbers are meaningful at 3 characters; words need 4 to avoid noise.
+      const min = /^\d/.test(term) ? 3 : 4;
+      if (term.length >= min && term.length <= 40) terms.add(term);
     }
   }
   return [...terms];
