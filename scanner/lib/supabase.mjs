@@ -30,8 +30,9 @@ function client() {
         apikey: key,
         authorization: `Bearer ${key}`,
         'content-type': 'application/json',
-        // The ideafeed tables live in `public`; Board Room's usage_log lives in
-        // `boardroom`. PostgREST picks the schema off this header per request.
+        // Everything ideafeed writes lives in `public`, which is PostgREST's
+        // default, so no profile header is needed today. Kept as an option
+        // because the same client is the obvious place to write elsewhere.
         ...(schema ? { 'content-profile': schema } : {}),
         // merge-duplicates makes this an upsert; minimal skips the echo.
         prefer: onConflict
@@ -147,47 +148,10 @@ export async function syncRun({ items, stats, mode, spend }) {
       output_tokens: stats.output_tokens ?? null,
       cost_usd: stats.cost_usd ?? null,
       stats,
+      by_stage: spend?.byStage ?? null,
     },
   ]);
 
-  const logged = await logUsageToBoardRoom(request, spend);
-
-  return (
-    `${candidates.length} candidates, ${skills.length} skills, 1 run` +
-    (logged ? `, ${logged} usage rows` : '')
-  );
+  return `${candidates.length} candidates, ${skills.length} skills, 1 run`;
 }
 
-/**
- * Mirror this run's model spend into Board Room's own usage log.
- *
- * Board Room already has the surface for this — a durable, cross-device log of
- * every Anthropic call, with spend tiles and a per-feature breakdown. Writing
- * one row per stage puts ideafeed in that view next to everything else,
- * instead of building a second, parallel cost panel that has to be kept in
- * agreement with the first.
- *
- * `fn` is what the "By feature" list groups on, hence the ideafeed/ prefix.
- * `user_id` has to be explicit: the column defaults to auth.uid(), and the
- * service role has no session, so the default resolves to NULL and the insert
- * would fail its NOT NULL constraint.
- */
-async function logUsageToBoardRoom(request, spend) {
-  const userId = process.env.BOARDROOM_USER_ID;
-  if (!userId || !spend?.byStage?.length) return 0;
-
-  const rows = spend.byStage.map((s) => ({
-    user_id: userId,
-    fn: `ideafeed/${s.stage}`,
-    kind: 'anthropic',
-    model: s.model,
-    in_tokens: s.input,
-    out_tokens: s.output,
-    cost_usd: s.cost,
-    ok: true,
-    detail: `${s.calls} call${s.calls === 1 ? '' : 's'}`,
-  }));
-
-  await request('usage_log', rows, { schema: 'boardroom' });
-  return rows.length;
-}
