@@ -77,6 +77,11 @@ jobs:
           # in it is logged rather than allowed to fail the scan.
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          # Board Room's usage_log is per-user and its user_id column defaults
+          # to auth.uid(); the service role has no session, so the id has to be
+          # passed. Without it the usage mirror is skipped and nothing else
+          # changes. Not a credential — an account identifier.
+          BOARDROOM_USER_ID: ${{ vars.BOARDROOM_USER_ID || '0d2f6286-1780-49aa-9d48-d4a7dac2ce66' }}
         run: |
           # A manual dispatch says which mode it wants. A scheduled run doesn't,
           # so the cron expression that fired decides: the daily slot runs

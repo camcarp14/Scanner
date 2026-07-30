@@ -16,8 +16,9 @@ const MAX_WORKFLOWS_PER_REPO = 2;
  * sizes; the API reports it exactly on every response, so the run can just add
  * it up and say what it actually cost.
  */
-// Keyed by model, because the stages run on different models at different
-// rates — a single total would price Haiku tokens like Opus ones.
+// Keyed by stage AND model. Model alone was enough while each stage ran on a
+// different one, but the moment two stages share a model the totals merge, and
+// "which stage costs the money" is the only question this data ever answers.
 const usage = new Map();
 
 export function resetUsage() {
@@ -45,9 +46,10 @@ export function rateFor(pricing, model) {
 }
 
 export function getUsage(pricing) {
-  const total = { calls: 0, input: 0, output: 0, cost: 0, byModel: {} };
+  const total = { calls: 0, input: 0, output: 0, cost: 0, byModel: {}, byStage: [] };
 
-  for (const [model, u] of usage) {
+  for (const u of usage.values()) {
+    const { stage, model } = u;
     const rates = rateFor(pricing, model);
     // Cache reads bill at ~10% of input, writes at ~1.25x. Broken out so the
     // number stays right if prompt caching is ever introduced here.
@@ -56,23 +58,40 @@ export function getUsage(pricing) {
       (billableInput / 1e6) * (rates?.inputPerMTok ?? 0) +
       (u.output / 1e6) * (rates?.outputPerMTok ?? 0);
 
+    const rounded = Math.round(cost * 10000) / 10000;
     total.calls += u.calls;
     total.input += u.input;
     total.output += u.output;
     total.cost += cost;
-    total.byModel[model] = { ...u, cost: Math.round(cost * 10000) / 10000 };
-    if (!rates) total.byModel[model].unpriced = true;
+    total.byStage.push({ ...u, cost: rounded, unpriced: !rates });
+
+    // Kept keyed by model as well: the run log prints per model, and the
+    // pricing table is per model, so a per-model view stays the natural one
+    // for answering "is this rate right".
+    const m = (total.byModel[model] ||= {
+      calls: 0, input: 0, output: 0, cacheRead: 0, cacheWrite: 0, cost: 0,
+    });
+    m.calls += u.calls;
+    m.input += u.input;
+    m.output += u.output;
+    m.cacheRead += u.cacheRead;
+    m.cacheWrite += u.cacheWrite;
+    m.cost = Math.round((m.cost + cost) * 10000) / 10000;
+    if (!rates) m.unpriced = true;
   }
 
   total.cost = Math.round(total.cost * 10000) / 10000;
   return total;
 }
 
-function record(response) {
+function record(response, stage = 'unknown') {
   const u = response?.usage;
   if (!u) return;
   const model = response.model || 'unknown';
-  const entry = usage.get(model) || {
+  const key = `${stage}\u0000${model}`;
+  const entry = usage.get(key) || {
+    stage,
+    model,
     calls: 0,
     input: 0,
     output: 0,
@@ -84,7 +103,7 @@ function record(response) {
   entry.output += u.output_tokens || 0;
   entry.cacheRead += u.cache_read_input_tokens || 0;
   entry.cacheWrite += u.cache_creation_input_tokens || 0;
-  usage.set(model, entry);
+  usage.set(key, entry);
 }
 
 /* ------------------------- choosing what to write up ------------------------- */
@@ -279,8 +298,8 @@ export async function createClient() {
   }
 }
 
-function parseResponse(response) {
-  record(response);
+function parseResponse(response, stage) {
+  record(response, stage);
   if (response.stop_reason === 'refusal') {
     throw new Error(
       `model declined (${response.stop_details?.category || 'unknown category'})`,
@@ -305,7 +324,7 @@ function parseResponse(response) {
  * `effort` is omitted when the stage config doesn't set it — Haiku 4.5 rejects
  * the parameter outright, and the extract stage runs there.
  */
-async function callModel(client, { system, prompt, schema, cfg, maxTokens = 8000 }) {
+async function callModel(client, { system, prompt, schema, cfg, stage, maxTokens = 8000 }) {
   const outputConfig = { format: { type: 'json_schema', schema } };
   if (cfg.effort) outputConfig.effort = cfg.effort;
 
@@ -334,7 +353,7 @@ async function callModel(client, { system, prompt, schema, cfg, maxTokens = 8000
     }
   }
 
-  return parseResponse(await client.messages.create(request));
+  return parseResponse(await client.messages.create(request), stage);
 }
 
 /* ------------------------------- stage 4: extract ------------------------------- */
@@ -368,6 +387,7 @@ export async function extractWorkflows(client, candidates, cfg, batchSize) {
         prompt: `Extract reusable workflows from these ${batch.length} repositories.\n\n${extractPrompt(batch)}`,
         schema: EXTRACT_SCHEMA,
         cfg,
+        stage: 'extract',
         maxTokens: 12000,
       });
       for (const entry of result.results || []) {
@@ -415,6 +435,7 @@ export async function generateSkill(client, { repo, docs, workflow }, cfg) {
     prompt,
     schema: GENERATE_SCHEMA,
     cfg,
+    stage: 'generate',
     maxTokens: 8000,
   });
 }
@@ -452,6 +473,7 @@ export async function reviewSkills(client, skills, cfg, batchSize) {
         prompt: `Review these ${batch.length} generated skills.\n\n${prompt}`,
         schema: REVIEW_SCHEMA,
         cfg,
+        stage: 'review',
         maxTokens: 6000,
       });
       for (const review of result.reviews || []) {

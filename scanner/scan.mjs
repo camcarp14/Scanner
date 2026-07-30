@@ -674,7 +674,7 @@ async function main() {
     );
   } else {
     try {
-      const summary = await syncRun({ items, stats: feed.stats, mode: runMode });
+      const summary = await syncRun({ items, stats: feed.stats, mode: runMode, spend });
       console.log(`synced to supabase: ${summary}`);
     } catch (err) {
       console.warn(`supabase sync failed (feed is still written): ${err.message}`);
