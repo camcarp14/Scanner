@@ -336,12 +336,18 @@ async function callModel(client, { system, prompt, schema, cfg, stage, maxTokens
     messages: [{ role: 'user', content: prompt }],
   };
 
+  // Bound once rather than passed at each call site. There are two return
+  // paths out of this function and only one of them got the stage argument, so
+  // every Opus call — which is to say the entire review stage — was logged
+  // against "unknown". A closure makes forgetting it impossible.
+  const parse = (response) => parseResponse(response, stage);
+
   // Server-side fallbacks exist so a safety-classifier decline on one odd repo
   // doesn't cost the whole batch. Only the Opus tier has fallback targets, so
   // attempting it elsewhere just burns a failed call.
   if (cfg.model.startsWith('claude-opus')) {
     try {
-      return parseResponse(
+      return parse(
         await client.beta.messages.create({
           ...request,
           betas: ['server-side-fallback-2026-07-01'],
@@ -353,7 +359,7 @@ async function callModel(client, { system, prompt, schema, cfg, stage, maxTokens
     }
   }
 
-  return parseResponse(await client.messages.create(request), stage);
+  return parse(await client.messages.create(request));
 }
 
 /* ------------------------------- stage 4: extract ------------------------------- */

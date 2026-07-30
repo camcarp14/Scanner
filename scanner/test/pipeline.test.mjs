@@ -20,7 +20,14 @@ import {
 } from '../lib/score.mjs';
 import { renderSkillMd, slugify } from '../lib/skillfile.mjs';
 import { readmeSummary, buildHook } from '../lib/summarize.mjs';
-import { rateFor, orderWorkflows } from '../lib/pipeline.mjs';
+import {
+  rateFor,
+  orderWorkflows,
+  getUsage,
+  resetUsage,
+  extractWorkflows,
+  reviewSkills,
+} from '../lib/pipeline.mjs';
 
 /* --------------------------------- trending --------------------------------- */
 
@@ -538,4 +545,40 @@ test('keyword stuffing cannot saturate the novelty component', () => {
     stuffed.breakdown.novelty < 100,
     `expected the cap to bite, got ${stuffed.breakdown.novelty}`,
   );
+});
+
+/* --------------------------- usage stage labelling --------------------------- */
+
+test('every stage labels its own spend, including the Opus fallback path', async () => {
+  // The review stage runs on Opus, which is the only tier that goes through
+  // the server-side-fallback branch — a second return path out of callModel.
+  // It was the one that lost its stage argument, so the most expensive stage
+  // in the pipeline reported itself as "unknown" in the usage log.
+  resetUsage();
+
+  const reply = (model, input, output) => ({
+    model,
+    usage: { input_tokens: input, output_tokens: output },
+    content: [{ type: 'text', text: '{"reviews":[]}' }],
+  });
+
+  const client = {
+    messages: { create: async () => reply('claude-haiku-4-5-20251001', 100, 10) },
+    beta: { messages: { create: async () => reply('claude-opus-5', 200, 20) } },
+  };
+
+  await extractWorkflows(client, [{ id: '1', full_name: 'a/b', docs: { text: 'x' } }], { model: 'claude-haiku-4-5' }, 6);
+  await reviewSkills(
+    client,
+    [{
+      id: 's1', name: 'n', description: 'd', body: 'b', steps: [], docs_excerpt: 'x',
+      source: { full_name: 'a/b' }, skill_score: 70, skill_breakdown: { grounding: 60, specificity: 70 },
+    }],
+    { model: 'claude-opus-5' },
+    4,
+  );
+
+  const stages = getUsage({}).byStage.map((s) => s.stage).sort();
+  assert.deepEqual(stages, ['extract', 'review']);
+  assert.ok(!stages.includes('unknown'), 'no call should be logged against an unknown stage');
 });
