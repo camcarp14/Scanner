@@ -8,28 +8,30 @@ name: ideafeed scan
 # Runs on `main`. Schedules only ever fire on the default branch, so keep this
 # file there — a copy on another branch will never tick.
 #
-# TWO cadences, because the two halves of the pipeline cost wildly different
-# amounts. Stages 1-3 (scout, filter, read) are GitHub API calls, which are
-# free, and Actions minutes are free on a public repo — so collecting new
-# candidates costs nothing and can run as often as is useful. Stages 4-8 are
-# the model calls, and they are the entire bill.
+# STOPPED. The schedules are removed: this pipeline does not run on its own.
 #
-#   07:17                  full run — new candidates AND new skills
-#   01:17 / 13:17 / 19:17  scout only — new candidates, $0.00
+# It used to tick four times a day — 07:17 for a full run (scout through
+# publish) and 01:17/13:17/19:17 for scout-only sweeps, which cost nothing
+# because stages 1-3 are GitHub API calls while stages 4-8 are the entire bill.
 #
-# So the feed picks up new ideas four times a day for the price of one. Skill
-# generation stays daily because that is the part that costs money, and because
-# a repo worth writing up does not break out inside a six-hour window.
+# Note for whoever reads this next: this job is the only writer of the
+# `public.ideafeed_*` tables. Pentagon's Ideas tool reads them and writes
+# nothing back, and Pentagon schedules no scanner of its own, so while this is
+# stopped the review queue receives no new repos and no new skills are written.
+# That is intended, not an oversight.
 #
-# This is the ONLY writer of the `public.ideafeed_*` tables in the Pentagon
-# Postgres project. Pentagon's Ideas tool (apps/ideas) reads them and writes
-# nothing back, and Pentagon schedules no scanner of its own — so if these
-# crons stop, the review queue stops receiving repos entirely. Not legacy.
+# `workflow_dispatch` is kept so the pipeline can still be run by hand. To
+# restore the old cadence, put back:
+#
+#     schedule:
+#       - cron: '17 7 * * *'        # full
+#       - cron: '17 1,13,19 * * *'  # scout only
+#
+# The mode logic below handles both: a dispatch names its mode, a scheduled run
+# infers it from the cron that fired.
 
 on:
-  schedule:
-    - cron: '17 7 * * *' # full — off the hour, away from the top-of-hour rush
-    - cron: '17 1,13,19 * * *' # scout only, free
+  # No `schedule:` — see STOPPED above. Manual dispatch only.
   workflow_dispatch:
     inputs:
       mode:
